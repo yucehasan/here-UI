@@ -189,10 +189,17 @@ export class ConferenceComponent implements OnInit {
     });
 
     this.peerConnection.ontrack = function({ streams: [stream] }) {
-      const remoteVideo = document.getElementById("remote-video") as HTMLVideoElement;
-      if (remoteVideo) {
-        remoteVideo.srcObject = stream;
-      }
+      
+      var vidElement = document.createElement('video');
+      vidElement.setAttribute('autoplay', '');
+      vidElement.setAttribute('muted', '');
+      vidElement.srcObject = stream;
+
+      document.getElementById('remote-videos').appendChild(vidElement);
+      // const remoteVideo = document.getElementById("remote-video") as HTMLVideoElement;
+      // if (remoteVideo) {
+      //   remoteVideo.srcObject = stream;
+      // }
     };
     
     this.videoOn = true;
