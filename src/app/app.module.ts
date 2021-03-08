@@ -17,8 +17,9 @@ import { AuthComponent } from './pages/auth/auth.component';
 import { AssignStudentComponent } from './components/assign-student/assign-student.component';
 import { ScheduleTableComponent } from './components/schedule-table/schedule-table.component';
 import { HttpClientModule } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
-const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
+const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {} };
 @NgModule({
   declarations: [
     AppComponent,

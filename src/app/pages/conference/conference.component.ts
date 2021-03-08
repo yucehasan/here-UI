@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { io } from 'socket.io-client';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { SocketioService } from 'src/app/services/socketio.service';
@@ -197,7 +196,6 @@ export class ConferenceComponent implements OnInit {
     };
     
     this.videoOn = true;
-    console.log("Changing to true");
     navigator.getUserMedia(
       { video: { mandatory: {maxHeight: 240} } as MediaTrackConstraints, audio: false },
       stream => {

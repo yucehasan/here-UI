@@ -1,1 +1,0 @@
-worker: nodemon --watch './src/app/**/*.ts' --exec ts-node ./index.ts

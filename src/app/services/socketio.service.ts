@@ -10,8 +10,7 @@ export class SocketioService {
   RTCSocket: Socket;
   socket: Socket;
   constructor() {
-    this.RTCSocket = io(environment.RTC_ENDPOINT, {transports: ['websocket', 'polling', 'flashsocket']});
-    this.socket = io(environment.FLASK_ENDPOINT, {transports: ['websocket', 'polling', 'flashsocket']});
+    //this.socket = io(environment.FLASK_ENDPOINT, {transports: ['websocket', 'polling', 'flashsocket']});
   }
 
   emitMessage(message: string): void{
