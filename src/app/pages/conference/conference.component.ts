@@ -29,14 +29,14 @@ export class ConferenceComponent implements OnInit {
     this.shareOn = false;
     this.taOn = false;
     this.message = 'Start';
-    // this.socketService.getMessages().subscribe(
-    //   (message: string) => {
-    //     console.log('Received', message);
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
+    this.socketService.getMessages().subscribe(
+      (message: string) => {
+        console.log('Received', message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   openTA(message: string): void{
