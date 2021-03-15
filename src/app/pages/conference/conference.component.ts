@@ -124,9 +124,13 @@ export class ConferenceComponent implements OnInit {
         .drawImage(this.video, 0, 0, canvas.width, canvas.height);
       // convert it to a usable data URL
       //this.socketService.emitImage(canvas.toDataURL());
-      this.httpClient.post("https://hereapp-live.herokuapp.com/image/", {data: canvas.toDataURL()}).subscribe(data => {
+      let info = {
+        data: "test data"
+      }
+      this.httpClient.post("https://hereapp-live.herokuapp.com/image", info).subscribe(data => {
         console.log(data)
       })
+
     }
     else{
       console.error("Video stream is not on!");
