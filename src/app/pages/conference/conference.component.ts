@@ -122,12 +122,12 @@ export class ConferenceComponent implements OnInit {
         .drawImage(this.video, 0, 0, canvas.width, canvas.height);
       // convert it to a usable data URL
       //this.socketService.emitImage(canvas.toDataURL());
-      let info = {
-        data: "test data"
-      }
-      this.httpClient.post(environment.FLASK_ENDPOINT + "image", info).subscribe(data => {
-        console.log(data)
-      })
+      const formData = new FormData();
+      formData.append("data", "data");
+      this.httpClient.post(environment.FLASK_ENDPOINT + "image", formData).subscribe(
+        (res) => console.log(res),
+        (err) => console.log(err)
+      );
 
     }
     else{
