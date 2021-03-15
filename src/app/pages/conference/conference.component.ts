@@ -124,7 +124,7 @@ export class ConferenceComponent implements OnInit {
         .drawImage(this.video, 0, 0, canvas.width, canvas.height);
       // convert it to a usable data URL
       //this.socketService.emitImage(canvas.toDataURL());
-      this.httpClient.post("http://127.0.0.1:5000/image", {data: canvas.toDataURL()}).subscribe(data => {
+      this.httpClient.post("https://hereapp-live.herokuapp.com/image", {data: canvas.toDataURL()}).subscribe(data => {
         console.log(data)
       })
     }
