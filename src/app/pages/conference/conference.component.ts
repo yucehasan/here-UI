@@ -127,7 +127,7 @@ export class ConferenceComponent implements OnInit {
       let info = {
         data: "test data"
       }
-      this.httpClient.post("https://hereapp-live.herokuapp.com/image", info).subscribe(data => {
+      this.httpClient.post(environment.FLASK_ENDPOINT + "image", info).subscribe(data => {
         console.log(data)
       })
 
