@@ -6,7 +6,6 @@ import { MainComponent } from './pages/main/main.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-import { SocketioService } from './services/socketio.service';
 import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from './pages/profile/profile.component';
@@ -43,7 +42,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {} };
     ReactiveFormsModule,
     HttpClientModule,
   ],
-  providers: [SocketioService],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,8 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { SocketioService } from 'src/app/services/socketio.service';
-import adapter from 'webrtc-adapter';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 

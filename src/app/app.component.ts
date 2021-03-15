@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { SocketioService } from './services/socketio.service';
 import { Router } from '@angular/router';
 
 @Component({
