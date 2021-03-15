@@ -2,6 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { SocketioService } from 'src/app/services/socketio.service';
+import adapter from 'webrtc-adapter';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-conference',
@@ -20,7 +23,7 @@ export class ConferenceComponent implements OnInit {
   activeCalls: any[];
   peerConnection;
 
-  constructor(private socket: Socket, private socketService: SocketioService, private cdr: ChangeDetectorRef) { 
+  constructor(private socket: Socket, private httpClient: HttpClient, private cdr: ChangeDetectorRef) { 
     this.setupSocketConnection();
   } //private socketService: SocketioService
 
@@ -29,14 +32,14 @@ export class ConferenceComponent implements OnInit {
     this.shareOn = false;
     this.taOn = false;
     this.message = 'Start';
-    this.socketService.getMessages().subscribe(
-      (message: string) => {
-        console.log('Received', message);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    // this.socketService.getMessages().subscribe(
+    //   (message: string) => {
+    //     console.log('Received', message);
+    //   },
+    //   (err) => {
+    //     console.log(err);
+    //   }
+    // );
   }
 
   openTA(message: string): void{
@@ -105,12 +108,13 @@ export class ConferenceComponent implements OnInit {
     }
   }
  
-  emitMessage(): void {
-    this.socketService.emitMessage(this.message);
-  }
+  // emitMessage(): void {
+  //   this.socketService.emitMessage(this.message);
+  // }
  
   captureVideo(){
     if( this.videoOn){
+      console.log("Capturing")
       const canvas = document.createElement("canvas");
       // scale the canvas accordingly
       canvas.width = this.video.videoWidth;
@@ -119,7 +123,10 @@ export class ConferenceComponent implements OnInit {
       canvas.getContext('2d')
         .drawImage(this.video, 0, 0, canvas.width, canvas.height);
       // convert it to a usable data URL
-      this.socketService.emitImage(canvas.toDataURL());
+      //this.socketService.emitImage(canvas.toDataURL());
+      this.httpClient.post(environment.FLASK_ENDPOINT, canvas.toDataURL()).subscribe(data => {
+        console.log(data)
+      })
     }
     else{
       console.error("Video stream is not on!");

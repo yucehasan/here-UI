@@ -10,7 +10,7 @@ export class SocketioService {
   RTCSocket: Socket;
   socket: Socket;
   constructor() {
-    this.socket = io(environment.FLASK_ENDPOINT, {transports: ['websocket', 'polling', 'flashsocket']});
+    this.socket = io(environment.FLASK_ENDPOINT);
   }
 
   emitMessage(message: string): void{

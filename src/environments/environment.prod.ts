@@ -1,5 +1,5 @@
 export const environment = {
   production: true,  
-  FLASK_ENDPOINT: "wss://here-env.eba-8zsv9qwm.us-east-2.elasticbeanstalk.com/",
+  FLASK_ENDPOINT: "https://hereapp-live.herokuapp.com/",
   RTC_ENDPOINT: "https://rtc-server-here.herokuapp.com"
 };
