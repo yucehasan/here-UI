@@ -1,7 +1,11 @@
 {
-    "/api/*": {
-        "target": "https://hereapp-live.herokuapp.com/",
-        "secure": false,
-        "logLevel": "debug"
+    "/api": {
+      "target": "https://hereapp-live.herokuapp.com",
+      "secure": true,
+      "pathRewrite": {
+      "^/api": ""
+    },
+      "changeOrigin": true
     }
-}
+  }
+  
