@@ -1,28 +1,60 @@
 <script src="socket.io/socket.io.js"></script>
 <mat-card class="example-card">
   <mat-card-content id="buttons">
-    <div id="toolsSection">
-        <button mat-raised-button [disabled]="videoOn" (click)="startVideo()">Start</button>
-        <button mat-raised-button [disabled]="shareOn" (click)="startShare()">Share</button>
-        <button mat-raised-button [disabled]="!videoOn" (click)="stopVideo()">Stop</button>
+    <div id="toolsSection" align="start">
         <button mat-raised-button (click)="openTA('Text will appear here')">TRY</button>
         <button (click)="captureVideo()" mat-raised-button color="primary">Capture snaphot</button>
+        <button mat-icon-button class="toolButton" id="" >
+            <mat-icon id="camIcon">radio_button_checked</mat-icon>
+        </button>
+        <button mat-icon-button class="toolButton" id="" >
+            <mat-icon id="chatIcon">chat_bubble</mat-icon>
+        </button>
+        <button mat-icon-button class="toolButton" id="" 
+            #noteTrigger="matMenuTrigger" 
+            [matMenuTriggerFor]="note" >
+            <mat-icon id="taIcon">note</mat-icon>
+        </button>
+        <mat-menu [hasBackdrop]="false" #note="matMenu" class="note-content">
+            <mat-card class="note-card" (click)="$event.stopPropagation();">
+                <mat-card-title>Note</mat-card-title>
+                <mat-card-content class="overlay">
+                    <app-register></app-register>
+                </mat-card-content>
+            </mat-card>
+        </mat-menu>
+        <button mat-icon-button class="toolButton" id="" >
+            <mat-icon id="taIcon">videocam</mat-icon>
+        </button>
+        <button mat-icon-button class="toolButton" id="" >
+            <mat-icon id="taIcon">mic</mat-icon>
+        </button>
+        <button mat-icon-button class="toolButton" id="" >
+            <mat-icon id="taIcon">screen_share</mat-icon>
+        </button>
+        <button mat-icon-button class="toolButton" id="" >
+            <mat-icon id="taIcon">group</mat-icon>
+        </button>
+        <button mat-icon-button class="toolButton" id="" >
+            <mat-icon id="taIcon">exit_to_app</mat-icon>
+        </button>
+    </div>
+    <div align="end">
         <button 
-        align="end"
         #taTrigger="matMenuTrigger" 
-        [matMenuTriggerFor]="menu" 
+        [matMenuTriggerFor]="taNotification" 
         mat-icon-button 
         id="taButton"
         [matBadge]="taOn ? '!' : null" matBadgeSize="large" matBadgePosition="before" >
         <mat-icon id="taIcon">face</mat-icon>
-    </button>
-    <mat-menu [hasBackdrop]="false" #menu="matMenu" class="ta-content">
-        <mat-card class="ta-card">
-            <mat-card-title>TA</mat-card-title>
-            <mat-card-content id="ta-notification"></mat-card-content>
-        </mat-card>
-    </mat-menu>
-</div>
+        </button>
+        <mat-menu [hasBackdrop]="false" #taNotification="matMenu" class="ta-content">
+            <mat-card class="ta-card">
+                <mat-card-title>TA</mat-card-title>
+                <mat-card-content class="overlay"></mat-card-content>
+            </mat-card>
+        </mat-menu>
+    </div>
 </mat-card-content>
 </mat-card>
 

@@ -17,11 +17,13 @@ export class ConferenceComponent implements OnInit {
   }
 
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
+  @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
   taOn: boolean;
   video: HTMLVideoElement;
   share: HTMLVideoElement;
   videoOn: boolean;
   shareOn: boolean;
+  noteOn: boolean;
   message: string;
   activeCalls: any[];
   peerConnection;
@@ -43,6 +45,7 @@ export class ConferenceComponent implements OnInit {
     this.activeCalls = [];
     this.shareOn = false;
     this.taOn = false;
+    this.noteOn = false;
     // this.socket = io(environment.TEST_ENDPOINT, {secure: true});
   }
   ngAfterContentInit(): void {
@@ -54,35 +57,30 @@ export class ConferenceComponent implements OnInit {
 
   openTA(message: string): void {
     console.log("sending test")
-    this.socket.emit("test");
-    // this.taTrigger.openMenu();
-    // let notification = document.getElementById('ta-notification');
-    // notification.innerHTML = message;
-    // this.taOn = true;
-    // setTimeout(() => {
-    //   this.taTrigger.closeMenu();
-    //   this.taOn = false;
-    // }, 5000);
+    this.taTrigger.openMenu();
+    let notification = document.getElementById('ta-notification');
+    notification.innerHTML = message || "message will appear here";
+    this.taOn = true;
+    setTimeout(() => {
+      this.taTrigger.closeMenu();
+      this.taOn = false;
+    }, 5000);
+  }
+
+  toggleNote(message: string): void {
+    if(!this.noteOn){
+      this.noteTrigger.openMenu();
+      this.noteOn = true; 
+    }
+    else{
+      this.noteTrigger.closeMenu();
+      this.noteOn = false; 
+    }
   }
 
   startVideo(): void {
     this.video = document.getElementById('host-video') as HTMLVideoElement;
     this.videoOn = true;
-
-    // navigator.getUserMedia(
-    //   {
-    //     video: { mandatory: { maxHeight: 240 } } as MediaTrackConstraints,
-    //     audio: false,
-    //   },
-    //   (stream) => {
-    //     this.video.srcObject = stream;
-    //     console.log('Streaming video');
-    //   },
-    //   (error) => {
-    //     console.log('Error: ' + error);
-    //     this.videoOn = false;
-    //   }
-    // );
   }
 
   startShare(): void {
@@ -247,7 +245,6 @@ export class ConferenceComponent implements OnInit {
       video.srcObject         = event.streams[0];
       video.autoplay    = true; 
       video.muted       = true;
-      video.playsinline = true;
       
       div.setAttribute("style", "width: 50%");
       div.appendChild(video);      
