@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  FLASK_ENDPOINT: "https://hereapp-live.herokuapp.com/",
+  FLASK_ENDPOINT: "http://localhost:5000/",
   RTC_ENDPOINT: "https://rtc-server-here.herokuapp.com"
 };
 

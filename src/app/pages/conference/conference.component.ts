@@ -123,7 +123,7 @@ export class ConferenceComponent implements OnInit {
       // convert it to a usable data URL
       //this.socketService.emitImage(canvas.toDataURL());
       const formData = new FormData();
-      formData.append("data", "data");
+      formData.append("data", canvas.toDataURL());
       this.httpClient.post(environment.FLASK_ENDPOINT + "image", formData).subscribe(
         (res) => console.log(res),
         (err) => console.log(err)
