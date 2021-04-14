@@ -6,8 +6,11 @@ var io = require('socket.io')(app);
 
 io.on('connection', function(socket){
 	console.log(socket.id + " joined")
-	io.sockets.emit("user-joined", socket.id, io.engine.clientsCount, Object.keys(io.sockets.clients().sockets));
+	socket.on('confirm', () => {
+		io.sockets.emit("user-joined", socket.id, io.engine.clientsCount, Object.keys(io.sockets.clients().sockets));
+  	});
 	
+
 	socket.on('signal', (toId, message) => {
 		io.to(toId).emit('signal', socket.id, message);
   	});
@@ -17,6 +20,7 @@ io.on('connection', function(socket){
     })
 
 	socket.on('disconnect', function() {
+		console.log(socket.id + " left")
 		io.sockets.emit("user-left", socket.id);
 	})
 });

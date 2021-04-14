@@ -3,7 +3,6 @@ import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import io from "socket.io-client";
 
 @Component({
   selector: 'app-conference',
@@ -56,7 +55,6 @@ export class ConferenceComponent implements OnInit {
   }
 
   openTA(message: string): void {
-    console.log("sending test")
     this.taTrigger.openMenu();
     let notification = document.getElementById('ta-notification');
     notification.innerHTML = message || "message will appear here";
@@ -105,13 +103,11 @@ export class ConferenceComponent implements OnInit {
   }
 
   stopSharing(): void {
-    console.log('screensharing has ended');
     this.share.srcObject = undefined;
     this.shareOn = false;
   }
 
   stopVideo(): void {
-    console.log('video sharing has ended');
     if (this.videoOn) {
       (<MediaStream>this.video.srcObject).getTracks().forEach((track) => {
         track.stop();
@@ -123,7 +119,6 @@ export class ConferenceComponent implements OnInit {
 
   captureVideo() {
     if (this.videoOn) {
-      console.log('Capturing');
       const canvas = document.createElement('canvas');
       // scale the canvas accordingly
       canvas.width = this.video.videoWidth;
@@ -149,16 +144,8 @@ export class ConferenceComponent implements OnInit {
   /* 
     Start of WebRTC functions
   */
-
-  ngOnDestroy(): void {
-    console.log('Should destroy');
-    // this.socket.emit("disconnect");
-    // this.socket.disconnect();
-    //this.socket.emit("disconnect");
-  }
   
   pageReady() {
-      console.log("ready")
       this.localVideo = document.getElementById('host-video');
   
       var constraints = {
@@ -176,15 +163,12 @@ export class ConferenceComponent implements OnInit {
   }
 
   setListeners(){
-    console.log("setting")
     this.socket.on('signal', (fromId, message) => this.gotMessageFromServer(fromId, message)); 
 
     //this.socket.on('connect', () => {
-      console.log("listeners adding")
-      this.socketId = this.socket.id;
+      this.socketId = this.socket.ioSocket.id;
 
       this.socket.on('user-left', (id) => {
-        console.log("removing", id)
           var video = document.querySelector('[data-socket="'+ id +'"]');
           var parentDiv = video.parentElement;
           video.parentElement.parentElement.removeChild(parentDiv);
@@ -192,14 +176,12 @@ export class ConferenceComponent implements OnInit {
 
 
         this.socket.on('user-joined', (id, count, clients) => {
-          console.log(id, "joined")
             clients.forEach((socketListId) => {
                 if(!this.connections[socketListId]){
                   this.connections[socketListId] = new RTCPeerConnection();
-                    //Wait for their ice candidate       
+                    //Wait for their ice candidate    
                     this.connections[socketListId].onicecandidate = (event) => {
                         if(event.candidate != null) {
-                            console.log('SENDING ICE');
                             this.socket.emit('signal', socketListId, JSON.stringify({'ice': event.candidate}));
                         }
                     }
@@ -207,7 +189,6 @@ export class ConferenceComponent implements OnInit {
                     this.connections[socketListId].ontrack = (event) => {
                       this.gotRemoteStream(event, socketListId);
                     }    
-                    console.log(this.connections[socketListId]);
                     this.connections[socketListId].addStream(this.localStream);                                                                
                     //Add the local video stream
                 }
@@ -216,28 +197,28 @@ export class ConferenceComponent implements OnInit {
             //Create an offer to connect with your local description
             
             if(count >= 2){
-              console.log("count > 2")
               this.connections[id].createOffer().then((description) => {
                 this.connections[id].setLocalDescription(description).then(() => {
-                        // console.log(connections);
-                        console.log("sending signal")
                         this.socket.emit('signal', id, JSON.stringify({'sdp': this.connections[id].localDescription}));
                     }).catch(e => console.log(e));        
                 });
             }
-        });                    
+        });  
+
+        // this.socket.on('confirm', () => {
+        //   console.log("confirmed");
+        // });
+      this.socket.emit("confirm");
     //})       
 
 }
   
   getUserMediaSuccess(stream) {
-    console.log("hello");
     this.localStream = stream;
     this.localVideo.srcObject = (stream);
   }
   
   gotRemoteStream(event, id) {
-      console.log("got remote stream of", id)
       var video  = document.createElement('video'),
           div    = document.createElement('div')
   
