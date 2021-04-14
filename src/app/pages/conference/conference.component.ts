@@ -7,69 +7,80 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-conference',
   templateUrl: './conference.component.html',
-  styleUrls: ['./conference.component.sass']
+  styleUrls: ['./conference.component.sass'],
 })
 export class ConferenceComponent implements OnInit {
+
+  config = {
+    host: environment.TEST_ENDPOINT
+  }
+
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
+  @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
   taOn: boolean;
   video: HTMLVideoElement;
   share: HTMLVideoElement;
-  constraints = { audio: false, video: true };
   videoOn: boolean;
   shareOn: boolean;
+  noteOn: boolean;
   message: string;
   activeCalls: any[];
   peerConnection;
 
-  constructor(private socket: Socket, private httpClient: HttpClient, private cdr: ChangeDetectorRef) { 
-    this.setupSocketConnection();
-  } //private socketService: SocketioService
+  localVideo;
+  //socket;
+  firstPerson = false;
+  socketCount = 0;
+  socketId;
+  localStream;
+  connections = [];
+
+  constructor(
+    private socket: Socket,
+    private httpClient: HttpClient
+  ) {}
 
   ngOnInit(): void {
-    this.activeCalls = []
+    this.activeCalls = [];
     this.shareOn = false;
     this.taOn = false;
-    this.message = 'Start';
-    // this.socketService.getMessages().subscribe(
-    //   (message: string) => {
-    //     console.log('Received', message);
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
+    this.noteOn = false;
+    // this.socket = io(environment.TEST_ENDPOINT, {secure: true});
+  }
+  ngAfterContentInit(): void {
+    this.pageReady();
+    //Called after ngOnInit when the component's or directive's content has been initialized.
+    //Add 'implements AfterContentInit' to the class.
+    
   }
 
-  openTA(message: string): void{
+  openTA(message: string): void {
     this.taTrigger.openMenu();
-    let notification = document.getElementById("ta-notification");
-    notification.innerHTML =  message;
+    let notification = document.getElementById('ta-notification');
+    notification.innerHTML = message || "message will appear here";
     this.taOn = true;
-    setTimeout(() => 
-    {
-        this.taTrigger.closeMenu();
-        this.taOn = false;
-    },
-    5000);
+    setTimeout(() => {
+      this.taTrigger.closeMenu();
+      this.taOn = false;
+    }, 5000);
+  }
+
+  toggleNote(message: string): void {
+    if(!this.noteOn){
+      this.noteTrigger.openMenu();
+      this.noteOn = true; 
+    }
+    else{
+      this.noteTrigger.closeMenu();
+      this.noteOn = false; 
+    }
   }
 
   startVideo(): void {
     this.video = document.getElementById('host-video') as HTMLVideoElement;
     this.videoOn = true;
-
-    navigator.getUserMedia(
-      { video: { mandatory: {maxHeight: 240} } as MediaTrackConstraints, audio: false },
-      stream => {
-        this.video.srcObject = stream;
-        console.log('Streaming video');
-      },
-      (error) => {
-        console.log('Error: ' + error);
-        this.videoOn = false;
-      }
-    );
   }
- 
+
   startShare(): void {
     this.share = document.getElementById('shared-screen') as HTMLVideoElement;
     this.shareOn = true;
@@ -78,9 +89,11 @@ export class ConferenceComponent implements OnInit {
       (stream) => {
         this.share.srcObject = stream;
         console.log('Sharing screen');
-        (<MediaStream>this.share.srcObject).getVideoTracks()[0].addEventListener('ended', () => {
-          this.stopSharing();
-        });
+        (<MediaStream>this.share.srcObject)
+          .getVideoTracks()[0]
+          .addEventListener('ended', () => {
+            this.stopSharing();
+          });
       },
       (error) => {
         console.log('Error: ' + error);
@@ -88,16 +101,14 @@ export class ConferenceComponent implements OnInit {
       }
     );
   }
- 
+
   stopSharing(): void {
-    console.log('screensharing has ended')
     this.share.srcObject = undefined;
     this.shareOn = false;
   }
- 
+
   stopVideo(): void {
-    console.log('video sharing has ended')
-    if(this.videoOn){
+    if (this.videoOn) {
       (<MediaStream>this.video.srcObject).getTracks().forEach((track) => {
         track.stop();
       });
@@ -105,191 +116,145 @@ export class ConferenceComponent implements OnInit {
       this.video.srcObject = undefined;
     }
   }
- 
-  // emitMessage(): void {
-  //   this.socketService.emitMessage(this.message);
-  // }
- 
-  captureVideo(){
-    if( this.videoOn){
-      console.log("Capturing")
-      const canvas = document.createElement("canvas");
+
+  captureVideo() {
+    if (this.videoOn) {
+      const canvas = document.createElement('canvas');
       // scale the canvas accordingly
       canvas.width = this.video.videoWidth;
       canvas.height = this.video.videoHeight;
       // draw the video at that frame
-      canvas.getContext('2d')
+      canvas
+        .getContext('2d')
         .drawImage(this.video, 0, 0, canvas.width, canvas.height);
       // convert it to a usable data URL
-      //this.socketService.emitImage(canvas.toDataURL());
       const formData = new FormData();
-      formData.append("data", "data");
-      this.httpClient.post(environment.FLASK_ENDPOINT + "image", formData).subscribe(
-        (res) => console.log(res),
-        (err) => console.log(err)
-      );
-
+      formData.append('data', canvas.toDataURL());
+      this.httpClient
+        .post(environment.FLASK_ENDPOINT + 'image', formData)
+        .subscribe(
+          (res) => console.log(res),
+          (err) => console.log(err)
+        );
+    } else {
+      console.error('Video stream is not on!');
     }
-    else{
-      console.error("Video stream is not on!");
-    }
- 
   }
 
   /* 
     Start of WebRTC functions
   */
-
-  ngOnDestroy(): void {
-    console.log("Should destroy");
-    this.socket.disconnect();
-    //this.socket.emit("disconnect");
+  
+  pageReady() {
+      this.localVideo = document.getElementById('host-video');
+  
+      var constraints = {
+        video: true,
+        audio: false,
+      };
+  
+      if(navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia(constraints)
+              .then((stream) => {this.getUserMediaSuccess(stream)})
+              .then( () => {this.setListeners()}); 
+      } else {
+          alert('Your browser does not support getUserMedia API');
+      } 
   }
 
+  setListeners(){
+    this.socket.on('signal', (fromId, message) => this.gotMessageFromServer(fromId, message)); 
+
+    //this.socket.on('connect', () => {
+      this.socketId = this.socket.ioSocket.id;
+
+      this.socket.on('user-left', (id) => {
+          var video = document.querySelector('[data-socket="'+ id +'"]');
+          var parentDiv = video.parentElement;
+          video.parentElement.parentElement.removeChild(parentDiv);
+        });
+
+
+        this.socket.on('user-joined', (id, count, clients) => {
+            clients.forEach((socketListId) => {
+                if(!this.connections[socketListId]){
+                  this.connections[socketListId] = new RTCPeerConnection();
+                    //Wait for their ice candidate    
+                    this.connections[socketListId].onicecandidate = (event) => {
+                        if(event.candidate != null) {
+                            this.socket.emit('signal', socketListId, JSON.stringify({'ice': event.candidate}));
+                        }
+                    }
+                    //Wait for their video stream
+                    this.connections[socketListId].ontrack = (event) => {
+                      this.gotRemoteStream(event, socketListId);
+                    }    
+                    this.connections[socketListId].addStream(this.localStream);                                                                
+                    //Add the local video stream
+                }
+            });
+
+            //Create an offer to connect with your local description
+            
+            if(count >= 2){
+              this.connections[id].createOffer().then((description) => {
+                this.connections[id].setLocalDescription(description).then(() => {
+                        this.socket.emit('signal', id, JSON.stringify({'sdp': this.connections[id].localDescription}));
+                    }).catch(e => console.log(e));        
+                });
+            }
+        });  
+
+        // this.socket.on('confirm', () => {
+        //   console.log("confirmed");
+        // });
+      this.socket.emit("confirm");
+    //})       
+
+}
   
-  setupSocketConnection() {
-    const { RTCPeerConnection, RTCSessionDescription } = window;
-    this.peerConnection = new RTCPeerConnection();
-    console.log("RTC Peer connection created");
-
-    //this.socket = io("localhost:5000", {transports: ['websocket', 'polling', 'flashsocket']});
-    console.log("Socket connection created");
-
-    this.socket.on("update-user-list", ({ users }) => {
-      console.log("Update user list request received");
-      this.updateUserList(users);
-    });
-
-    this.socket.on("remove-user", ({ socketId }) => {
-      console.log("Remove user request received");
-      const elToRemove = document.getElementById(socketId);
-
-      if (elToRemove) {
-        elToRemove.remove();
-      }
-    });
-
-    this.socket.on("call-made", async data => {
-      console.log("Call made request received");
-      await this.peerConnection.setRemoteDescription(
-        new RTCSessionDescription(data.offer)
-      );
-      console.log("Remote desc set");
-      const answer = await this.peerConnection.createAnswer();
-      console.log("Answer created");
-      await this.peerConnection.setLocalDescription(new RTCSessionDescription(answer));
-      console.log("Local desc set");
-
-      this.socket.emit("make-answer", {
-        answer,
-        to: data.socket
-      });
-      console.log("Make answer request sent");
-    });
-
-    this.socket.on("answer-made", async data => {
-      console.log("Answer made request received");
-      await this.peerConnection.setRemoteDescription(
-        new RTCSessionDescription(data.answer)
-      );
-      console.log("Remote desc set");
-      this.callUser(data.socket);
-      console.log("Remote desc set");
-    });
-
-    this.peerConnection.ontrack = function({ streams: [stream] }) {
+  getUserMediaSuccess(stream) {
+    this.localStream = stream;
+    this.localVideo.srcObject = (stream);
+  }
+  
+  gotRemoteStream(event, id) {
+      var video  = document.createElement('video'),
+          div    = document.createElement('div')
+  
+      video.setAttribute('data-socket', id);
+      video.srcObject         = event.streams[0];
+      video.autoplay    = true; 
+      video.muted       = true;
       
-      var vidElement = document.createElement('video');
-      vidElement.setAttribute('autoplay', '');
-      vidElement.setAttribute('muted', '');
-      vidElement.srcObject = stream;
-
-      document.getElementById('remote-videos').appendChild(vidElement);
-      // const remoteVideo = document.getElementById("remote-video") as HTMLVideoElement;
-      // if (remoteVideo) {
-      //   remoteVideo.srcObject = stream;
-      // }
-    };
-    
-    this.videoOn = true;
-    navigator.getUserMedia(
-      { video: { mandatory: {maxHeight: 240} } as MediaTrackConstraints, audio: false },
-      stream => {
-        this.video = document.getElementById('host-video') as HTMLVideoElement;
-        if (this.video) {
-          this.video.srcObject = stream;
-          console.log('Streaming video');
-        }
-
-        stream.getTracks().forEach(track => this.peerConnection.addTrack(track, stream));
-      },
-      error => {
-        console.log('Error: ' + error);
-        this.videoOn = false;
+      div.setAttribute("style", "width: 50%");
+      div.appendChild(video);      
+      document.querySelector('.remote-videos').appendChild(div);       
+  }
+  
+  gotMessageFromServer(fromId, message) {
+  
+      //Parse the incoming signal
+      var signal = JSON.parse(message)
+  
+      //Make sure it's not coming from yourself
+      if(fromId != this.socketId) {
+          if(signal.sdp){            
+            this.connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(() => {                
+                  if(signal.sdp.type == 'offer') {
+                    this.connections[fromId].createAnswer().then((description) => {
+                      this.connections[fromId].setLocalDescription(description).then(() => {
+                        this.socket.emit('signal', fromId, JSON.stringify({'sdp': this.connections[fromId].localDescription}));
+                          }).catch(e => console.log(e));        
+                      }).catch(e => console.log(e));
+                  }
+              }).catch(e => console.log(e));
+          }
+      
+          if(signal.ice) {
+            this.connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+          }                
       }
-    );
-  }
-
-  unselectUsersFromList() {
-    const alreadySelectedUser = document.querySelectorAll(
-      ".active-user.active-user--selected"
-    );
-  
-    alreadySelectedUser.forEach(el => {
-      el.setAttribute("class", "active-user");
-    });
-  }
-  
-  createUserItemContainer(socketId) {
-    const userContainerEl = document.createElement("div");
-  
-    const usernameEl = document.createElement("p");
-  
-    userContainerEl.setAttribute("class", "active-user");
-    userContainerEl.setAttribute("id", socketId);
-    usernameEl.setAttribute("class", "username");
-    usernameEl.innerHTML = `Socket: ${socketId}`;
-  
-    userContainerEl.appendChild(usernameEl);
-  
-    userContainerEl.addEventListener("click", () => {
-      this.unselectUsersFromList();
-      userContainerEl.setAttribute("class", "active-user active-user--selected");
-      const talkingWithInfo = document.getElementById("talking-with-info");
-      talkingWithInfo.innerHTML = `Talking with: "Socket: ${socketId}"`;
-      this.callUser(socketId);
-    });
-  
-    return userContainerEl;
-  }
-  
-  async callUser(socketId) {
-    const offer = await this.peerConnection.createOffer();
-    await this.peerConnection.setLocalDescription(new RTCSessionDescription(offer));
-  
-    this.socket.emit("call-user", {
-      offer,
-      to: socketId
-    });
-  }
-  
-  updateUserList(socketIds) {
-    console.log("Updating", socketIds);
-    //const activeUserContainer = document.getElementById("active-user-container");
-    console.log("active", this.activeCalls);
-    console.log("IDs", socketIds);
-    socketIds.forEach(socketId => {
-      if(this.activeCalls.includes(socketId) == undefined)
-        console.log("Trying to call");
-        this.callUser(socketId);
-        this.activeCalls.push(socketId);
-      // const alreadyExistingUser = document.getElementById(socketId);
-      // if (!alreadyExistingUser) {
-      //   const userContainerEl = this.createUserItemContainer(socketId);
-  
-      //   activeUserContainer.appendChild(userContainerEl);
-      // }
-    });
   }
 
 

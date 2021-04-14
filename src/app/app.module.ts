@@ -18,7 +18,7 @@ import { ScheduleTableComponent } from './components/schedule-table/schedule-tab
 import { HttpClientModule } from '@angular/common/http';
 import { environment } from '../environments/environment';
 
-const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {} };
+const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transports: ['websocket'], upgrade: false} };
 @NgModule({
   declarations: [
     AppComponent,
