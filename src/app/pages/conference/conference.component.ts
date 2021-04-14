@@ -11,10 +11,6 @@ import { environment } from 'src/environments/environment';
 })
 export class ConferenceComponent implements OnInit {
 
-  config = {
-    host: environment.TEST_ENDPOINT
-  }
-
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
   @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
   taOn: boolean;
