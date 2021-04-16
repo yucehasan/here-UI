@@ -31,6 +31,16 @@ export class ConferenceComponent implements OnInit {
   localStream;
   connections = [];
 
+  iceservers: RTCConfiguration = { 
+    'iceServers': [
+      { 'urls': 'stun:stun.l.google.com:19302'},
+      { 'urls': 'stun:stun1.l.google.com:19302'},
+      { 'urls': 'stun:stun2.l.google.com:19302'},
+      { 'urls': 'stun:stun3.l.google.com:19302'},
+      { 'urls': 'stun:stun4.l.google.com:19302'},
+    ] 
+};
+
   constructor(
     private socket: Socket,
     private httpClient: HttpClient
@@ -174,7 +184,7 @@ export class ConferenceComponent implements OnInit {
         this.socket.on('user-joined', (id, count, clients) => {
             clients.forEach((socketListId) => {
                 if(!this.connections[socketListId]){
-                  this.connections[socketListId] = new RTCPeerConnection();
+                  this.connections[socketListId] = new RTCPeerConnection(this.iceservers);
                     //Wait for their ice candidate    
                     this.connections[socketListId].onicecandidate = (event) => {
                         if(event.candidate != null) {
@@ -219,11 +229,12 @@ export class ConferenceComponent implements OnInit {
           div    = document.createElement('div')
   
       video.setAttribute('data-socket', id);
+      video.setAttribute("style", "width: 100%");
       video.srcObject         = event.streams[0];
       video.autoplay    = true; 
       video.muted       = true;
       
-      div.setAttribute("style", "width: 50%");
+      div.setAttribute("style", "width: 23%");
       div.appendChild(video);      
       document.querySelector('.remote-videos').appendChild(div);       
   }
