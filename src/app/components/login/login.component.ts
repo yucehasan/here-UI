@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
         if (res['access_token'] !== undefined) {
           console.log(res);
           console.log("Successful");
-          this.router.navigate(['main']);
+          this.router.navigate(['main'], {state: {data: {access_token: res['access_token']}}});
           this.dialogRef.close();
 
         }
