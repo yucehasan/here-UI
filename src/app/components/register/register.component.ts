@@ -13,7 +13,7 @@ export class RegisterComponent implements OnInit {
   email: string;
   type: string;
   registerForm: FormGroup;
-  SERVER_URL = "http://localhost:5000/register"; // TODO
+  SERVER_URL = "https://hereapp-live.herokuapp.com/registration";
 
   constructor(
     private formBuilder: FormBuilder,

@@ -13,8 +13,7 @@ export class LoginComponent implements OnInit {
   email: string;
   password: string;
   loginForm: FormGroup;
-  SERVER_URL = "http://localhost:5000/login"; // TODO
-
+  SERVER_URL = "https://hereapp-live.herokuapp.com/login";
   constructor(
     private router: Router, 
     public dialogRef: MatDialogRef<LoginComponent>,
