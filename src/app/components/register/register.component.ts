@@ -23,10 +23,11 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {}
   register(): void {
-    console.log("Register called with username: " + this.username + " password: " + this.password + " email: " + this.email);
+    console.log("Register called with username: " + this.username + " password: " + this.password + "type: " + this.type + " email: " + this.email);
     const formData = new FormData();
     formData.append("username", this.username);
     formData.append("password", this.password);
+    formData.append("type", this.type);
     formData.append("email", this.email);
     
     // TODO
