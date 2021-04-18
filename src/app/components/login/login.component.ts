@@ -15,12 +15,12 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   SERVER_URL = "https://hereapp-live.herokuapp.com/login";
   constructor(
-    private router: Router, 
+    private router: Router,
     public dialogRef: MatDialogRef<LoginComponent>,
     private formBuilder: FormBuilder,
     private httpClient: HttpClient) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   login(): void {
     console.log(
@@ -32,13 +32,23 @@ export class LoginComponent implements OnInit {
     const formData = new FormData();
     formData.append("email", this.email);
     formData.append("password", this.password);
-    
+
     this.httpClient.post<any>(this.SERVER_URL, formData).subscribe(
-      (res) => console.log(res),
-      (err) => console.log(err)
+      (res) => {
+        if (res['access_token'] !== undefined) {
+          console.log(res);
+          console.log("Successful");
+          this.router.navigate(['main']);
+          this.dialogRef.close();
+
+        }
+        else {
+          console.log(res);
+          console.log("Failed");
+          alert(res["message"]);
+        }
+      }
     );
-    this.router.navigate(['main']);
-    this.dialogRef.close();
   }
 
 
