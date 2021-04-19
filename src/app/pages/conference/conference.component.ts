@@ -23,8 +23,6 @@ export class ConferenceComponent implements OnInit {
   peerConnection;
 
   localVideo;
-  //socket;
-  firstPerson = false;
   socketCount = 0;
   socketId;
   localStream;
@@ -47,12 +45,6 @@ export class ConferenceComponent implements OnInit {
     this.shareOn = false;
     this.taOn = false;
     this.noteOn = false;
-    // this.socket = io(environment.TEST_ENDPOINT, {secure: true});
-  }
-  ngAfterContentInit(): void {
-    this.pageReady();
-    //Called after ngOnInit when the component's or directive's content has been initialized.
-    //Add 'implements AfterContentInit' to the class.
   }
 
   openTA(message: string): void {
@@ -74,11 +66,6 @@ export class ConferenceComponent implements OnInit {
       this.noteTrigger.closeMenu();
       this.noteOn = false;
     }
-  }
-
-  startVideo(): void {
-    this.video = document.getElementById('host-video') as HTMLVideoElement;
-    this.videoOn = true;
   }
 
   startShare(): void {
@@ -145,7 +132,7 @@ export class ConferenceComponent implements OnInit {
     Start of WebRTC functions
   */
 
-  pageReady() {
+  startVideo() {
     this.localVideo = document.getElementById('host-video');
 
     var constraints = {
@@ -232,6 +219,7 @@ export class ConferenceComponent implements OnInit {
   }
 
   getUserMediaSuccess(stream) {
+    this.videoOn = true;
     this.localStream = stream;
     this.localVideo.srcObject = stream;
   }
