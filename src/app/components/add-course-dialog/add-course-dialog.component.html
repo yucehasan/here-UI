@@ -1,0 +1,21 @@
+<div class="outer">
+<table class="mat-elevation-z8">
+    <tr>
+        <td></td>
+        <td align="center" *ngFor="let day of days">
+            {{day}}
+        </td>
+
+    </tr>
+    <tr *ngFor="let hour of hours">
+        <td align="center">{{hour}}</td>
+        <td align="center" *ngFor="let day of days">
+            <mat-checkbox id="{{hour}}-{{day}}" (change)="onCheckChange($event)"></mat-checkbox>
+        </td>
+    </tr>
+</table>
+
+<button mat-raised-button color="primary" (click)="onSave()">Apply</button>
+<button mat-raised-button color="warn" (click)="onCancel()">Cancel</button>
+
+</div>
