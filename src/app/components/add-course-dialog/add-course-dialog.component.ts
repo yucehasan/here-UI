@@ -11,14 +11,28 @@ export class AddCourseDialogComponent implements OnInit {
   dataSource = DATA_SOURCE;
   days = DAYS;
   hours = HOURS;
+  checkboxes: boolean[][];
   constructor(
-    public dialogRef: MatDialogRef<AddCourseDialogComponent>){}
+    public dialogRef: MatDialogRef<AddCourseDialogComponent>) {
+    this.checkboxes = new Array(5)
+      .fill(false)
+      .map(() => new Array(8)
+        .fill(false));
+  }
 
   ngOnInit(): void {
+
   }
 
   onSave(): void {
     console.log("Save");
+    for (let i = 0; i < DAYS.length; i++) {
+      for (let j = 0; j < HOURS.length; j++) {
+        if (this.checkboxes[i][j]) {
+          console.log(DAYS[i] + " " + HOURS[j]);
+        }
+      }
+    }
   }
 
   onCancel(): void {
@@ -38,9 +52,9 @@ export class AddCourseDialogComponent implements OnInit {
     console.log("Checked: " + event.checked);
     console.log("Day Index:" + dayIndex);
     console.log("Hour Index:" + hourIndex);
+    this.checkboxes[dayIndex][hourIndex] = event.checked;
   }
 }
-
 
 const DAYS: String[] = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
