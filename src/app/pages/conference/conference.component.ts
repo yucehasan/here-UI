@@ -12,17 +12,13 @@ import { environment } from 'src/environments/environment';
 export class ConferenceComponent implements OnInit {
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
   @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
-  taOn: boolean;
-  video: HTMLVideoElement;
-  share: HTMLVideoElement;
   videoOn: boolean;
   shareOn: boolean;
   noteOn: boolean;
-  message: string;
-  activeCalls: any[];
-  peerConnection;
+  taOn: boolean;
 
-  localVideo;
+  localVideo: HTMLVideoElement;
+  share: HTMLVideoElement;
   socketCount = 0;
   socketId;
   localStream;
@@ -41,7 +37,6 @@ export class ConferenceComponent implements OnInit {
   constructor(private socket: Socket, private httpClient: HttpClient) {}
 
   ngOnInit(): void {
-    this.activeCalls = [];
     this.shareOn = false;
     this.taOn = false;
     this.noteOn = false;
@@ -96,11 +91,11 @@ export class ConferenceComponent implements OnInit {
 
   stopVideo(): void {
     if (this.videoOn) {
-      (<MediaStream>this.video.srcObject).getTracks().forEach((track) => {
+      (<MediaStream>this.localVideo.srcObject).getTracks().forEach((track) => {
         track.stop();
       });
       this.videoOn = false;
-      this.video.srcObject = undefined;
+      this.localVideo.srcObject = undefined;
     }
   }
 
@@ -108,12 +103,12 @@ export class ConferenceComponent implements OnInit {
     if (this.videoOn) {
       const canvas = document.createElement('canvas');
       // scale the canvas accordingly
-      canvas.width = this.video.videoWidth;
-      canvas.height = this.video.videoHeight;
+      canvas.width = this.localVideo.videoWidth;
+      canvas.height = this.localVideo.videoHeight;
       // draw the video at that frame
       canvas
         .getContext('2d')
-        .drawImage(this.video, 0, 0, canvas.width, canvas.height);
+        .drawImage(this.localVideo, 0, 0, canvas.width, canvas.height);
       // convert it to a usable data URL
       const formData = new FormData();
       formData.append('data', canvas.toDataURL());
@@ -133,24 +128,28 @@ export class ConferenceComponent implements OnInit {
   */
 
   startVideo() {
-    this.localVideo = document.getElementById('host-video');
-
-    var constraints = {
-      video: true,
-      audio: false,
-    };
-
-    if (navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then((stream) => {
-          this.getUserMediaSuccess(stream);
-        })
-        .then(() => {
-          this.setListeners();
-        });
+    if (this.videoOn) {
+      this.stopVideo();
     } else {
-      alert('Your browser does not support getUserMedia API');
+      this.localVideo = document.getElementById(
+        'host-video'
+      ) as HTMLVideoElement;
+      var constraints = {
+        video: true,
+        audio: false,
+      };
+      if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia(constraints)
+          .then((stream) => {
+            this.getUserMediaSuccess(stream);
+          })
+          .then(() => {
+            this.setListeners();
+          });
+      } else {
+        alert('Your browser does not support getUserMedia API');
+      }
     }
   }
 
