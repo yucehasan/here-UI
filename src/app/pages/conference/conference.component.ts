@@ -25,12 +25,7 @@ export class ConferenceComponent implements OnInit {
   localStream;
   connections = [];
 
-  sharedCol;
-  sharedRow;
-  slideCol = 4;
-  slideRow = 2;
-  videosCol;
-  videosRow;
+  videoWidth;
 
   iceservers: RTCConfiguration = {
     iceServers: [
@@ -156,15 +151,22 @@ export class ConferenceComponent implements OnInit {
     if (this.videoOn) {
       this.stopVideo();
     } else {
-    this.localVideo = document.createElement('video');
-    var div = document.createElement('div');
-    div.setAttribute('style', 'width: 23%');
-    this.localVideo.setAttribute("id", "my-video");
-    this.localVideo.setAttribute('style', 'width: 100%');
-    this.localVideo.autoplay = true;
-    this.localVideo.muted = true;
-    div.appendChild(this.localVideo);
-    document.querySelector('.remote-videos').appendChild(div);
+      this.localVideo = document.createElement('video');
+      var div = document.createElement('div');
+      console.log('selam');
+      div.setAttribute(
+        'style',
+        'shareOn && slideOn ? width: 23% : shareOn || slideOn ? width: 100% : width: 23%'
+      );
+      this.localVideo.setAttribute('id', 'my-video');
+      this.localVideo.setAttribute(
+        'style',
+        'width: 100%; min-height: 25vh; max-height: 50vh;'
+      );
+      this.localVideo.autoplay = true;
+      this.localVideo.muted = true;
+      div.appendChild(this.localVideo);
+      document.querySelector('.remote-videos').appendChild(div);
       var constraints = {
         video: true,
         audio: false,
@@ -258,13 +260,18 @@ export class ConferenceComponent implements OnInit {
     var video = document.createElement('video'),
       div = document.createElement('div');
 
+    div.setAttribute(
+      'style',
+      'shareOn && slideOn ? width: 23% : shareOn || slideOn ? width: 100% : width: 23%'
+    );
     video.setAttribute('data-socket', id);
-    video.setAttribute('style', 'width: 100%');
+    video.setAttribute(
+      'style',
+      'width: 100%; min-height: 25vh; max-height: 50vh;'
+    );
     video.srcObject = event.streams[0];
     video.autoplay = true;
     video.muted = true;
-
-    div.setAttribute('style', 'width: 23%');
     div.appendChild(video);
     document.querySelector('.remote-videos').appendChild(div);
   }
