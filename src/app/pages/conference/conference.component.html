@@ -27,10 +27,10 @@
         <button mat-icon-button class="toolButton" id="" >
             <mat-icon id="taIcon">mic</mat-icon>
         </button>
-        <button mat-icon-button class="toolButton" id="" >
+        <button mat-icon-button class="toolButton" id="" (click)="startShare()">
             <mat-icon id="taIcon">screen_share</mat-icon>
         </button>
-        <button mat-icon-button class="toolButton" id="" >
+        <button mat-icon-button class="toolButton" id="" (click)="startSlide()">
             <mat-icon id="taIcon">group</mat-icon>
         </button>
         <button mat-icon-button class="toolButton" id="" >
@@ -57,22 +57,22 @@
 </mat-card>
 
 <mat-grid-list class="middle-panel" cols="8" rowHeight="25vh" [gutterSize]="'10px'">
-    <mat-grid-tile colspan=4 rowspan=2>
+    <mat-grid-tile [colspan]="!slideOn ? 0 : shareOn ? 4 : 6 " [rowspan]="!slideOn ? 0 : shareOn ? 2 : 3">
         <mat-grid-tile-header>Shared Slide</mat-grid-tile-header>
         <!-- Will be implemented -->
     </mat-grid-tile>
-    <mat-grid-tile colspan=4 rowspan=2>
+    <mat-grid-tile [colspan]="!shareOn ? 0 : slideOn ? 4 : 6 " [rowspan]="!shareOn ? 0 : slideOn ? 2 : 3">
         <mat-grid-tile-header>Shared Screen</mat-grid-tile-header>
         <video id="shared-screen" autoplay></video>
     </mat-grid-tile>
-    <mat-grid-tile colspan=6>
+    <mat-grid-tile [colspan]="shareOn && slideOn ? 8 : shareOn || slideOn ? 2 : 8" [rowspan]="shareOn && slideOn ? 1 : 3">
         <mat-grid-tile-header>Participants</mat-grid-tile-header>
         <div class="remote-videos"></div>
     </mat-grid-tile>
-    <mat-grid-tile colspan=2>
+    <!-- <mat-grid-tile colspan=2>
         <mat-grid-tile-header>Video of Host</mat-grid-tile-header>
         <div>        
             <video id="host-video" muted autoplay></video>
         </div>
-    </mat-grid-tile>
+    </mat-grid-tile> -->
 </mat-grid-list>

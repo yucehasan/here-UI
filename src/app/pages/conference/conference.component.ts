@@ -15,6 +15,7 @@ export class ConferenceComponent implements OnInit {
   videoOn: boolean;
   shareOn: boolean;
   noteOn: boolean;
+  slideOn: boolean;
   taOn: boolean;
 
   localVideo: HTMLVideoElement;
@@ -23,6 +24,13 @@ export class ConferenceComponent implements OnInit {
   socketId;
   localStream;
   connections = [];
+
+  sharedCol;
+  sharedRow;
+  slideCol = 4;
+  slideRow = 2;
+  videosCol;
+  videosRow;
 
   iceservers: RTCConfiguration = {
     iceServers: [
@@ -40,6 +48,7 @@ export class ConferenceComponent implements OnInit {
     this.shareOn = false;
     this.taOn = false;
     this.noteOn = false;
+    this.slideOn = false;
   }
 
   openTA(message: string): void {
@@ -64,29 +73,45 @@ export class ConferenceComponent implements OnInit {
   }
 
   startShare(): void {
-    this.share = document.getElementById('shared-screen') as HTMLVideoElement;
-    this.shareOn = true;
-    // @ts-ignore
-    navigator.mediaDevices.getDisplayMedia().then(
-      (stream) => {
-        this.share.srcObject = stream;
-        console.log('Sharing screen');
-        (<MediaStream>this.share.srcObject)
-          .getVideoTracks()[0]
-          .addEventListener('ended', () => {
-            this.stopSharing();
-          });
-      },
-      (error) => {
-        console.log('Error: ' + error);
-        this.shareOn = false;
-      }
-    );
+    if (this.shareOn) {
+      this.stopSharing();
+    } else {
+      this.share = document.getElementById('shared-screen') as HTMLVideoElement;
+      this.shareOn = true;
+      // @ts-ignore
+      // navigator.mediaDevices.getDisplayMedia().then(
+      //   (stream) => {
+      //     this.share.srcObject = stream;
+      //     console.log('Sharing screen');
+      //     (<MediaStream>this.share.srcObject)
+      //       .getVideoTracks()[0]
+      //       .addEventListener('ended', () => {
+      //         this.stopSharing();
+      //       });
+      //   },
+      //   (error) => {
+      //     console.log('Error: ' + error);
+      //     this.shareOn = false;
+      //   }
+      // );
+    }
   }
 
   stopSharing(): void {
     this.share.srcObject = undefined;
     this.shareOn = false;
+  }
+
+  startSlide(): void {
+    if (this.slideOn) {
+      this.stopSlide();
+    } else {
+      this.slideOn = true;
+    }
+  }
+
+  stopSlide(): void {
+    this.slideOn = false;
   }
 
   stopVideo(): void {
@@ -131,9 +156,15 @@ export class ConferenceComponent implements OnInit {
     if (this.videoOn) {
       this.stopVideo();
     } else {
-      this.localVideo = document.getElementById(
-        'host-video'
-      ) as HTMLVideoElement;
+    this.localVideo = document.createElement('video');
+    var div = document.createElement('div');
+    div.setAttribute('style', 'width: 23%');
+    this.localVideo.setAttribute("id", "my-video");
+    this.localVideo.setAttribute('style', 'width: 100%');
+    this.localVideo.autoplay = true;
+    this.localVideo.muted = true;
+    div.appendChild(this.localVideo);
+    document.querySelector('.remote-videos').appendChild(div);
       var constraints = {
         video: true,
         audio: false,
