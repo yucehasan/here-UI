@@ -6,22 +6,31 @@ import { Router } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass']
 })
-export class AppComponent{
+export class AppComponent {
   username: string;
+  token: string;
   loggedIn: boolean;
   constructor(private router: Router) {
     this.username = "John Doe";
-    this.loggedIn = false;
-  }
-  goMain(){
-    this.router.navigate(['/main']);
+    this.loggedIn = true;
   }
 
-  goProfile(){
-    this.router.navigate(['/profile']);
+  login(username: string, token: string) {
+    this.username = username;
+    this.token = token;
+    this.loggedIn = true;
+  }
+  
+  goMain() {
+    if (this.loggedIn) { this.router.navigate(['/main']); }
   }
 
-  logout(){
-    this.router.navigate(['/auth']);
+  goProfile() {
+    if (this.loggedIn) { this.router.navigate(['/profile']); }
   }
+
+  logout() {
+    if (this.loggedIn) { this.router.navigate(['/auth']); }
+  }
+
 }
