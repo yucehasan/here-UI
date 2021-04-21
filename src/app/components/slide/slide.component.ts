@@ -6,8 +6,9 @@ import {
   Injectable,
   Output,
   EventEmitter,
+  Input,
 } from '@angular/core';
-import WebViewer, { Actions } from '@pdftron/webviewer';
+import WebViewer, { Actions, WebViewerInstance } from '@pdftron/webviewer';
 import { Action } from 'rxjs/internal/scheduler/Action';
 import { environment } from 'src/environments/environment';
 
@@ -18,8 +19,14 @@ import { environment } from 'src/environments/environment';
 })
 export class SlideComponent implements AfterViewInit {
   @ViewChild('viewer') viewer: ElementRef;
+  @Input() next: EventEmitter<void>;
+  @Input() prev: EventEmitter<void>;
   @Output() onChange = new EventEmitter<number>();
-  wvInstance: any;
+  wvInstance: WebViewerInstance;
+  nextButton: HTMLButtonElement;
+  prevButton: HTMLButtonElement;
+  currentSlide: number;
+
 
   base64ToBlob(base64) {
     const binaryString = window.atob(base64);
@@ -45,7 +52,8 @@ export class SlideComponent implements AfterViewInit {
       // });
 
       this.wvInstance = instance;
-
+      this.currentSlide = instance.docViewer.getCurrentPage();
+      console.log(this.viewer.nativeElement);
       instance.disableElements([
         'header',
         'notesPanel',
@@ -61,7 +69,6 @@ export class SlideComponent implements AfterViewInit {
       // or listen to events from the viewer element
       this.viewer.nativeElement.addEventListener('pageChanged', (e) => {
         const [pageNumber] = e.detail;
-        console.log(`Current page is ${pageNumber}`);
         this.onChange.emit(pageNumber);
       });
 
@@ -71,6 +78,13 @@ export class SlideComponent implements AfterViewInit {
       });
 
       instance.docViewer.on('documentLoaded', this.wvDocumentLoadedHandler);
+
+      var element = document.querySelector("iframe").contentWindow.document.getElementsByClassName("PageNavOverlay");
+      (element[0] as HTMLElement).style.display = 'none';
+
+      var element = document.querySelector("iframe").contentWindow.document.getElementsByClassName("side-arrow-container");
+      this.prevButton = element[0] as HTMLButtonElement;
+      this.nextButton = element[1] as HTMLButtonElement;
     });
   }
 
@@ -78,12 +92,22 @@ export class SlideComponent implements AfterViewInit {
     this.wvDocumentLoadedHandler = this.wvDocumentLoadedHandler.bind(this);
   }
 
+  changeSlide(number) {
+    this.wvInstance.docViewer.setCurrentPage(number);
+  }
+
+  nextSlide(){
+    this.nextButton.click();
+  }
+
+  prevSlide(){
+    this.prevButton.click();
+  }
+
   wvDocumentLoadedHandler(): void {
     // you can access docViewer object for low-level APIs
     // and access classes defined in the WebViewer iframe
     const { Annotations, annotManager, docViewer } = this.wvInstance;
-
-    console.log('asdnf ', docViewer.displayPageLocation(3));
     // see https://www.pdftron.com/api/web/WebViewer.html for the full list of low-level APIs
   }
 }

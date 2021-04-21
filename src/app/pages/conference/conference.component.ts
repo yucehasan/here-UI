@@ -3,6 +3,7 @@ import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { SlideComponent } from 'src/app/components/slide/slide.component';
 
 @Component({
   selector: 'app-conference',
@@ -12,6 +13,8 @@ import { environment } from 'src/environments/environment';
 export class ConferenceComponent implements OnInit {
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
   @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
+  @ViewChild(SlideComponent) slideComponent: SlideComponent;
+
   videoOn: boolean;
   shareOn: boolean;
   noteOn: boolean;
@@ -20,12 +23,13 @@ export class ConferenceComponent implements OnInit {
 
   localVideo: HTMLVideoElement;
   share: HTMLVideoElement;
-  socketCount = 0;
   socketId;
   localStream;
   connections = [];
 
-  videoWidth;
+  type: 'instructor' | 'student' = 'instructor';
+  currSlideInstr: number;
+  syncWithInstr: boolean;
 
   iceservers: RTCConfiguration = {
     iceServers: [
@@ -44,6 +48,7 @@ export class ConferenceComponent implements OnInit {
     this.taOn = false;
     this.noteOn = false;
     this.slideOn = false;
+    this.syncWithInstr = true;
   }
 
   openTA(message: string): void {
@@ -109,8 +114,32 @@ export class ConferenceComponent implements OnInit {
     this.slideOn = false;
   }
 
-  onSlideChange(number){
-    console.log("log from conference. Page is: ", number);
+  onSlideChange(number) {
+    if (this.type == 'instructor') this.socket.emit('slideChange', number);
+  }
+
+  nextSlide() {
+    if (this.type == 'student') this.syncWithInstr = false;
+    this.slideComponent.nextButton.click();
+  }
+
+  prevSlide() {
+    if (this.type == 'student') this.syncWithInstr = false;
+    this.slideComponent.prevButton.click();
+  }
+
+  syncWithInstructor() {
+    this.syncWithInstr = true;
+    this.slideComponent.changeSlide(this.currSlideInstr);
+    console.log("syncing");
+  }
+
+  changeType() {
+    if (this.type == 'instructor') {
+      this.type = 'student';
+    } else {
+      this.type = 'instructor';
+    }
   }
 
   stopVideo(): void {
@@ -247,9 +276,11 @@ export class ConferenceComponent implements OnInit {
       }
     });
 
-    // this.socket.on('confirm', () => {
-    //   console.log("confirmed");
-    // });
+    this.socket.on('slideChange', (number) => {
+      this.currSlideInstr = number;
+      this.gotSlideUpdate(number);
+    });
+
     this.socket.emit('confirm');
     //})
   }
@@ -318,6 +349,13 @@ export class ConferenceComponent implements OnInit {
           .addIceCandidate(new RTCIceCandidate(signal.ice))
           .catch((e) => console.log(e));
       }
+    }
+  }
+
+  gotSlideUpdate(number){
+    if (this.syncWithInstr) {
+      this.slideComponent.changeSlide(number);
+      console.log("updating");
     }
   }
 }

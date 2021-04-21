@@ -43,6 +43,9 @@
       <button mat-icon-button class="toolButton" id="">
         <mat-icon id="taIcon">exit_to_app</mat-icon>
       </button>
+      <button mat-icon-button class="toolButton" id="" (click)="changeType()">
+        curr type: {{this.type}}
+      </button>
     </div>
     <div align="end">
       <button
@@ -81,6 +84,11 @@
     [rowspan]="!slideOn ? 0 : shareOn ? 2 : 3"
   >
     <mat-grid-tile-header>Shared Slide</mat-grid-tile-header>
+    <div style="position: absolute; top: 0">
+      <button mat-raised-button value="prev" (click)="prevSlide()">prev</button>
+      <button mat-raised-button value="prev" (click)="syncWithInstructor()">sync</button>
+      <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
+    </div>
     <app-slide (onChange)="onSlideChange($event)"></app-slide>
   </mat-grid-tile>
   <mat-grid-tile
