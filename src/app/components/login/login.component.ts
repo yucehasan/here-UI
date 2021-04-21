@@ -3,6 +3,7 @@ import { throwMatDialogContentAlreadyAttachedError, MatDialogRef } from '@angula
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,8 @@ export class LoginComponent implements OnInit {
     private router: Router,
     public dialogRef: MatDialogRef<LoginComponent>,
     private formBuilder: FormBuilder,
-    private httpClient: HttpClient) { }
+    private httpClient: HttpClient,
+    private authService: AuthService) { }
 
   ngOnInit(): void { }
 
@@ -36,11 +38,10 @@ export class LoginComponent implements OnInit {
     this.httpClient.post<any>(this.SERVER_URL, formData).subscribe(
       (res) => {
         if (res['access_token'] !== undefined) {
-          console.log(res);
-          console.log("Successful");
-          this.router.navigate(['main'], {state: {data: {access_token: res['access_token']}}});
+          this.authService.updateToken( res['access_token'] );
+          this.authService.updateUsername(res["message"].substr(13));
+          this.router.navigate(['main'], { state: { data: { access_token: res['access_token'] } } });
           this.dialogRef.close();
-
         }
         else {
           console.log(res);
@@ -50,6 +51,4 @@ export class LoginComponent implements OnInit {
       }
     );
   }
-
-
 }

@@ -1,18 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { AuthService } from './services/auth.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   username: string;
   token: string;
   loggedIn: boolean;
-  constructor(private router: Router) {
-    this.username = "John Doe";
+  constructor(
+    private router: Router,
+    private authService: AuthService) {
+    this.username = "";
+    this.token = "";
     this.loggedIn = true;
+  }
+
+  ngOnInit(): void {
+    this.authService.getToken().subscribe(token => {
+      this.token = token;
+    })
+
+    this.authService.getUsername().subscribe(username => {
+      this.username = username;
+    })
   }
 
   login(username: string, token: string) {
@@ -20,9 +35,10 @@ export class AppComponent {
     this.token = token;
     this.loggedIn = true;
   }
-  
+
   goMain() {
     if (this.loggedIn) { this.router.navigate(['/main']); }
+    console.log(this.token);
   }
 
   goProfile() {
