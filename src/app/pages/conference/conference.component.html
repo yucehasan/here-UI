@@ -81,7 +81,7 @@
     [rowspan]="!slideOn ? 0 : shareOn ? 2 : 3"
   >
     <mat-grid-tile-header>Shared Slide</mat-grid-tile-header>
-    <!-- Will be implemented -->
+    <app-slide (onChange)="onSlideChange($event)"></app-slide>
   </mat-grid-tile>
   <mat-grid-tile
     [colspan]="!shareOn ? 0 : slideOn ? 4 : 6"

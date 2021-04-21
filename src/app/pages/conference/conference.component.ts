@@ -109,6 +109,10 @@ export class ConferenceComponent implements OnInit {
     this.slideOn = false;
   }
 
+  onSlideChange(number){
+    console.log("log from conference. Page is: ", number);
+  }
+
   stopVideo(): void {
     if (this.videoOn) {
       (<MediaStream>this.localVideo.srcObject).getTracks().forEach((track) => {
