@@ -40,7 +40,8 @@ export class LoginComponent implements OnInit {
         if (res['access_token'] !== undefined) {
           this.authService.updateToken( res['access_token'] );
           this.authService.updateUsername(res["message"].substr(13));
-          this.router.navigate(['main'], { state: { data: { access_token: res['access_token'] } } });
+          this.authService.updateUserType(res["type"]);
+          this.router.navigate(['main']);
           this.dialogRef.close();
         }
         else {

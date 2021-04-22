@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-main',
@@ -8,10 +9,16 @@ import { Router } from '@angular/router';
 })
 export class MainComponent implements OnInit {
   upcomingClasses: any[];
-  accessToken: string;
+  username: string;
+  token: string;
+
   constructor(
-    private router: Router
-  ) { }
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.username = "";
+    this.token = "";
+  }
 
   ngOnInit(): void {
     this.upcomingClasses = [
@@ -28,20 +35,15 @@ export class MainComponent implements OnInit {
         link: ""
       }
     ];
-    try {
-      if(localStorage.getItem('accessToken') === undefined || localStorage.getItem('accessToken') === null){
-        localStorage.setItem('accessToken', history.state.data['access_token']);
-      }
-      this.accessToken = localStorage.getItem('accessToken');
-      if (this.accessToken === undefined || this.accessToken === null) {
-        alert("You do not have access to this page");
-        this.router.navigate(['auth']);
+    this.authService.getToken().subscribe(token => {
+      this.token = token;
+    })
 
-      }
-      console.log("Access Token: " + this.accessToken);
-    }
-    catch (err) {
-      alert(err);
-    }
+    this.authService.getUsername().subscribe(username => {
+      this.username = username;
+    })
+
   }
+
+
 }
