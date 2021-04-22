@@ -43,10 +43,12 @@ export class AppComponent implements OnInit {
 
   goProfile() {
     if (this.loggedIn) { this.router.navigate(['/profile']); }
+    console.log(this.token);
   }
 
   logout() {
     if (this.loggedIn) { this.router.navigate(['/auth']); }
+    localStorage.clear();
   }
 
 }
