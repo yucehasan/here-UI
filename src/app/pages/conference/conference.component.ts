@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
+import { TaComponent } from 'src/app/components/ta/ta.component';
 
 @Component({
   selector: 'app-conference',
@@ -44,7 +45,8 @@ export class ConferenceComponent implements OnInit {
   };
 
   constructor(private socket: Socket, private httpClient: HttpClient, public dialog: MatDialog) {}
-  @ViewChild('filterIcon') filterIcon: ElementRef;
+  @ViewChild('noteIcon') noteIcon: ElementRef;
+  @ViewChild('taIcon') TAIcon: ElementRef;
 
   ngOnInit(): void {
     this.shareOn = false;
@@ -55,14 +57,19 @@ export class ConferenceComponent implements OnInit {
   }
 
   openTA(message: string): void {
-    this.taTrigger.openMenu();
-    let notification = document.getElementById('ta-notification');
-    notification.innerHTML = message || 'message will appear here';
-    this.taOn = true;
-    setTimeout(() => {
-      this.taTrigger.closeMenu();
-      this.taOn = false;
-    }, 5000);
+    const filterData = {
+      top : this.TAIcon.nativeElement.getBoundingClientRect().top,
+      left : this.TAIcon.nativeElement.getBoundingClientRect().left
+    };
+    let  dialogRef = this.dialog.open(TaComponent, {
+        data: filterData,
+        hasBackdrop: false,
+        panelClass: 'filter-popup'
+      });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
   toggleNote(message: string): void {
@@ -77,8 +84,8 @@ export class ConferenceComponent implements OnInit {
 
   openDialog(): void {
     const filterData = {
-      top : this.filterIcon.nativeElement.getBoundingClientRect().top,
-      left : this.filterIcon.nativeElement.getBoundingClientRect().left
+      top : this.noteIcon.nativeElement.getBoundingClientRect().bottom,
+      right : this.noteIcon.nativeElement.getBoundingClientRect().right
     };
     let  dialogRef = this.dialog.open(NoteCanvasComponent, {
         data: filterData,

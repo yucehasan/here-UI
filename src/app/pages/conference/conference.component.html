@@ -8,12 +8,9 @@
         Capture snaphot
       </button>
       <button mat-icon-button class="toolButton" id="">
-        <mat-icon id="camIcon">radio_button_checked</mat-icon>
-      </button>
-      <button mat-icon-button class="toolButton" id="">
         <mat-icon id="chatIcon">chat_bubble</mat-icon>
       </button>
-      <div #filterIcon class="note-wrapper">
+      <div #noteIcon class="dialog-btn-wrapper">
         <button mat-icon-button (click)="openDialog()">
           <mat-icon id="taIcon">note</mat-icon>
         </button>
@@ -37,28 +34,13 @@
         curr type: {{ this.type }}
       </button>
     </div>
+    <div class="fill"></div>
     <div align="end">
-      <button
-        #taTrigger="matMenuTrigger"
-        [matMenuTriggerFor]="taNotification"
-        mat-icon-button
-        id="taButton"
-        [matBadge]="taOn ? '!' : null"
-        matBadgeSize="large"
-        matBadgePosition="before"
-      >
-        <mat-icon id="taIcon">face</mat-icon>
-      </button>
-      <mat-menu
-        [hasBackdrop]="false"
-        #taNotification="matMenu"
-        class="ta-content"
-      >
-        <mat-card class="ta-card">
-          <mat-card-title>TA</mat-card-title>
-          <mat-card-content class="overlay"></mat-card-content>
-        </mat-card>
-      </mat-menu>
+      <div #taIcon class="dialog-btn-wrapper">
+        <button mat-icon-button (click)="openDialog()">
+          <mat-icon id="taIcon">face</mat-icon>
+        </button>
+      </div>
     </div>
   </mat-card-content>
 </mat-card>

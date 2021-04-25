@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-note-canvas',
@@ -30,9 +30,15 @@ export class NoteCanvasComponent implements OnInit {
   xOffset: number;
   yOffset: number;
 
-  constructor(public dialogRef: MatDialogRef<NoteCanvasComponent>) { }
+  filterData;
+  
+  constructor(public dialogRef: MatDialogRef<NoteCanvasComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit(): void {
+    this.filterData = this.data;
+    const leftMosPos =  Number(this.filterData.right);
+    this.dialogRef.updatePosition({ top: `${this.filterData.top}px`,
+    left: `${leftMosPos}px`});
     this.canvas = document.getElementById('can') as HTMLCanvasElement;
     this.ctx = this.canvas.getContext("2d") as CanvasRenderingContext2D;
     this.canvasWidth = this.canvas.width;
