@@ -8,8 +8,8 @@
               <h2 [ngStyle.xs]="{'font-size': '18px'}" [ngStyle.sm]="{'font-size': '22px'}">Educational Video Conference Platform</h2>
               </div>
               <div fxLayout="row" fxLayout.lt-md="column" fxLayoutWrap="nowrap" fxLayoutGap="30px" [class.animated]="isHeadingBtn" [class.fadeIn]="isHeadingBtn" [class.heading-btn]="isHeadingBtn">
-                  <a class="heading-button-left" mat-flat-button color="accent">Sign up for free</a>
-                  <a class="heading-button-right" mat-stroked-button color="accent">Sign in</a>
+                  <a class="heading-button-left" mat-flat-button (click)="openRegisterDialog()">Sign up for free</a>
+                  <a class="heading-button-right" mat-stroked-button (click)="openLoginDialog()">Sign in</a>
               </div>
           </div>
      </div>
