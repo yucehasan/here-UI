@@ -63,7 +63,7 @@
       </button>
       <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
     </div>
-    <app-slide (onChange)="onSlideChange($event)"></app-slide>
+    <app-slide [ngStyle]="{'height': (shareOn) ? '51.5vh' : '78vh'}" (onChange)="onSlideChange($event)"></app-slide>
   </mat-grid-tile>
   <mat-grid-tile
     [colspan]="!shareOn ? 0 : slideOn ? 4 : 6"
