@@ -56,36 +56,41 @@ export class ConferenceComponent implements OnInit {
     this.syncWithInstr = true;
   }
 
+  
   openTA(message: string): void {
     const filterData = {
       top : this.TAIcon.nativeElement.getBoundingClientRect().top,
-      left : this.TAIcon.nativeElement.getBoundingClientRect().left
+      left : this.TAIcon.nativeElement.getBoundingClientRect().left,
     };
     let  dialogRef = this.dialog.open(TaComponent, {
-        data: filterData,
-        hasBackdrop: false,
-        panelClass: 'filter-popup'
-      });
-
+      data: filterData,
+      hasBackdrop: false,
+      panelClass: 'filter-popup'
+    });
+    
+    
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
+    setTimeout( () => {
+      dialogRef.close();
+    }, 2500);
   }
-
+  
   toggleNote(message: string): void {
     if (!this.noteOn) {
-      this.noteTrigger.openMenu();
-      this.noteOn = true;
-    } else {
-      this.noteTrigger.closeMenu();
-      this.noteOn = false;
+      this.openDialog();
     }
   }
-
+  getScreenshot(): HTMLVideoElement { 
+    return document.getElementById('my-video') as HTMLVideoElement;
+  }
+  
   openDialog(): void {
     const filterData = {
       top : this.noteIcon.nativeElement.getBoundingClientRect().bottom,
-      right : this.noteIcon.nativeElement.getBoundingClientRect().right
+      right : this.noteIcon.nativeElement.getBoundingClientRect().right,
+      getSnip: this.getScreenshot,
     };
     let  dialogRef = this.dialog.open(NoteCanvasComponent, {
         data: filterData,
@@ -93,8 +98,10 @@ export class ConferenceComponent implements OnInit {
         panelClass: 'filter-popup'
       });
 
+    this.noteOn = true;
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
+      this.noteOn = false;
     });
   }
 
