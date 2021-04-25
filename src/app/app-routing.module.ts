@@ -8,9 +8,10 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthComponent } from './pages/auth/auth.component';
 import { SlideComponent } from './components/slide/slide.component';
+import { AppComponent } from './app.component';
 
 const routes: Routes = [
-  {path: '',  redirectTo: 'auth', pathMatch:'full'},
+  {path: '', component: AppComponent},
   {path: 'main', component: MainComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'conference', component: ConferenceComponent},
