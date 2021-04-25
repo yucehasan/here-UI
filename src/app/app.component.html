@@ -6,6 +6,10 @@
       <a mat-list-item href="#contact">Team</a>
   </mat-nav-list>
   <span class="navigation-spacer"></span>
+  <mat-nav-list class="navigation-list" fxLayout="row" fxShow="false" fxShow.gt-xs="true">
+    <a class="heading-button-left" mat-flat-button (click)="openRegisterDialog()">Sign up for free</a>
+    <a class="heading-button-right" mat-stroked-button (click)="openLoginDialog()">Sign in</a>
+</mat-nav-list>
 </mat-toolbar>
 
 <div class="navigation-empty" fxShow="false" fxShow.gt-xs="true"></div>
