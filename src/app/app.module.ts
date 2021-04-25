@@ -12,7 +12,6 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { ConferenceComponent } from './pages/conference/conference.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { AuthComponent } from './pages/auth/auth.component';
 import { AssignStudentComponent } from './components/assign-student/assign-student.component';
 import { ScheduleTableComponent } from './components/schedule-table/schedule-table.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -36,7 +35,6 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     ConferenceComponent,
     LoginComponent,
     RegisterComponent,
-    AuthComponent,
     AssignStudentComponent,
     ScheduleTableComponent,
     SlideComponent,
