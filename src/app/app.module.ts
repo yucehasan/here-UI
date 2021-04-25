@@ -18,6 +18,7 @@ import { ScheduleTableComponent } from './components/schedule-table/schedule-tab
 import { HttpClientModule } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { SlideComponent } from './components/slide/slide.component';
+import { NoteCanvasComponent } from './components/note-canvas/note-canvas.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transports: ['websocket'], upgrade: false} };
 @NgModule({
@@ -33,6 +34,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     AssignStudentComponent,
     ScheduleTableComponent,
     SlideComponent,
+    NoteCanvasComponent,
   ],
   imports: [
     BrowserModule,
