@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { SlideComponent } from 'src/app/components/slide/slide.component';
+import { MatDialog } from '@angular/material/dialog';
+import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 
 @Component({
   selector: 'app-conference',
@@ -41,7 +43,8 @@ export class ConferenceComponent implements OnInit {
     ],
   };
 
-  constructor(private socket: Socket, private httpClient: HttpClient) {}
+  constructor(private socket: Socket, private httpClient: HttpClient, public dialog: MatDialog) {}
+  @ViewChild('filterIcon') filterIcon: ElementRef;
 
   ngOnInit(): void {
     this.shareOn = false;
@@ -70,6 +73,22 @@ export class ConferenceComponent implements OnInit {
       this.noteTrigger.closeMenu();
       this.noteOn = false;
     }
+  }
+
+  openDialog(): void {
+    const filterData = {
+      top : this.filterIcon.nativeElement.getBoundingClientRect().top,
+      left : this.filterIcon.nativeElement.getBoundingClientRect().left
+    };
+    let  dialogRef = this.dialog.open(NoteCanvasComponent, {
+        data: filterData,
+        hasBackdrop: false,
+        panelClass: 'filter-popup'
+      });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
   startShare(): void {

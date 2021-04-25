@@ -1,17 +1,24 @@
+<div mat-dialog-content>
 <div class="note-wrapper">
-    <canvas id="can" width="400" height="400" style="position:absolute;top:10%;left:10%;border:2px solid;"></canvas>
-    <div style="position:absolute;top:12%;left:43%;">Choose Color</div>
-    <div style="position:absolute;top:15%;left:45%;width:10px;height:10px;background:green;" id="green" (click)="color($event)"></div>
-    <div style="position:absolute;top:15%;left:46%;width:10px;height:10px;background:blue;" id="blue" (click)="color($event)"></div>
-    <div style="position:absolute;top:15%;left:47%;width:10px;height:10px;background:red;" id="red" (click)="color($event)"></div>
-    <div style="position:absolute;top:17%;left:45%;width:10px;height:10px;background:yellow;" id="yellow" (click)="color($event)"></div>
-    <div style="position:absolute;top:17%;left:46%;width:10px;height:10px;background:orange;" id="orange" (click)="color($event)"></div>
-    <div style="position:absolute;top:17%;left:47%;width:10px;height:10px;background:black;" id="black" (click)="color($event)"></div>
-    <div style="position:absolute;top:20%;left:43%;">Eraser</div>
-    <div style="position:absolute;top:22%;left:45%;width:15px;height:15px;background:white;border:2px solid;" id="white" (click)="color($event)"></div>
-    <img id="canvasimg" style="position:absolute;top:10%;left:52%;" style="display:none;">
-    <input type="button" value="save" id="btn" size="30" (click)="save()" style="position:absolute;top:55%;left:10%;">
-    <input type="button" value="clear" id="clr" size="23" (click)="erase()" style="position:absolute;top:55%;left:15%;">
-    <input type="button" value="addtext" id="txt" size="23" (click)="addtext()" style="position:absolute;top:55%;left:20%;">
-    <input type="button" value="draw" id="drw" size="23" (click)="draw2()" style="position:absolute;top:55%;left:25%;">
+    <canvas id="can" width="400" height="400" style="border:2px solid;"></canvas>
+    <div >
+        <h3>Choose Color</h3>
+        <div style="width:10px;height:10px;background:green;" id="green" (click)="color($event)"></div>
+        <div style="width:10px;height:10px;background:blue;" id="blue" (click)="color($event)"></div>
+        <div style="width:10px;height:10px;background:red;" id="red" (click)="color($event)"></div>
+        <div style="width:10px;height:10px;background:yellow;" id="yellow" (click)="color($event)"></div>
+        <div style="width:10px;height:10px;background:orange;" id="orange" (click)="color($event)"></div>
+        <div style="width:10px;height:10px;background:black;" id="black" (click)="color($event)"></div>
+    </div>
+    <div >Eraser</div>
+    <div style="width:15px;height:15px;background:white;border:2px solid;" id="white" (click)="color($event)"></div>
+    <img id="canvasimg" style="display:none;">
+    <input type="button" value="save" id="btn" size="30" (click)="save()" >
+    <input type="button" value="clear" id="clr" size="23" (click)="erase()" >
+    <input type="button" value="addtext" id="txt" size="23" (click)="addtext()" >
+    <input type="button" value="draw" id="drw" size="23" (click)="draw2()" >
+</div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="close()">Close</button>
 </div>

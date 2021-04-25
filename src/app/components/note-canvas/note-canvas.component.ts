@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-note-canvas',
@@ -29,7 +30,7 @@ export class NoteCanvasComponent implements OnInit {
   xOffset: number;
   yOffset: number;
 
-  constructor() { }
+  constructor(public dialogRef: MatDialogRef<NoteCanvasComponent>) { }
 
   ngOnInit(): void {
     this.canvas = document.getElementById('can') as HTMLCanvasElement;
@@ -48,6 +49,10 @@ export class NoteCanvasComponent implements OnInit {
     this.xOffset = 0;
     this.yOffset = 0;
     this.draw2();
+  }
+
+  close(): void {
+    this.dialogRef.close();
   }
 
   draw2() {

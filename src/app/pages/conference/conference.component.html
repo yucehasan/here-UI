@@ -13,21 +13,11 @@
       <button mat-icon-button class="toolButton" id="">
         <mat-icon id="chatIcon">chat_bubble</mat-icon>
       </button>
-      <button
-        mat-icon-button
-        class="toolButton"
-        id=""
-        #noteTrigger="matMenuTrigger"
-        [matMenuTriggerFor]="note"
-      >
-        <mat-icon id="taIcon">note</mat-icon>
-      </button>
-      <mat-menu [hasBackdrop]="false" #note="matMenu" class="note-content">
-        <mat-card class="note-card" (click)="$event.stopPropagation()">
-          <mat-card-title>Note</mat-card-title>
-          <mat-card-content class="overlay"> </mat-card-content>
-        </mat-card>
-      </mat-menu>
+      <div #filterIcon class="note-wrapper">
+        <button mat-icon-button (click)="openDialog()">
+          <mat-icon id="taIcon">note</mat-icon>
+        </button>
+      </div>
       <button mat-icon-button class="toolButton" id="" (click)="startVideo()">
         <mat-icon id="taIcon">videocam</mat-icon>
       </button>
@@ -44,7 +34,7 @@
         <mat-icon id="taIcon">exit_to_app</mat-icon>
       </button>
       <button mat-icon-button class="toolButton" id="" (click)="changeType()">
-        curr type: {{this.type}}
+        curr type: {{ this.type }}
       </button>
     </div>
     <div align="end">
@@ -86,7 +76,9 @@
     <mat-grid-tile-header>Shared Slide</mat-grid-tile-header>
     <div style="position: absolute; top: 0">
       <button mat-raised-button value="prev" (click)="prevSlide()">prev</button>
-      <button mat-raised-button value="prev" (click)="syncWithInstructor()">sync</button>
+      <button mat-raised-button value="prev" (click)="syncWithInstructor()">
+        sync
+      </button>
       <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
     </div>
     <app-slide (onChange)="onSlideChange($event)"></app-slide>
