@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { MediaMatcher } from '@angular/cdk/layout';
+import { ChangeDetectorRef, Component, OnDestroy, Inject } from '@angular/core';
+import { SE } from './directives/scroll.directive';
+import { MatDialog } from '@angular/material/dialog';
+import { DOCUMENT } from '@angular/common';
 
 import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass']
+  styleUrls: ['./app.component.sass'],
 })
 export class AppComponent implements OnInit {
   username: string;

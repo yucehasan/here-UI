@@ -21,6 +21,11 @@ import { SlideComponent } from './components/slide/slide.component';
 import { NoteCanvasComponent } from './components/note-canvas/note-canvas.component';
 import { TaComponent } from './components/ta/ta.component';
 import { AddCourseDialogComponent } from './components/add-course-dialog/add-course-dialog.component';
+import { AboutComponent } from './components/about/about.component';
+import { ContactComponent } from './components/contact/contact.component';
+import { HeadingComponent } from './components/heading/heading.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { DirectivesModule } from './directives/directives.module';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transports: ['websocket'], upgrade: false} };
 @NgModule({
@@ -39,6 +44,9 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     SlideComponent,
     NoteCanvasComponent,
     TaComponent,
+    AboutComponent,
+    ContactComponent,
+    HeadingComponent,
   ],
   imports: [
     BrowserModule,
@@ -48,7 +56,9 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FlexLayoutModule,
+    DirectivesModule
   ],
   providers: [],
   bootstrap: [AppComponent],
