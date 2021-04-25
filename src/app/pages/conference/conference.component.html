@@ -8,26 +8,13 @@
         Capture snaphot
       </button>
       <button mat-icon-button class="toolButton" id="">
-        <mat-icon id="camIcon">radio_button_checked</mat-icon>
-      </button>
-      <button mat-icon-button class="toolButton" id="">
         <mat-icon id="chatIcon">chat_bubble</mat-icon>
       </button>
-      <button
-        mat-icon-button
-        class="toolButton"
-        id=""
-        #noteTrigger="matMenuTrigger"
-        [matMenuTriggerFor]="note"
-      >
-        <mat-icon id="taIcon">note</mat-icon>
-      </button>
-      <mat-menu [hasBackdrop]="false" #note="matMenu" class="note-content">
-        <mat-card class="note-card" (click)="$event.stopPropagation()">
-          <mat-card-title>Note</mat-card-title>
-          <mat-card-content class="overlay"> </mat-card-content>
-        </mat-card>
-      </mat-menu>
+      <div #noteIcon class="dialog-btn-wrapper">
+        <button mat-icon-button (click)="openDialog()">
+          <mat-icon id="taIcon">note</mat-icon>
+        </button>
+      </div>
       <button mat-icon-button class="toolButton" id="" (click)="startVideo()">
         <mat-icon id="taIcon">videocam</mat-icon>
       </button>
@@ -43,29 +30,17 @@
       <button mat-icon-button class="toolButton" id="">
         <mat-icon id="taIcon">exit_to_app</mat-icon>
       </button>
-    </div>
-    <div align="end">
-      <button
-        #taTrigger="matMenuTrigger"
-        [matMenuTriggerFor]="taNotification"
-        mat-icon-button
-        id="taButton"
-        [matBadge]="taOn ? '!' : null"
-        matBadgeSize="large"
-        matBadgePosition="before"
-      >
-        <mat-icon id="taIcon">face</mat-icon>
+      <button mat-icon-button class="toolButton" id="" (click)="changeType()">
+        curr type: {{ this.type }}
       </button>
-      <mat-menu
-        [hasBackdrop]="false"
-        #taNotification="matMenu"
-        class="ta-content"
-      >
-        <mat-card class="ta-card">
-          <mat-card-title>TA</mat-card-title>
-          <mat-card-content class="overlay"></mat-card-content>
-        </mat-card>
-      </mat-menu>
+    </div>
+    <div class="fill"></div>
+    <div align="end">
+      <div #taIcon class="dialog-btn-wrapper">
+        <button mat-icon-button (click)="openDialog()">
+          <mat-icon id="taIcon">face</mat-icon>
+        </button>
+      </div>
     </div>
   </mat-card-content>
 </mat-card>
@@ -81,7 +56,14 @@
     [rowspan]="!slideOn ? 0 : shareOn ? 2 : 3"
   >
     <mat-grid-tile-header>Shared Slide</mat-grid-tile-header>
-    <!-- Will be implemented -->
+    <div style="position: absolute; top: 0">
+      <button mat-raised-button value="prev" (click)="prevSlide()">prev</button>
+      <button mat-raised-button value="prev" (click)="syncWithInstructor()">
+        sync
+      </button>
+      <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
+    </div>
+    <app-slide [ngStyle]="{'height': (shareOn) ? '51.5vh' : '78vh'}" (onChange)="onSlideChange($event)"></app-slide>
   </mat-grid-tile>
   <mat-grid-tile
     [colspan]="!shareOn ? 0 : slideOn ? 4 : 6"

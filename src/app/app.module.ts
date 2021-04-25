@@ -17,6 +17,9 @@ import { AssignStudentComponent } from './components/assign-student/assign-stude
 import { ScheduleTableComponent } from './components/schedule-table/schedule-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import { environment } from '../environments/environment';
+import { SlideComponent } from './components/slide/slide.component';
+import { NoteCanvasComponent } from './components/note-canvas/note-canvas.component';
+import { TaComponent } from './components/ta/ta.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transports: ['websocket'], upgrade: false} };
 @NgModule({
@@ -31,6 +34,9 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     AuthComponent,
     AssignStudentComponent,
     ScheduleTableComponent,
+    SlideComponent,
+    NoteCanvasComponent,
+    TaComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,7 +46,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -7,6 +7,7 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthComponent } from './pages/auth/auth.component';
+import { SlideComponent } from './components/slide/slide.component';
 
 const routes: Routes = [
   {path: '',  redirectTo: 'auth', pathMatch:'full'},
@@ -16,6 +17,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'auth', component: AuthComponent},
+  {path: 'slide', component: SlideComponent},
   {path: '**', component: PageNotFoundComponent},
 ];
 
