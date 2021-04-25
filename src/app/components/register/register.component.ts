@@ -18,7 +18,7 @@ export class RegisterComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private httpClient: HttpClient) {
-      this.type = "student"
+      // this.type = "student"
     }
 
   ngOnInit(): void {}

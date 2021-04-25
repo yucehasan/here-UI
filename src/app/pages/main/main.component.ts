@@ -42,8 +42,9 @@ export class MainComponent implements OnInit {
     this.authService.getUsername().subscribe(username => {
       this.username = username;
     })
-
+    if(this.token === "") {
+      alert("You are not logged in");
+      this.router.navigate(['/auth']);
+    }
   }
-
-
 }

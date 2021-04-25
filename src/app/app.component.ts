@@ -49,6 +49,7 @@ export class AppComponent implements OnInit {
   logout() {
     if (this.loggedIn) { this.router.navigate(['/auth']); }
     localStorage.clear();
+    this.authService.updateToken("");
   }
 
 }

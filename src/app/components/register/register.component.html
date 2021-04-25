@@ -17,11 +17,11 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>User Type</mat-label>
-                    <mat-select required [(ngModel)]="type">
-                        <mat-option value="Student">
+                    <mat-select required [(value)]="type">
+                        <mat-option value="student">
                             Student
                         </mat-option>
-                        <mat-option value="Instructor">
+                        <mat-option value="instructor">
                             Instructor
                         </mat-option>
                     </mat-select>

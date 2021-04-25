@@ -17,6 +17,7 @@ export class AddCourseDialogComponent implements OnInit {
   dataSource = DATA_SOURCE;
   days = DAYS;
   hours = HOURS;
+  courseName: string = "";
   checkboxes: boolean[][];
   SERVER_URL = "https://hereapp-live.herokuapp.com/course"; 
   // /course/id: parameter: student email
@@ -50,6 +51,7 @@ export class AddCourseDialogComponent implements OnInit {
   onSave(): void { // /course post request token, coursename, slot string
     // /assign student: student email, course id
     console.log("Save");
+    console.log(this.courseName);
     var count: number = 0;
     var slots: string = ""
     for (let i = 0; i < DAYS.length; i++) {
@@ -71,11 +73,13 @@ export class AddCourseDialogComponent implements OnInit {
 
       const headers = new HttpHeaders().set('Authorization', "Bearer " + this.token);
 
-      this.httpClient.post<any>(this.SERVER_URL, formData, {headers: headers}).subscribe(
-        (res) => {
-          console.log(res);
-        }
-      );
+      console.log("Form data Course name: " + formData.get("course_name"));
+      console.log("Form data: " + formData.get("course_name"));
+      // this.httpClient.post<any>(this.SERVER_URL, formData, {headers: headers}).subscribe(
+      //   (res) => {
+      //     console.log(res);
+      //   }
+      // );
     }
   }
 

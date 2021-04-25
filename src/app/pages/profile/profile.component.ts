@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AssignStudentComponent } from 'src/app/components/assign-student/assign-student.component';
-import {AddCourseDialogComponent} from 'src/app/components/add-course-dialog/add-course-dialog.component';
+import { AddCourseDialogComponent } from 'src/app/components/add-course-dialog/add-course-dialog.component';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -9,27 +11,35 @@ import {AddCourseDialogComponent} from 'src/app/components/add-course-dialog/add
   styleUrls: ['./profile.component.sass']
 })
 export class ProfileComponent implements OnInit {
-  user_type: string;
+  userType: string;
   username: string;
+  token: string;
   user_id: number;
   saved_notes: any[];
   courses: any[];
-  constructor(private assignStudentDialog: MatDialog, public addCourseDialog: MatDialog) { }
+  constructor(
+    private assignStudentDialog: MatDialog,
+    public addCourseDialog: MatDialog,
+    private router: Router,
+    private authService: AuthService) {
+    this.username = "";
+    this.token = "";
+  }
 
   ngOnInit(): void {
     // Fetch them from database
-    this.username = "John Doe";
-    this.user_type = "instructor";
+    // this.username = "John Doe";
+    this.userType = "instructor";
     this.saved_notes = [
       {
         date: "10/11/2020",
         class: "CS464",
-        link:""
+        link: ""
       },
       {
         date: "29/01/2021",
         class: "CS413",
-        link:""
+        link: ""
       }
     ];
     this.courses = [
@@ -39,13 +49,29 @@ export class ProfileComponent implements OnInit {
       },
       {
         name: "Seminar",
-       code: "CS491",
+        code: "CS491",
       }
     ];
+
+    this.authService.getToken().subscribe(token => {
+      this.token = token;
+    })
+
+    this.authService.getUsername().subscribe(username => {
+      this.username = username;
+    })
+
+    this.authService.getUserType().subscribe(userType => {
+      this.userType = userType;
+    })
+    if (this.token === "") {
+      alert("You are not logged in");
+      this.router.navigate(['/auth']);
+    }
   }
 
-  addCourse(): void{
-    if(this.user_type === "instructor"){
+  addCourse(): void {
+    if (this.userType === "instructor") {
       // alert("Not yet implemented");
       // TODO
       this.addCourseDialog.open(AddCourseDialogComponent, {
@@ -55,9 +81,9 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  assignStudent(courseCode: string): void{
+  assignStudent(courseCode: string): void {
     this.assignStudentDialog.open(AssignStudentComponent, {
-      data: {courseCode: courseCode}
+      data: { courseCode: courseCode }
     });
   }
 
