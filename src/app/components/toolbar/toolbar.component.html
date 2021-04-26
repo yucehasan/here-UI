@@ -1,0 +1,33 @@
+<mat-toolbar class="navigation-toolbar" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.navigation-fixed]="!fixedTolbar">
+    <a class="logo" fxShow="false" fxShow.gt-xs="true" href="#">
+        <img src="assets/img/logo.png">
+    </a>
+    <ng-container *ngIf="this.isLoggedIn">
+        <span class="navigation-spacer"></span>
+        <mat-label class="name">{{username}}</mat-label>
+        <button mat-icon-button class="icon" [matMenuTriggerFor]="menu">
+            <mat-icon [inline]="true">person</mat-icon>
+        </button>
+    
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item *ngIf="loggedIn" (click)="goProfile()">Profile</button>
+            <button mat-menu-item *ngIf="loggedIn" (click)="logout()">Logout</button>
+        </mat-menu>
+    </ng-container>
+
+    <ng-container *ngIf=!this.isLoggedIn>
+        <mat-nav-list class="navigation-list" fxLayout="row" fxShow="false" fxShow.gt-xs="true">
+            <a mat-list-item href="#about">Features</a>
+            <a mat-list-item href="#contact">Team</a>
+
+        </mat-nav-list>
+        <span class="navigation-spacer"></span>
+        <mat-nav-list class="navigation-list" fxLayout="row" fxShow="false" fxShow.gt-xs="true">
+            <a class="toolbar-button-left" mat-flat-button (click)="openRegisterDialog()">Sign up for free</a>
+            <a class="toolbar-button-right" mat-stroked-button (click)="openLoginDialog()">Sign in</a>
+        </mat-nav-list>
+    </ng-container>
+</mat-toolbar>
+
+    
+
