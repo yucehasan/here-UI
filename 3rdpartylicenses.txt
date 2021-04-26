@@ -66,6 +66,8 @@ MIT
 @angular/router
 MIT
 
+@pdftron/webviewer
+
 after
 MIT
 Copyright (c) 2011 Raynos.
