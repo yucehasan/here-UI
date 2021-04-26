@@ -4,6 +4,7 @@ import { AssignStudentComponent } from 'src/app/components/assign-student/assign
 import { AddCourseDialogComponent } from 'src/app/components/add-course-dialog/add-course-dialog.component';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-profile',
@@ -17,9 +18,11 @@ export class ProfileComponent implements OnInit {
   user_id: number;
   saved_notes: any[];
   courses: any[];
+  SERVER_URL = 'https://hereapp-live.herokuapp.com/course';
   constructor(
     private assignStudentDialog: MatDialog,
     public addCourseDialog: MatDialog,
+    private httpClient: HttpClient,
     private router: Router,
     private authService: AuthService) {
     this.username = "";
@@ -27,32 +30,7 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Fetch them from database
-    // this.username = "John Doe";
-    this.userType = "instructor";
-    this.saved_notes = [
-      {
-        date: "10/11/2020",
-        class: "CS464",
-        link: ""
-      },
-      {
-        date: "29/01/2021",
-        class: "CS413",
-        link: ""
-      }
-    ];
-    this.courses = [
-      {
-        name: "Machine Learning",
-        code: "CS464",
-      },
-      {
-        name: "Seminar",
-        code: "CS491",
-      }
-    ];
-
+    this.courses = [];
     this.authService.getToken().subscribe(token => {
       this.token = token;
     })
@@ -64,6 +42,18 @@ export class ProfileComponent implements OnInit {
     this.authService.getUserType().subscribe(userType => {
       this.userType = userType;
     })
+
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + this.token
+    );
+
+    this.httpClient.get<any>(this.SERVER_URL, { headers: headers })
+      .subscribe((res) => {
+        console.log(res);
+        this.courses = res.courses;
+      })
+
     if (this.token === "") {
       alert("You are not logged in");
       this.router.navigate(['/auth']);
@@ -81,9 +71,11 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  assignStudent(courseCode: string): void {
+  assignStudent(courseName: string, courseId: number): void {
+    console.log(courseId);
+    console.log(courseName);
     this.assignStudentDialog.open(AssignStudentComponent, {
-      data: { courseCode: courseCode }
+      data: { courseName: courseName, courseId: courseId }
     });
   }
 
