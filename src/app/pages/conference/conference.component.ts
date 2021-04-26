@@ -21,6 +21,11 @@ import { AuthService } from 'src/app/services/auth.service';
   templateUrl: './conference.component.html',
   styleUrls: ['./conference.component.sass'],
 })
+
+/* 
+TODOS
+- PDFTron experiences network failure on some clients (console log says CORS policy (again?!) )
+*/
 export class ConferenceComponent implements OnInit {
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
   @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
@@ -73,7 +78,6 @@ export class ConferenceComponent implements OnInit {
     this.syncWithInstr = true;
     this.activatedRoute.queryParams.subscribe((params) => {
       this.roomID = params['roomID'];
-      console.log(this.roomID); // Print the parameter to the console.
     });
     this.authService.getUserType().subscribe( (type) => {
       this.userType = type;
@@ -121,8 +125,7 @@ export class ConferenceComponent implements OnInit {
     });
 
     this.noteOn = true;
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
+    dialogRef.afterClosed().subscribe(() => {
       this.noteOn = false;
     });
   }
@@ -186,7 +189,6 @@ export class ConferenceComponent implements OnInit {
   syncWithInstructor() {
     this.syncWithInstr = true;
     this.slideComponent.changeSlide(this.currSlideInstr);
-    console.log('syncing');
   }
 
   stopVideo(): void {
@@ -235,7 +237,6 @@ export class ConferenceComponent implements OnInit {
     } else {
       this.localVideo = document.createElement('video');
       var div = document.createElement('div');
-      console.log('selam');
       div.setAttribute(
         'style',
         'shareOn && slideOn ? width: 23% : shareOn || slideOn ? width: 100% : width: 23%'
