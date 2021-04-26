@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { throwMatDialogContentAlreadyAttachedError, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 
@@ -20,8 +20,13 @@ export class LoginComponent implements OnInit {
     public dialogRef: MatDialogRef<LoginComponent>,
     private formBuilder: FormBuilder,
     private httpClient: HttpClient,
-    private authService: AuthService) { }
-
+    private authService: AuthService,
+    private fb: FormBuilder) {
+      this.loginForm = fb.group({
+        email: ['', [Validators.required]],
+        password: ['', [Validators.required]]
+      });
+    }
   ngOnInit(): void { }
 
   login(): void {

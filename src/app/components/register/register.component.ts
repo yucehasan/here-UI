@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -16,9 +16,14 @@ export class RegisterComponent implements OnInit {
   SERVER_URL = "https://hereapp-live.herokuapp.com/registration";
 
   constructor(
-    private formBuilder: FormBuilder,
-    private httpClient: HttpClient) {
-      // this.type = "student"
+    private httpClient: HttpClient,
+    private fb: FormBuilder) {
+      this.registerForm = fb.group({
+        email: ['', [Validators.required]],
+        username: ['', [Validators.required]],
+        type: ['', [Validators.required]],
+        password: ['', [Validators.required]]
+      });
     }
 
   ngOnInit(): void {}
