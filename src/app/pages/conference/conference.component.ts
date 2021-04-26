@@ -21,6 +21,11 @@ import { AuthService } from 'src/app/services/auth.service';
   templateUrl: './conference.component.html',
   styleUrls: ['./conference.component.sass'],
 })
+
+/* 
+TODOS
+- PDFTron experiences network failure on some clients (console log says CORS policy (again?!) )
+*/
 export class ConferenceComponent implements OnInit {
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
   @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
@@ -73,58 +78,54 @@ export class ConferenceComponent implements OnInit {
     this.syncWithInstr = true;
     this.activatedRoute.queryParams.subscribe((params) => {
       this.roomID = params['roomID'];
-      console.log(this.roomID); // Print the parameter to the console.
     });
-    this.authService.getUserType().subscribe( (type) => {
+    this.authService.getUserType().subscribe((type) => {
       this.userType = type;
     });
   }
 
   openTA(message: string): void {
-    const filterData = {
-      top: this.TAIcon.nativeElement.getBoundingClientRect().top,
-      left: this.TAIcon.nativeElement.getBoundingClientRect().left,
-    };
-    let dialogRef = this.dialog.open(TaComponent, {
-      data: filterData,
-      hasBackdrop: false,
-      panelClass: 'filter-popup',
-    });
+    if (!this.taOn) {
+      const filterData = {
+        top: this.TAIcon.nativeElement.getBoundingClientRect().top,
+        left: this.TAIcon.nativeElement.getBoundingClientRect().left,
+      };
+      let dialogRef = this.dialog.open(TaComponent, {
+        data: filterData,
+        hasBackdrop: false,
+        panelClass: 'filter-popup',
+      });
+      this.taOn = true;
 
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
-    });
-    setTimeout(() => {
-      dialogRef.close();
-    }, 2500);
-  }
-
-  toggleNote(message: string): void {
-    if (!this.noteOn) {
-      this.openDialog();
+      setTimeout(() => {
+        dialogRef.close();
+        this.taOn = false;
+      }, 2500);
     }
   }
+
   getScreenshot(): HTMLVideoElement {
     return document.getElementById('my-video') as HTMLVideoElement;
   }
 
-  openDialog(): void {
-    const filterData = {
-      top: this.noteIcon.nativeElement.getBoundingClientRect().bottom,
-      right: this.noteIcon.nativeElement.getBoundingClientRect().right,
-      getSnip: this.getScreenshot,
-    };
-    let dialogRef = this.dialog.open(NoteCanvasComponent, {
-      data: filterData,
-      hasBackdrop: false,
-      panelClass: 'filter-popup',
-    });
+  openNote(): void {
+    if (!this.noteOn) {
+      const filterData = {
+        top: this.noteIcon.nativeElement.getBoundingClientRect().bottom,
+        right: this.noteIcon.nativeElement.getBoundingClientRect().right,
+        getSnip: this.getScreenshot,
+      };
+      let dialogRef = this.dialog.open(NoteCanvasComponent, {
+        data: filterData,
+        hasBackdrop: false,
+        panelClass: 'filter-popup',
+      });
 
-    this.noteOn = true;
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
-      this.noteOn = false;
-    });
+      this.noteOn = true;
+      dialogRef.afterClosed().subscribe(() => {
+        this.noteOn = false;
+      });
+    }
   }
 
   startShare(): void {
@@ -150,11 +151,29 @@ export class ConferenceComponent implements OnInit {
       //   }
       // );
     }
+    this.updateStyles();
   }
 
   stopSharing(): void {
     this.share.srcObject = undefined;
     this.shareOn = false;
+  }
+
+  updateStyles(): void {
+    var remoteVids: NodeListOf<HTMLDivElement> = document.querySelector(
+      '.remote-videos'
+    ).childNodes as NodeListOf<HTMLDivElement>;
+    var width;
+    if (this.slideOn && this.shareOn) {
+      width = '20%';
+    } else if (this.slideOn || this.shareOn) {
+      width = '50%';
+    } else {
+      width = '33.3%';
+    }
+    for (var i = 0; i < remoteVids.length; i++) {
+      (remoteVids[i] as HTMLDivElement).style.width = width;
+    }
   }
 
   startSlide(): void {
@@ -163,6 +182,7 @@ export class ConferenceComponent implements OnInit {
     } else {
       this.slideOn = true;
     }
+    this.updateStyles();
   }
 
   stopSlide(): void {
@@ -186,7 +206,6 @@ export class ConferenceComponent implements OnInit {
   syncWithInstructor() {
     this.syncWithInstr = true;
     this.slideComponent.changeSlide(this.currSlideInstr);
-    console.log('syncing');
   }
 
   stopVideo(): void {
@@ -235,20 +254,13 @@ export class ConferenceComponent implements OnInit {
     } else {
       this.localVideo = document.createElement('video');
       var div = document.createElement('div');
-      console.log('selam');
-      div.setAttribute(
-        'style',
-        'shareOn && slideOn ? width: 23% : shareOn || slideOn ? width: 100% : width: 23%'
-      );
+      this.localVideo.setAttribute('style', 'width: 100% ');
       this.localVideo.setAttribute('id', 'my-video');
-      this.localVideo.setAttribute(
-        'style',
-        'width: 100%; min-height: 25vh; max-height: 50vh;'
-      );
       this.localVideo.autoplay = true;
       this.localVideo.muted = true;
       div.appendChild(this.localVideo);
       document.querySelector('.remote-videos').appendChild(div);
+      this.updateStyles();
       var constraints = {
         video: true,
         audio: false,
@@ -266,10 +278,7 @@ export class ConferenceComponent implements OnInit {
         alert('Your browser does not support getUserMedia API');
       }
     }
-  }
-
-  printRooms(){
-    this.socket.emit("print");
+    this.updateStyles();
   }
 
   setListeners() {
@@ -280,8 +289,8 @@ export class ConferenceComponent implements OnInit {
     //this.socket.on('connect', () => {
     this.socketId = this.socket.ioSocket.id;
 
-    this.socket.on("anEvent", () => {
-      console.log("geldi hocam eventiniz");
+    this.socket.on('anEvent', () => {
+      console.log('geldi hocam eventiniz');
     });
 
     this.socket.on('user-left', (id) => {
@@ -291,8 +300,8 @@ export class ConferenceComponent implements OnInit {
     });
 
     this.socket.on('user-joined', (id, count, clients) => {
-      console.log("biri katıldı")
-      console.log(clients)
+      console.log('biri katıldı');
+      console.log(clients);
       clients.forEach((socketListId) => {
         if (!this.connections[socketListId]) {
           this.connections[socketListId] = new RTCPeerConnection(
@@ -354,20 +363,14 @@ export class ConferenceComponent implements OnInit {
     var video = document.createElement('video'),
       div = document.createElement('div');
 
-    div.setAttribute(
-      'style',
-      'shareOn && slideOn ? width: 23% : shareOn || slideOn ? width: 100% : width: 23%'
-    );
     video.setAttribute('data-socket', id);
-    video.setAttribute(
-      'style',
-      'width: 100%; min-height: 25vh; max-height: 50vh;'
-    );
+    video.setAttribute('style', 'width: 100%;');
     video.srcObject = event.streams[0];
     video.autoplay = true;
     video.muted = true;
     div.appendChild(video);
     document.querySelector('.remote-videos').appendChild(div);
+    this.updateStyles();
   }
 
   gotMessageFromServer(fromId, message) {

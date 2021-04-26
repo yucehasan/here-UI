@@ -53,7 +53,6 @@ export class SlideComponent implements AfterViewInit {
 
       this.wvInstance = instance;
       this.currentSlide = instance.docViewer.getCurrentPage();
-      console.log(this.viewer.nativeElement);
       instance.disableElements([
         'header',
         'notesPanel',
@@ -73,9 +72,9 @@ export class SlideComponent implements AfterViewInit {
       });
 
       // or from the docViewer instance
-      instance.docViewer.on('annotationsLoaded', () => {
-        console.log('annotations loaded');
-      });
+      // instance.docViewer.on('annotationsLoaded', () => {
+      //   console.log('annotations loaded');
+      // });
 
       instance.docViewer.on('documentLoaded', this.wvDocumentLoadedHandler);
 

@@ -11,7 +11,7 @@
         <mat-icon id="chatIcon">chat_bubble</mat-icon>
       </button>
       <div #noteIcon class="dialog-btn-wrapper">
-        <button mat-icon-button (click)="openDialog()">
+        <button mat-icon-button (click)="openNote()">
           <mat-icon id="taIcon">note</mat-icon>
         </button>
       </div>
@@ -30,14 +30,11 @@
       <button mat-icon-button class="toolButton" id="">
         <mat-icon id="taIcon">exit_to_app</mat-icon>
       </button>
-      <button mat-icon-butto (click)="printRooms()" class="toolButton" id="">
-        Print Rooms
-      </button>
     </div>
     <div class="fill"></div>
     <div align="end">
       <div #taIcon class="dialog-btn-wrapper">
-        <button mat-icon-button (click)="openDialog()">
+        <button mat-icon-button [disabled]="!taOn">
           <mat-icon id="taIcon">face</mat-icon>
         </button>
       </div>
@@ -63,7 +60,10 @@
       </button>
       <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
     </div>
-    <app-slide [ngStyle]="{'height': (shareOn) ? '51.5vh' : '78vh'}" (onChange)="onSlideChange($event)"></app-slide>
+    <app-slide
+      [ngStyle]="{ height: shareOn ? '51.5vh' : '78vh' }"
+      (onChange)="onSlideChange($event)"
+    ></app-slide>
   </mat-grid-tile>
   <mat-grid-tile
     [colspan]="!shareOn ? 0 : slideOn ? 4 : 6"
