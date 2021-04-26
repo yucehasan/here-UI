@@ -7,10 +7,10 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
 import { SlideComponent } from './components/slide/slide.component';
-import { AppComponent } from './app.component';
+import { LandingComponent } from './pages/landing/landing.component';
 
 const routes: Routes = [
-  {path: '', component: AppComponent},
+  {path: '', component: LandingComponent},
   {path: 'main', component: MainComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'conference', component: ConferenceComponent},
