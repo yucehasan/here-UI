@@ -269,10 +269,6 @@ export class ConferenceComponent implements OnInit {
     }
   }
 
-  printRooms(){
-    this.socket.emit("print");
-  }
-
   setListeners() {
     this.socket.on('signal', (fromId, message) =>
       this.gotMessageFromServer(fromId, message)
