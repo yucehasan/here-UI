@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 import { TaComponent } from 'src/app/components/ta/ta.component';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-conference',
@@ -24,6 +31,9 @@ export class ConferenceComponent implements OnInit {
   noteOn: boolean;
   slideOn: boolean;
   taOn: boolean;
+
+  roomID: number;
+  userType: string;
 
   localVideo: HTMLVideoElement;
   share: HTMLVideoElement;
@@ -45,7 +55,13 @@ export class ConferenceComponent implements OnInit {
     ],
   };
 
-  constructor(private socket: Socket, private httpClient: HttpClient, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private socket: Socket,
+    private httpClient: HttpClient,
+    private dialog: MatDialog,
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService
+  ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
 
@@ -55,56 +71,57 @@ export class ConferenceComponent implements OnInit {
     this.noteOn = false;
     this.slideOn = false;
     this.syncWithInstr = true;
-    this.activatedRoute.queryParams.subscribe(params => {
-      let date = params['roomID'];
-      console.log(date); // Print the parameter to the console. 
-  });
+    this.activatedRoute.queryParams.subscribe((params) => {
+      this.roomID = params['roomID'];
+      console.log(this.roomID); // Print the parameter to the console.
+    });
+    this.authService.getUserType().subscribe( (type) => {
+      this.userType = type;
+    });
   }
 
-  
   openTA(message: string): void {
     const filterData = {
-      top : this.TAIcon.nativeElement.getBoundingClientRect().top,
-      left : this.TAIcon.nativeElement.getBoundingClientRect().left,
+      top: this.TAIcon.nativeElement.getBoundingClientRect().top,
+      left: this.TAIcon.nativeElement.getBoundingClientRect().left,
     };
-    let  dialogRef = this.dialog.open(TaComponent, {
+    let dialogRef = this.dialog.open(TaComponent, {
       data: filterData,
       hasBackdrop: false,
-      panelClass: 'filter-popup'
+      panelClass: 'filter-popup',
     });
-    
-    
-    dialogRef.afterClosed().subscribe(result => {
+
+    dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
     });
-    setTimeout( () => {
+    setTimeout(() => {
       dialogRef.close();
     }, 2500);
   }
-  
+
   toggleNote(message: string): void {
     if (!this.noteOn) {
       this.openDialog();
     }
   }
-  getScreenshot(): HTMLVideoElement { 
+  getScreenshot(): HTMLVideoElement {
     return document.getElementById('my-video') as HTMLVideoElement;
   }
-  
+
   openDialog(): void {
     const filterData = {
-      top : this.noteIcon.nativeElement.getBoundingClientRect().bottom,
-      right : this.noteIcon.nativeElement.getBoundingClientRect().right,
+      top: this.noteIcon.nativeElement.getBoundingClientRect().bottom,
+      right: this.noteIcon.nativeElement.getBoundingClientRect().right,
       getSnip: this.getScreenshot,
     };
-    let  dialogRef = this.dialog.open(NoteCanvasComponent, {
-        data: filterData,
-        hasBackdrop: false,
-        panelClass: 'filter-popup'
-      });
+    let dialogRef = this.dialog.open(NoteCanvasComponent, {
+      data: filterData,
+      hasBackdrop: false,
+      panelClass: 'filter-popup',
+    });
 
     this.noteOn = true;
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
       this.noteOn = false;
     });
@@ -169,7 +186,7 @@ export class ConferenceComponent implements OnInit {
   syncWithInstructor() {
     this.syncWithInstr = true;
     this.slideComponent.changeSlide(this.currSlideInstr);
-    console.log("syncing");
+    console.log('syncing');
   }
 
   changeType() {
@@ -187,6 +204,8 @@ export class ConferenceComponent implements OnInit {
       });
       this.videoOn = false;
       this.localVideo.srcObject = undefined;
+      this.socket.emit('disconnectFrom', { roomID: this.roomID });
+      this.socket.disconnect();
     }
   }
 
@@ -319,7 +338,7 @@ export class ConferenceComponent implements OnInit {
       this.gotSlideUpdate(number);
     });
 
-    this.socket.emit('confirm');
+    this.socket.emit('confirm', { roomID: this.roomID });
     //})
   }
 
@@ -390,10 +409,10 @@ export class ConferenceComponent implements OnInit {
     }
   }
 
-  gotSlideUpdate(number){
+  gotSlideUpdate(number) {
     if (this.syncWithInstr) {
       this.slideComponent.changeSlide(number);
-      console.log("updating");
+      console.log('updating');
     }
   }
 }
