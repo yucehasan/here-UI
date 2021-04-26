@@ -170,16 +170,16 @@ export class ConferenceComponent implements OnInit {
   }
 
   onSlideChange(number) {
-    if (this.type == 'instructor') this.socket.emit('slideChange', number);
+    if (this.userType == 'instructor') this.socket.emit('slideChange', number);
   }
 
   nextSlide() {
-    if (this.type == 'student') this.syncWithInstr = false;
+    if (this.userType == 'student') this.syncWithInstr = false;
     this.slideComponent.nextButton.click();
   }
 
   prevSlide() {
-    if (this.type == 'student') this.syncWithInstr = false;
+    if (this.userType == 'student') this.syncWithInstr = false;
     this.slideComponent.prevButton.click();
   }
 
@@ -187,14 +187,6 @@ export class ConferenceComponent implements OnInit {
     this.syncWithInstr = true;
     this.slideComponent.changeSlide(this.currSlideInstr);
     console.log('syncing');
-  }
-
-  changeType() {
-    if (this.type == 'instructor') {
-      this.type = 'student';
-    } else {
-      this.type = 'instructor';
-    }
   }
 
   stopVideo(): void {
@@ -276,6 +268,10 @@ export class ConferenceComponent implements OnInit {
     }
   }
 
+  printRooms(){
+    this.socket.emit("print");
+  }
+
   setListeners() {
     this.socket.on('signal', (fromId, message) =>
       this.gotMessageFromServer(fromId, message)
@@ -284,6 +280,10 @@ export class ConferenceComponent implements OnInit {
     //this.socket.on('connect', () => {
     this.socketId = this.socket.ioSocket.id;
 
+    this.socket.on("anEvent", () => {
+      console.log("geldi hocam eventiniz");
+    });
+
     this.socket.on('user-left', (id) => {
       var video = document.querySelector('[data-socket="' + id + '"]');
       var parentDiv = video.parentElement;
@@ -291,6 +291,8 @@ export class ConferenceComponent implements OnInit {
     });
 
     this.socket.on('user-joined', (id, count, clients) => {
+      console.log("biri katıldı")
+      console.log(clients)
       clients.forEach((socketListId) => {
         if (!this.connections[socketListId]) {
           this.connections[socketListId] = new RTCPeerConnection(
