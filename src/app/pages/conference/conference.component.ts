@@ -7,6 +7,7 @@ import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 import { TaComponent } from 'src/app/components/ta/ta.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-conference',
@@ -44,7 +45,7 @@ export class ConferenceComponent implements OnInit {
     ],
   };
 
-  constructor(private socket: Socket, private httpClient: HttpClient, public dialog: MatDialog) {}
+  constructor(private socket: Socket, private httpClient: HttpClient, private dialog: MatDialog, private activatedRoute: ActivatedRoute) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
 
@@ -54,6 +55,10 @@ export class ConferenceComponent implements OnInit {
     this.noteOn = false;
     this.slideOn = false;
     this.syncWithInstr = true;
+    this.activatedRoute.queryParams.subscribe(params => {
+      let date = params['roomID'];
+      console.log(date); // Print the parameter to the console. 
+  });
   }
 
   
