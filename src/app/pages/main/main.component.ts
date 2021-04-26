@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-main',
@@ -7,7 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
   upcomingClasses: any[];
-  constructor() {}
+  username: string;
+  token: string;
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.username = "";
+    this.token = "";
+  }
 
   ngOnInit(): void {
     this.upcomingClasses = [
@@ -15,16 +26,25 @@ export class MainComponent implements OnInit {
         name: "ML",
         code: "CS464",
         time: "09.30",
-        link:""
+        link: ""
       },
       {
         name: "PMBOK",
         code: "CS413",
         time: "13.30",
-        link:""
+        link: ""
       }
     ];
-  }
+    this.authService.getToken().subscribe(token => {
+      this.token = token;
+    })
 
-  
+    this.authService.getUsername().subscribe(username => {
+      this.username = username;
+    })
+    if(this.token === "") {
+      alert("You are not logged in");
+      this.router.navigate(['/auth']);
+    }
+  }
 }

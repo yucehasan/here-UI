@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { throwMatDialogContentAlreadyAttachedError, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,15 +14,20 @@ export class LoginComponent implements OnInit {
   email: string;
   password: string;
   loginForm: FormGroup;
-  SERVER_URL = "http://localhost:5000/login"; // TODO
-
+  SERVER_URL = "https://hereapp-live.herokuapp.com/login";
   constructor(
-    private router: Router, 
+    private router: Router,
     public dialogRef: MatDialogRef<LoginComponent>,
     private formBuilder: FormBuilder,
-    private httpClient: HttpClient) { }
-
-  ngOnInit(): void {}
+    private httpClient: HttpClient,
+    private authService: AuthService,
+    private fb: FormBuilder) {
+      this.loginForm = fb.group({
+        email: ['', [Validators.required]],
+        password: ['', [Validators.required]]
+      });
+    }
+  ngOnInit(): void { }
 
   login(): void {
     console.log(
@@ -33,20 +39,22 @@ export class LoginComponent implements OnInit {
     const formData = new FormData();
     formData.append("email", this.email);
     formData.append("password", this.password);
-    // console.log(formData);
-    // console.log(formData.get("password"));
-    // console.log(formData.get("email"));
-    
-    // TODO
-    /* 
+
     this.httpClient.post<any>(this.SERVER_URL, formData).subscribe(
-      (res) => console.log(res),
-      (err) => console.log(err)
+      (res) => {
+        if (res['access_token'] !== undefined) {
+          this.authService.updateToken( res['access_token'] );
+          this.authService.updateUsername(res["message"].substr(13));
+          this.authService.updateUserType(res["type"]);
+          this.router.navigate(['main']);
+          this.dialogRef.close();
+        }
+        else {
+          console.log(res);
+          console.log("Failed");
+          alert(res["message"]);
+        }
+      }
     );
-    */
-    this.router.navigate(['main']);
-    this.dialogRef.close();
   }
-
-
 }
