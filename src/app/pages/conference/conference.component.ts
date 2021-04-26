@@ -16,12 +16,16 @@ import { TaComponent } from 'src/app/components/ta/ta.component';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
+const labelStyle =
+  'position: absolute; bottom: 5px; width: calc(100% - 20px); \
+                    padding-left: 20px; background-color: rgba(0,0,0,0.5);\
+                    font-size: 25px; color: white; padding-top: 10px;';
+
 @Component({
   selector: 'app-conference',
   templateUrl: './conference.component.html',
   styleUrls: ['./conference.component.sass'],
 })
-
 /* 
 TODOS
 - PDFTron experiences network failure on some clients (console log says CORS policy (again?!) )
@@ -39,6 +43,7 @@ export class ConferenceComponent implements OnInit {
 
   roomID: number;
   userType: string;
+  username: string;
 
   localVideo: HTMLVideoElement;
   share: HTMLVideoElement;
@@ -81,6 +86,9 @@ export class ConferenceComponent implements OnInit {
     });
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
+    });
+    this.authService.getUsername().subscribe((name) => {
+      this.username = name;
     });
   }
 
@@ -253,17 +261,27 @@ export class ConferenceComponent implements OnInit {
       this.stopVideo();
     } else {
       this.localVideo = document.createElement('video');
-      var div = document.createElement('div');
       this.localVideo.setAttribute('style', 'width: 100% ');
       this.localVideo.setAttribute('id', 'my-video');
       this.localVideo.autoplay = true;
       this.localVideo.muted = true;
-      div.appendChild(this.localVideo);
-      document.querySelector('.remote-videos').appendChild(div);
+
+      var labelDiv = document.createElement('div');
+      var label = document.createElement('p');
+      label.innerHTML = this.username;
+      labelDiv.appendChild(label);
+      labelDiv.setAttribute('style', labelStyle);
+
+      var parentDiv = document.createElement('div');
+      parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+      parentDiv.appendChild(this.localVideo);
+      parentDiv.appendChild(labelDiv);
+
+      document.querySelector('.remote-videos').appendChild(parentDiv);
       this.updateStyles();
       var constraints = {
         video: true,
-        audio: false,
+        audio: true,
       };
       if (navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices
@@ -302,26 +320,32 @@ export class ConferenceComponent implements OnInit {
     this.socket.on('user-joined', (id, count, clients) => {
       console.log('biri katıldı');
       console.log(clients);
-      clients.forEach((socketListId) => {
-        if (!this.connections[socketListId]) {
-          this.connections[socketListId] = new RTCPeerConnection(
-            this.iceservers
-          );
+      var socketID;
+      var name;
+      clients.forEach((client) => {
+        if (!this.connections[client.socketID] && client.socketID != this.socketId) {
+          socketID = client.socketID;
+          name = client.username;
+          console.log("we were connecting", name, "for the first time");
+          this.connections[socketID] = new RTCPeerConnection(this.iceservers);
           //Wait for their ice candidate
-          this.connections[socketListId].onicecandidate = (event) => {
+          this.connections[socketID].onicecandidate = (event) => {
             if (event.candidate != null) {
               this.socket.emit(
                 'signal',
-                socketListId,
+                socketID,
                 JSON.stringify({ ice: event.candidate })
               );
             }
           };
           //Wait for their video stream
-          this.connections[socketListId].ontrack = (event) => {
-            this.gotRemoteStream(event, socketListId);
+          this.connections[socketID].ontrack = (event) => {
+            console.log(name, 'added', event.track.kind, 'track');
+            if (event.track.kind === 'video')
+              this.gotRemoteStream(event, socketID, name);
           };
-          this.connections[socketListId].addStream(this.localStream);
+          console.log('addStream yapıcam');
+          this.connections[socketID].addStream(this.localStream);
           //Add the local video stream
         }
       });
@@ -349,7 +373,10 @@ export class ConferenceComponent implements OnInit {
       this.gotSlideUpdate(number);
     });
 
-    this.socket.emit('confirm', { roomID: this.roomID });
+    this.socket.emit('confirm', {
+      roomID: this.roomID,
+      username: this.username,
+    });
     //})
   }
 
@@ -359,17 +386,26 @@ export class ConferenceComponent implements OnInit {
     this.localVideo.srcObject = stream;
   }
 
-  gotRemoteStream(event, id) {
-    var video = document.createElement('video'),
-      div = document.createElement('div');
-
+  gotRemoteStream(event, id, name) {
+    console.log('called');
+    var video = document.createElement('video');
     video.setAttribute('data-socket', id);
     video.setAttribute('style', 'width: 100%;');
-    video.srcObject = event.streams[0];
     video.autoplay = true;
-    video.muted = true;
-    div.appendChild(video);
-    document.querySelector('.remote-videos').appendChild(div);
+    // video.muted = true;
+    video.srcObject = event.streams[0];
+
+    var labelDiv = document.createElement('div');
+    var label = document.createElement('p');
+    label.innerHTML = name;
+    labelDiv.appendChild(label);
+    labelDiv.setAttribute('style', labelStyle);
+
+    var parentDiv = document.createElement('div');
+    parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+    parentDiv.appendChild(video);
+    parentDiv.appendChild(labelDiv);
+    document.querySelector('.remote-videos').appendChild(parentDiv);
     this.updateStyles();
   }
 
