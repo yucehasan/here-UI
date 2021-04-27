@@ -318,15 +318,12 @@ export class ConferenceComponent implements OnInit {
     });
 
     this.socket.on('user-joined', (id, count, clients) => {
-      console.log('biri katıldı');
-      console.log(clients);
       var socketID;
       var name;
       clients.forEach((client) => {
         if (!this.connections[client.socketID] && client.socketID != this.socketId) {
           socketID = client.socketID;
           name = client.username;
-          console.log("we were connecting", name, "for the first time");
           this.connections[socketID] = new RTCPeerConnection(this.iceservers);
           //Wait for their ice candidate
           this.connections[socketID].onicecandidate = (event) => {
@@ -340,11 +337,9 @@ export class ConferenceComponent implements OnInit {
           };
           //Wait for their video stream
           this.connections[socketID].ontrack = (event) => {
-            console.log(name, 'added', event.track.kind, 'track');
             if (event.track.kind === 'video')
               this.gotRemoteStream(event, socketID, name);
           };
-          console.log('addStream yapıcam');
           this.connections[socketID].addStream(this.localStream);
           //Add the local video stream
         }
@@ -387,7 +382,6 @@ export class ConferenceComponent implements OnInit {
   }
 
   gotRemoteStream(event, id, name) {
-    console.log('called');
     var video = document.createElement('video');
     video.setAttribute('data-socket', id);
     video.setAttribute('style', 'width: 100%;');
@@ -453,7 +447,6 @@ export class ConferenceComponent implements OnInit {
   gotSlideUpdate(number) {
     if (this.syncWithInstr) {
       this.slideComponent.changeSlide(number);
-      console.log('updating');
     }
   }
 }
