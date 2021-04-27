@@ -22,11 +22,11 @@ export class LoginComponent implements OnInit {
     private httpClient: HttpClient,
     private authService: AuthService,
     private fb: FormBuilder) {
-      this.loginForm = fb.group({
-        email: ['', [Validators.required]],
-        password: ['', [Validators.required]]
-      });
-    }
+    this.loginForm = fb.group({
+      email: ['', [Validators.required]],
+      password: ['', [Validators.required]]
+    });
+  }
   ngOnInit(): void { }
 
   login(): void {
@@ -43,7 +43,8 @@ export class LoginComponent implements OnInit {
     this.httpClient.post<any>(this.SERVER_URL, formData).subscribe(
       (res) => {
         if (res['access_token'] !== undefined) {
-          this.authService.updateToken( res['access_token'] );
+          this.authService.updateToken(res['access_token']);
+          this.authService.updateRefreshToken(res['refresh_token']);
           this.authService.updateUsername(res["message"].substr(13));
           this.authService.updateUserType(res["type"]);
           this.router.navigate(['main']);

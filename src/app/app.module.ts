@@ -15,14 +15,16 @@ import { RegisterComponent } from './components/register/register.component';
 import { AuthComponent } from './pages/auth/auth.component';
 import { AssignStudentComponent } from './components/assign-student/assign-student.component';
 import { ScheduleTableComponent } from './components/schedule-table/schedule-table.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { SlideComponent } from './components/slide/slide.component';
 import { NoteCanvasComponent } from './components/note-canvas/note-canvas.component';
 import { TaComponent } from './components/ta/ta.component';
 import { AddCourseDialogComponent } from './components/add-course-dialog/add-course-dialog.component';
+import { JwtInterceptor } from './helpers/JwtInterceptor';
+import { ErrorInterceptor } from './helpers/ErrorInterceptor';
 
-const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transports: ['websocket'], upgrade: false} };
+const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
   declarations: [
     AppComponent,
@@ -50,7 +52,10 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

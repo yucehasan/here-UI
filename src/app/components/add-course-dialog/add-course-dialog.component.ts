@@ -63,7 +63,8 @@ export class AddCourseDialogComponent implements OnInit {
         }
       }
     }
-    if (count > 6) alert('Too many hours');
+    if(this.courseName.length === 0) alert('Enter course name');
+    else if (count > 6) alert('Too many hours');
     else if (count == 0) alert('You have to pick hours');
     else {
       const formData = new FormData();
@@ -78,9 +79,11 @@ export class AddCourseDialogComponent implements OnInit {
       console.log('Form data Course name: ' + formData.get('course_name'));
       console.log('Form data Slots: ' + formData.get('slots'));
       this.httpClient
-        .post<any>(this.SERVER_URL, formData, { headers: headers })
+        .post<any>(this.SERVER_URL, formData /*, { headers: headers } */)
         .subscribe((res) => {
           console.log(res);
+          alert("The course is added");
+          this.dialogRef.close();
         });
     }
   }
