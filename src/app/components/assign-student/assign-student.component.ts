@@ -4,6 +4,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-assign-student',
@@ -54,6 +55,9 @@ export class AssignStudentComponent implements OnInit {
         this.httpClient.post<any>(this.SERVER_URL, formData, { headers: headers })
           .subscribe((res) => {
             console.log(res);
+          },
+          (error) => {
+            console.log("Error: " + error);
           })
         this.dialogRef.close();
       }
