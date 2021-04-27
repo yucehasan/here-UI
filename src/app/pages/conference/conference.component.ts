@@ -100,7 +100,12 @@ export class ConferenceComponent implements OnInit {
   }
 
   leaveSession(): void {
-    this.router.navigate(['main']);
+    if (this.userType == 'instructor'){
+      this.router.navigate(['analysis'])
+    }
+    else{
+      this.router.navigate(['main']);
+    }
   }
 
   openTA(message: string): void {
