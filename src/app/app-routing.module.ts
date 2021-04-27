@@ -8,6 +8,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
 import { SlideComponent } from './components/slide/slide.component';
 import { LandingComponent } from './pages/landing/landing.component';
+import { AnalyticsComponent } from './pages/analytics/analytics.component';
 
 const routes: Routes = [
   {path: '', component: LandingComponent},
@@ -17,6 +18,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'slide', component: SlideComponent},
+  {path: 'analytics', component: AnalyticsComponent},
   {path: '**', component: PageNotFoundComponent},
 ];
 
