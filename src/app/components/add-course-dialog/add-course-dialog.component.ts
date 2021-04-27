@@ -63,7 +63,7 @@ export class AddCourseDialogComponent implements OnInit {
         }
       }
     }
-    if(this.courseName.length === 0) alert('Enter course name');
+    if(this.courseName.trim().length === 0) alert('Enter course name');
     else if (count > 6) alert('Too many hours');
     else if (count == 0) alert('You have to pick hours');
     else {
