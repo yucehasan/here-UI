@@ -126,7 +126,7 @@ export class ConferenceComponent implements OnInit {
     if (!this.noteOn) {
       document.getElementById('editIcon').style.color = 'blue';
       const filterData = {
-        top: this.noteIcon.nativeElement.getBoundingClientRect().bottom,
+        top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
         right: this.noteIcon.nativeElement.getBoundingClientRect().right,
         getSnip: this.getScreenshot,
       };
