@@ -101,7 +101,7 @@ export class ConferenceComponent implements OnInit {
 
   leaveSession(): void {
     if (this.userType == 'instructor'){
-      this.router.navigate(['analysis'])
+      this.router.navigate(['analytics'])
     }
     else{
       this.router.navigate(['main']);
