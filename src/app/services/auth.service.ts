@@ -1,15 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  SERVER_URL = 'https://hereapp-live.herokuapp.com/token/refresh';
+  constructor(private httpClient: HttpClient) { }
+
   private tokenSub = new BehaviorSubject<string>(localStorage.getItem('token'));
   private refreshTokenSub = new BehaviorSubject<string>(localStorage.getItem('refresh_token'));
   private usernameSub = new BehaviorSubject<string>(localStorage.getItem('username'));
   private userTypeSub = new BehaviorSubject<string>(localStorage.getItem('userType'));
+
+  token: string = "";
+  refreshToken: string = "";
 
   currentToken = this.tokenSub.asObservable();
   currentRefreshToken = this.refreshTokenSub.asObservable();
@@ -18,26 +25,42 @@ export class AuthService {
 
   updateToken(newToken: string): void {
     this.tokenSub.next(newToken);
+    this.token = newToken;
     localStorage.setItem("token", newToken);
-    console.log("Token is updated. New Token: \n" + newToken);
+    console.log("AUTH SERVICE: Token is updated. New Token: \n" + newToken.substr(0, 5) + "...");
   }
 
   updateRefreshToken(newRefreshToken: string): void {
     this.refreshTokenSub.next(newRefreshToken);
+    this.refreshToken = newRefreshToken;
     localStorage.setItem("refresh_token", newRefreshToken);
-    console.log("Refresh token is updated. New Token: \n" + newRefreshToken);
+    console.log("AUTH SERVICE: Refresh token is updated. New Token: \n" + newRefreshToken.substr(0, 5) + "...");
   }
 
   updateUsername(newUsername: string): void {
     this.usernameSub.next(newUsername);
     localStorage.setItem("username", newUsername);
-    console.log("Username is updated. New Username: \n" + newUsername);
+    console.log("AUTH SERVICE: Username is updated. New Username: \n" + newUsername);
   }
 
   updateUserType(newUserType: string): void {
     this.userTypeSub.next(newUserType);
     localStorage.setItem("userType", newUserType);
-    console.log("User type is updated. New User type: \n" + newUserType);
+    console.log("AUTH SERVICE: User type is updated. New User type: \n" + newUserType);
+  }
+
+  refreshAccessToken(): void {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + this.refreshToken
+    );
+
+    this.httpClient.post<any>(this.SERVER_URL, {headers: headers})
+    .subscribe((res) => {
+      console.log("AUTH SERVICE: response for token refresh: " + res);
+      this.updateToken(res.access_token);
+    })
+
   }
 
   getToken(): Observable<string> {
