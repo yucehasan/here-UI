@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { ScheduleResponse, WeeklySchedule } from '../../interface';
+import { CourseService } from '../../services/course.service';
 
 @Component({
   selector: 'app-schedule-table',
@@ -6,24 +10,58 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./schedule-table.component.sass'],
 })
 export class ScheduleTableComponent implements OnInit {
-  displayedColumns: string[] = ['hour', 'monday', 'tuesday'];
-  dataSource = SCHEDULE_DATA;
-  hours = ['8.30', '10.30', '13.30'];
+  displayedColumns: string[] = [
+    'hour',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ];
+  dataSource;
+  response: ScheduleResponse = {
+    courses: [
+      {
+        id: 26,
+        name: 'selam',
+        slots: 'Monday-8.30,Monday-9.30,Friday-10.30,Friday-11.30',
+      },
+    ],
+  };
+  constructor(private courseService: CourseService, private httpClient: HttpClient) {}
 
-  constructor() {}
+  ngOnInit(): void {
+    this.httpClient.get<any>(environment.SCHEDULE_ENDPOINT).subscribe(
+      (res) => {
+        if (res['access_token'] !== undefined) {
+          console.log('');
+        }
+        else {
+          console.log(res);
+          console.log("Failed");
+        }
+      }
+    );
+    this.dataSource = this.courseService.getEmptySchedule();
+    this.courseService.getschedule().subscribe((schedule) => {
+      console.log("yeni geldi", schedule)
+      this.dataSource = schedule.schedule;
+    });
+    this.courseService.updateSchedule(this.response);
+  }
 
-  ngOnInit(): void {}
+  fetchCourses(): void {
+
+  }
+
 }
 
-export interface WeeklySchedule {
-  hour: string; //TODO hours will be seperate
-  monday: string;
-  tuesday: string;
-}
-
-const SCHEDULE_DATA: WeeklySchedule[] = [
-  { hour: '8.30', monday: 'ML', tuesday: 'PMBOK' },
-  { hour: '10.30', monday: 'OOP', tuesday: 'Network' },
-  { hour: '10.30', monday: 'OOP', tuesday: 'Network' },
-  { hour: '13.30', monday: 'Cloud', tuesday: 'OS' },
-];
+const response = {
+  courses: [
+    {
+      id: 26,
+      name: 'selam',
+      slots: 'Monday-8.30,Monday-9.30,Friday-10.30,Friday-11.30',
+    },
+  ],
+};

@@ -1,12 +1,12 @@
 <mat-card> </mat-card>
 
-<mat-grid-list cols="8" [gutterSize]="'20px'" rowHeight="6rem">
-  <mat-grid-tile colspan="6" rowspan="4">
+<mat-grid-list cols="8" [gutterSize]="'20px'" rowHeight="80vh">
+  <mat-grid-tile colspan="6" rowspan="1">
     <mat-grid-tile-header> Weekly Schedule </mat-grid-tile-header>
     <app-schedule-table></app-schedule-table>
   </mat-grid-tile>
 
-  <mat-grid-tile colspan="2" rowspan="4">
+  <mat-grid-tile colspan="2" rowspan="1">
     <mat-grid-tile-header> Upcoming Classes </mat-grid-tile-header>
       <mat-list>
         <div *ngFor="let c of upcomingClasses" class="upcoming-classes">
