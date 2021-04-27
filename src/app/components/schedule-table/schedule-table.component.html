@@ -1,19 +1,32 @@
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
     <ng-container matColumnDef="hour" [sticky]="true">
       <th mat-header-cell *matHeaderCellDef> Hours </th>
       <td mat-cell *matCellDef="let element"> {{element.hour}} </td>
-      <!-- <td mat-cell *ngFor="let hour of hours"> {{hour}} </td> -->
     </ng-container>
   
-    <ng-container matColumnDef="monday">
+    <ng-container matColumnDef="Monday">
       <th mat-header-cell *matHeaderCellDef> Monday </th>
-      <td mat-cell *matCellDef="let element"> {{element.monday}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.Monday}} </td>
     </ng-container>
   
-    <ng-container matColumnDef="tuesday">
+    <ng-container matColumnDef="Tuesday">
       <th mat-header-cell *matHeaderCellDef> Tuesday </th>
-      <td mat-cell *matCellDef="let element"> {{element.tuesday}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.Tuesday}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Wednesday">
+      <th mat-header-cell *matHeaderCellDef> Wednesday </th>
+      <td mat-cell *matCellDef="let element"> {{element.Wednesday}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Thursday">
+      <th mat-header-cell *matHeaderCellDef> Thursday </th>
+      <td mat-cell *matCellDef="let element"> {{element.Thursday}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Friday">
+      <th mat-header-cell *matHeaderCellDef> Friday </th>
+      <td mat-cell *matCellDef="let element"> {{element.Friday}} </td>
     </ng-container>
   
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
