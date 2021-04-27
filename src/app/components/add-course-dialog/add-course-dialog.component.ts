@@ -79,9 +79,11 @@ export class AddCourseDialogComponent implements OnInit {
       console.log('Form data Course name: ' + formData.get('course_name'));
       console.log('Form data: ' + formData.get('course_name'));
       this.httpClient
-        .post<any>(this.SERVER_URL, formData, { headers: headers })
+        .post<any>(this.SERVER_URL, formData /*, { headers: headers } */)
         .subscribe((res) => {
           console.log(res);
+          alert("The course is added");
+          this.dialogRef.close();
         });
     }
   }
