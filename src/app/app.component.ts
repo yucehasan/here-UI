@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
 
   goMain() {
     if (this.loggedIn) { this.router.navigate(['/main']); }
-    console.log(this.token);
+    console.log("Token: " + this.token.substr(0, 5) + "...");
   }
 
   goProfile() {
