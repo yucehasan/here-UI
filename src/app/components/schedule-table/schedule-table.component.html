@@ -1,32 +1,42 @@
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="hour" [sticky]="true">
-      <th mat-header-cell *matHeaderCellDef> Hours </th>
-      <td mat-cell *matCellDef="let element"> {{element.hour}} </td>
+      <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Hours </th>
+      <td mat-cell class="table-header-cell" *matCellDef="let element"> {{element.hour}} </td>
     </ng-container>
   
     <ng-container matColumnDef="Monday">
-      <th mat-header-cell *matHeaderCellDef> Monday </th>
-      <td mat-cell *matCellDef="let element"> {{element.Monday}} </td>
+      <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Monday </th>
+      <td mat-cell *matCellDef="let element"> 
+        <button (click)="onClick($event)" id="{{element.Monday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Monday.name}}</button>
+      </td>
     </ng-container>
   
     <ng-container matColumnDef="Tuesday">
-      <th mat-header-cell *matHeaderCellDef> Tuesday </th>
-      <td mat-cell *matCellDef="let element"> {{element.Tuesday}} </td>
+      <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Tuesday </th>
+      <td mat-cell *matCellDef="let element"> 
+        <button (click)="onClick($event)" id="{{element.Tuesday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Tuesday.name}}</button>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="Wednesday">
-      <th mat-header-cell *matHeaderCellDef> Wednesday </th>
-      <td mat-cell *matCellDef="let element"> {{element.Wednesday}} </td>
+      <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Wednesday </th>
+      <td mat-cell *matCellDef="let element"> 
+        <button (click)="onClick($event)" id="{{element.Wednesday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Wednesday.name}}</button>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="Thursday">
-      <th mat-header-cell *matHeaderCellDef> Thursday </th>
-      <td mat-cell *matCellDef="let element"> {{element.Thursday}} </td>
+      <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Thursday </th>
+      <td mat-cell *matCellDef="let element"> 
+        <button (click)="onClick($event)" id="{{element.Thursday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Thursday.name}}</button>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="Friday">
-      <th mat-header-cell *matHeaderCellDef> Friday </th>
-      <td mat-cell *matCellDef="let element"> {{element.Friday}} </td>
+      <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Friday </th>
+      <td mat-cell *matCellDef="let element"> 
+        <button (click)="onClick($event)" id="{{element.Friday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Friday.name}}</button>
+      </td>
     </ng-container>
   
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
