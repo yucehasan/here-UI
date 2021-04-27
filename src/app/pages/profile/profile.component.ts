@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
       'Bearer ' + this.token
     );
 
-    this.httpClient.get<any>(this.SERVER_URL, { headers: headers })
+    this.httpClient.get<any>(this.SERVER_URL/*, { headers: headers }, {withCredentials: true}*/)
       .subscribe((res) => {
         console.log(res);
         this.courses = res.courses;
