@@ -13,7 +13,7 @@ import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 import { TaComponent } from 'src/app/components/ta/ta.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 const labelStyle =
@@ -73,7 +73,8 @@ export class ConferenceComponent implements OnInit {
     private httpClient: HttpClient,
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
@@ -96,6 +97,10 @@ export class ConferenceComponent implements OnInit {
     this.authService.getUsername().subscribe((name) => {
       this.username = name;
     });
+  }
+
+  leaveSession(): void {
+    this.router.navigate(['main']);
   }
 
   openTA(message: string): void {
