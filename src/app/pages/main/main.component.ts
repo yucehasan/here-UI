@@ -45,7 +45,7 @@ export class MainComponent implements OnInit {
     })
     if(this.token === "") {
       alert("You are not logged in");
-      this.router.navigate(['/auth']);
+      this.router.navigate(['/']);
     }
   }
 }
