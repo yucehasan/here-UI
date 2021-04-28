@@ -224,6 +224,9 @@ export class ConferenceComponent implements OnInit {
       this.localVideo.srcObject = undefined;
       this.socket.emit('disconnectFrom', { roomID: this.roomID });
       this.socket.disconnect();
+      var video = document.getElementById('my-video');
+      var parentDiv = video.parentElement;
+      video.parentElement.parentElement.removeChild(parentDiv);
     }
   }
 
@@ -241,10 +244,11 @@ export class ConferenceComponent implements OnInit {
       const formData = new FormData();
       formData.append('data', canvas.toDataURL());
       this.httpClient
-        .post(environment.FLASK_ENDPOINT + 'image', formData)
+        .post(environment.HAND_ENPOINT, formData)
         .subscribe(
           (res) => console.log(res),
-          (err) => console.log(err)
+          (err) => console.log(err),
+          () => {console.log("completed")}
         );
     } else {
       console.error('Video stream is not on!');
@@ -311,6 +315,7 @@ export class ConferenceComponent implements OnInit {
     });
 
     this.socket.on('user-left', (id) => {
+      console.log(id, "left");
       var video = document.querySelector('[data-socket="' + id + '"]');
       var parentDiv = video.parentElement;
       video.parentElement.parentElement.removeChild(parentDiv);
