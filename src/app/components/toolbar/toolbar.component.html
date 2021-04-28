@@ -1,25 +1,22 @@
 <mat-toolbar class="navigation-toolbar" [class.mat-elevation-z0]="!isActive" [class.mat-elevation-z8]="isActive" [class.animated-header]="!isActivefadeInDown" [class.fadeInDown]="!isActivefadeInDown" [class.navigation-fixed]="!fixedTolbar">
-    <a class="logo" fxShow="false" fxShow.gt-xs="true" href="#">
+    <a class="logo" fxShow="false" fxShow.gt-xs="true" href="{{this.loggedIn ? 'main':''}}">
         <img src="assets/img/logo.png">
     </a>
-    <ng-container *ngIf="this.isLoggedIn">
+    <ng-container *ngIf="this.loggedIn">
+        <mat-nav-list class="navigation-list" fxLayout="row" fxShow="false" fxShow.gt-xs="true">
+            <a mat-list-item href="profile">My Profile</a>
+        </mat-nav-list>
         <span class="navigation-spacer"></span>
-        <mat-label class="name">{{username}}</mat-label>
-        <button mat-icon-button class="icon" [matMenuTriggerFor]="menu">
-            <mat-icon [inline]="true">person</mat-icon>
+        <mat-label class="name">Logged in as {{username}}</mat-label>
+        <button style="background-color: white;" mat-mini-fab (click)="logout()">
+            <i class="fas fa-sign-out-alt" style="color:red;"></i>
         </button>
-    
-        <mat-menu #menu="matMenu">
-            <button mat-menu-item *ngIf="loggedIn" (click)="goProfile()">Profile</button>
-            <button mat-menu-item *ngIf="loggedIn" (click)="logout()">Logout</button>
-        </mat-menu>
     </ng-container>
 
-    <ng-container *ngIf=!this.isLoggedIn>
+    <ng-container *ngIf="!this.loggedIn">
         <mat-nav-list class="navigation-list" fxLayout="row" fxShow="false" fxShow.gt-xs="true">
             <a mat-list-item href="#about">Features</a>
             <a mat-list-item href="#contact">Team</a>
-
         </mat-nav-list>
         <span class="navigation-spacer"></span>
         <mat-nav-list class="navigation-list" fxLayout="row" fxShow="false" fxShow.gt-xs="true">
@@ -27,6 +24,8 @@
             <a class="toolbar-button-right" mat-stroked-button (click)="openLoginDialog()">Sign in</a>
         </mat-nav-list>
     </ng-container>
+
+    <mat-toolbar-content nglp-scroll (onScroll)="detectScroll($event)"></mat-toolbar-content>
 </mat-toolbar>
 
     

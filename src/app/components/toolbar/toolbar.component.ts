@@ -1,21 +1,26 @@
 import { MediaMatcher } from '@angular/cdk/layout';
-import { ChangeDetectorRef, Component, OnDestroy, Inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, Inject, OnInit} from '@angular/core';
 import { SE } from '../../directives/scroll.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { DOCUMENT } from '@angular/common';
 
 import {RegisterComponent} from '../register/register.component';
 import {LoginComponent} from '../login/login.component';
+import { AuthService } from 'src/app/services/auth.service';  
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.sass']
 })
-export class ToolbarComponent implements OnDestroy {
+export class ToolbarComponent implements OnDestroy, OnInit {
 
   username: string;
   password: string;
+  token: string;
+  userType: string;
+  loggedIn: boolean;
 
   contactFabButton: any;
   bodyelement: any;
@@ -25,17 +30,40 @@ export class ToolbarComponent implements OnDestroy {
   isActivefadeInDown = true;
   fixedTolbar = true;
 
-  isLoggedIn: boolean;
-
   mobileQuery: MediaQueryList;
 
   private _mobileQueryListener: () => void;
 
-  constructor(@Inject(DOCUMENT) document, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher, public dialog: MatDialog) {
+  constructor(@Inject(DOCUMENT) document, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher, public dialog: MatDialog, private router: Router, private authService: AuthService) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
-    this.isLoggedIn = false;
+    this.username = "";
+    this.token = "";
+    this.userType = "";
+  }
+
+  ngOnInit(): void {
+    this.authService.getToken().subscribe(token => {
+      this.token = token;
+      if (this.token === "") {
+        alert("You are not logged in");
+        this.loggedIn = false;
+        this.router.navigate(['/']);
+      }
+      else{
+        this.loggedIn = true;
+      }
+    })
+
+    this.authService.getUsername().subscribe(username => {
+      this.username = username;
+    })
+
+    this.authService.getUserType().subscribe(userType => {
+      this.userType = userType;
+    })
+    
   }
 
   public detectScroll(event: SE) {
@@ -90,5 +118,15 @@ export class ToolbarComponent implements OnDestroy {
     });
   }
 
+  goProfile() {
+    if (this.loggedIn) { this.router.navigate(['/profile']); }
+    console.log(this.token);
+  }
+
+  logout() {
+    this.router.navigate(['/']); 
+    localStorage.clear();
+    this.authService.updateToken("");
+  }
 
 }

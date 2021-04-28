@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from "../../services/auth.service";
 
@@ -6,6 +6,7 @@ import { AuthService } from "../../services/auth.service";
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.sass'],
+  encapsulation: ViewEncapsulation.None
 })
 export class MainComponent implements OnInit {
   upcomingClasses: any[];
