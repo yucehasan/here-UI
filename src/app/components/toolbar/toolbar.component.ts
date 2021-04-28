@@ -48,11 +48,9 @@ export class ToolbarComponent implements OnDestroy, OnInit {
       this.token = token;
       if (this.token === "") {
         this.loggedIn = false;
-        this.router.navigate(['/']);
       }
       else{
         this.loggedIn = true;
-        this.router.navigate(['/main']);
       }
     })
 
