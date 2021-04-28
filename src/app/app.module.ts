@@ -27,6 +27,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { DirectivesModule } from './directives/directives.module';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { LandingComponent } from './pages/landing/landing.component';
+import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
+import { AnalyticsComponent } from './pages/analytics/analytics.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transports: ['websocket'], upgrade: false} };
 @NgModule({
@@ -49,6 +51,8 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: {transp
     HeadingComponent,
     ToolbarComponent,
     LandingComponent,
+    EditProfileComponent,
+    AnalyticsComponent,
   ],
   imports: [
     BrowserModule,

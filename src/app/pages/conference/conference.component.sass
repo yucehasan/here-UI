@@ -1,5 +1,39 @@
-mat-grid-tile 
-    background-color: rgba(0,0,0, 0.2)
+#component
+    height: 100%
+    width: 100%
+    display: inline-block
+
+.mat-fab
+    background-color: white !important
+    margin-left: 10px
+    transition-duration: 0.4s;
+
+.mat-fab:hover 
+  background-color: darkgray !important
+
+i
+    color: gray
+    font-size: 20px
+
+mat-grid-list
+    background: rgba(249,247,207,0.5)
+    z-index: 0
+
+.mat-grid-tile-header
+    display: none
+
+.mat-icon
+    color: gray
+    font-size: 30px
+    padding-left: 13px
+    padding-bottom: 3px
+
+.ta-div
+    justify-content: flex-end 
+
+.fill-remaining-space 
+   flex: 1 1 auto;
+
 
 .ta-card
     background-color: rgba(0,0,0, 0.2)
@@ -27,13 +61,10 @@ mat-icon
     font-size: 40px
     padding-right: 25px
 
-.toolButton
-    margin-left: 10px
-
-#taButton
-    width: 50px
-    height: 50px
-    pointer-events: none
+#tabutton
+    background-image: url('../../../assets/img/ta.gif')
+    background-size: cover
+    margin-right: 10px
 
 #triggerButton
     display: none
@@ -47,6 +78,8 @@ mat-icon
     height: 100%
     overflow-y: scroll
     display: flex
+    flex-flow: row wrap
+    align-content: flex-start
 
 #host-video
     width: 100%

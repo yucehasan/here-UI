@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { HttpClient } from '@angular/common/http';
@@ -7,12 +13,23 @@ import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 import { TaComponent } from 'src/app/components/ta/ta.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
+
+const labelStyle =
+  'position: absolute; bottom: 5px; width: calc(100% - 20px); \
+                    padding-left: 20px; background-color: rgba(0,0,0,0.5);\
+                    font-size: 25px; color: white; padding-top: 10px;';
 
 @Component({
   selector: 'app-conference',
   templateUrl: './conference.component.html',
   styleUrls: ['./conference.component.sass'],
 })
+/* 
+TODOS
+- PDFTron experiences network failure on some clients (console log says CORS policy (again?!) )
+*/
 export class ConferenceComponent implements OnInit {
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
   @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
@@ -23,6 +40,13 @@ export class ConferenceComponent implements OnInit {
   noteOn: boolean;
   slideOn: boolean;
   taOn: boolean;
+  micOn: boolean;
+  participantsOn: boolean;
+  chatOn: boolean;
+
+  roomID: number;
+  userType: string;
+  username: string;
 
   localVideo: HTMLVideoElement;
   share: HTMLVideoElement;
@@ -44,71 +68,98 @@ export class ConferenceComponent implements OnInit {
     ],
   };
 
-  constructor(private socket: Socket, private httpClient: HttpClient, public dialog: MatDialog) {}
+  constructor(
+    private socket: Socket,
+    private httpClient: HttpClient,
+    private dialog: MatDialog,
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService,
+    private router: Router
+  ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
 
   ngOnInit(): void {
+    this.micOn = false;
     this.shareOn = false;
     this.taOn = false;
     this.noteOn = false;
     this.slideOn = false;
     this.syncWithInstr = true;
+    this.participantsOn = false;
+    this.chatOn = false;
+    this.activatedRoute.queryParams.subscribe((params) => {
+      this.roomID = params['roomID'];
+    });
+    this.authService.getUserType().subscribe((type) => {
+      this.userType = type;
+    });
+    this.authService.getUsername().subscribe((name) => {
+      this.username = name;
+    });
   }
 
-  
-  openTA(message: string): void {
-    const filterData = {
-      top : this.TAIcon.nativeElement.getBoundingClientRect().top,
-      left : this.TAIcon.nativeElement.getBoundingClientRect().left,
-    };
-    let  dialogRef = this.dialog.open(TaComponent, {
-      data: filterData,
-      hasBackdrop: false,
-      panelClass: 'filter-popup'
-    });
-    
-    
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-    setTimeout( () => {
-      dialogRef.close();
-    }, 2500);
-  }
-  
-  toggleNote(message: string): void {
-    if (!this.noteOn) {
-      this.openDialog();
+  leaveSession(): void {
+    if (this.userType == 'instructor'){
+      this.router.navigate(['analytics'])
+    }
+    else{
+      this.router.navigate(['main']);
     }
   }
-  getScreenshot(): HTMLVideoElement { 
-    return document.getElementById('my-video') as HTMLVideoElement;
-  }
-  
-  openDialog(): void {
-    const filterData = {
-      top : this.noteIcon.nativeElement.getBoundingClientRect().bottom,
-      right : this.noteIcon.nativeElement.getBoundingClientRect().right,
-      getSnip: this.getScreenshot,
-    };
-    let  dialogRef = this.dialog.open(NoteCanvasComponent, {
+
+  openTA(message: string): void {
+    if (!this.taOn) {
+      const filterData = {
+        top: this.TAIcon.nativeElement.getBoundingClientRect().top,
+        left: this.TAIcon.nativeElement.getBoundingClientRect().left,
+      };
+      let dialogRef = this.dialog.open(TaComponent, {
         data: filterData,
         hasBackdrop: false,
-        panelClass: 'filter-popup'
+        panelClass: 'filter-popup',
+      });
+      this.taOn = true;
+
+      setTimeout(() => {
+        dialogRef.close();
+        this.taOn = false;
+      }, 2500);
+    }
+  }
+
+  getScreenshot(): HTMLVideoElement {
+    return document.getElementById('my-video') as HTMLVideoElement;
+  }
+
+  openNote(): void {
+    if (!this.noteOn) {
+      document.getElementById('editIcon').style.color = 'blue';
+      const filterData = {
+        top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
+        right: this.noteIcon.nativeElement.getBoundingClientRect().right,
+        getSnip: this.getScreenshot,
+      };
+      let dialogRef = this.dialog.open(NoteCanvasComponent, {
+        data: filterData,
+        hasBackdrop: false,
+        panelClass: 'filter-popup',
       });
 
-    this.noteOn = true;
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      this.noteOn = false;
-    });
+      this.noteOn = true;
+      dialogRef.afterClosed().subscribe(() => {
+        this.noteOn = false;
+        document.getElementById('editIcon').style.color = 'gray';
+      });
+    }
   }
 
   startShare(): void {
     if (this.shareOn) {
       this.stopSharing();
+      document.getElementById('screenIcon').style.color = 'gray';
     } else {
+      document.getElementById('screenIcon').style.color = 'blue';
       this.share = document.getElementById('shared-screen') as HTMLVideoElement;
       this.shareOn = true;
       // @ts-ignore
@@ -128,6 +179,7 @@ export class ConferenceComponent implements OnInit {
       //   }
       // );
     }
+    this.updateStyles();
   }
 
   stopSharing(): void {
@@ -135,12 +187,54 @@ export class ConferenceComponent implements OnInit {
     this.shareOn = false;
   }
 
+  updateStyles(): void {
+    var remoteVids: NodeListOf<HTMLDivElement> = document.querySelector(
+      '.remote-videos'
+    ).childNodes as NodeListOf<HTMLDivElement>;
+    var width;
+    if (this.slideOn && this.shareOn) {
+      width = '20%';
+    } else if (this.slideOn || this.shareOn) {
+      width = '50%';
+    } else {
+      width = '33.3%';
+    }
+    for (var i = 0; i < remoteVids.length; i++) {
+      (remoteVids[i] as HTMLDivElement).style.width = width;
+    }
+  }
+
+  showParticipants(): void {
+    if (this.participantsOn) {
+      document.getElementById('participantsIcon').style.color = 'gray';
+      this.participantsOn = false;
+    } else {
+      document.getElementById('participantsIcon').style.color = 'blue';
+      this.participantsOn = true;
+    }
+    this.updateStyles();
+  }
+
+  openChat(): void {
+    if (this.chatOn) {
+      document.getElementById('chatIcon').style.color = 'gray';
+      this.chatOn = false;
+    } else {
+      document.getElementById('chatIcon').style.color = 'blue';
+      this.chatOn = true;
+    }
+    this.updateStyles();
+  }
+
   startSlide(): void {
     if (this.slideOn) {
       this.stopSlide();
+      document.getElementById('slideIcon').style.color = 'gray';
     } else {
+      document.getElementById('slideIcon').style.color = 'blue';
       this.slideOn = true;
     }
+    this.updateStyles();
   }
 
   stopSlide(): void {
@@ -148,31 +242,22 @@ export class ConferenceComponent implements OnInit {
   }
 
   onSlideChange(number) {
-    if (this.type == 'instructor') this.socket.emit('slideChange', number);
+    if (this.userType == 'instructor') this.socket.emit('slideChange', number);
   }
 
   nextSlide() {
-    if (this.type == 'student') this.syncWithInstr = false;
+    if (this.userType == 'student') this.syncWithInstr = false;
     this.slideComponent.nextButton.click();
   }
 
   prevSlide() {
-    if (this.type == 'student') this.syncWithInstr = false;
+    if (this.userType == 'student') this.syncWithInstr = false;
     this.slideComponent.prevButton.click();
   }
 
   syncWithInstructor() {
     this.syncWithInstr = true;
     this.slideComponent.changeSlide(this.currSlideInstr);
-    console.log("syncing");
-  }
-
-  changeType() {
-    if (this.type == 'instructor') {
-      this.type = 'student';
-    } else {
-      this.type = 'instructor';
-    }
   }
 
   stopVideo(): void {
@@ -182,6 +267,8 @@ export class ConferenceComponent implements OnInit {
       });
       this.videoOn = false;
       this.localVideo.srcObject = undefined;
+      this.socket.emit('disconnectFrom', { roomID: this.roomID });
+      this.socket.disconnect();
     }
   }
 
@@ -213,29 +300,46 @@ export class ConferenceComponent implements OnInit {
     Start of WebRTC functions
   */
 
+  startMic() {
+    if(this.micOn){
+      this.micOn = false;
+      document.getElementById('micIcon').setAttribute('class', 'fas fa-microphone-slash');
+    }
+    else {
+      this.micOn = true;
+      document.getElementById('micIcon').setAttribute('class', 'fas fa-microphone');
+    }
+    this.updateStyles();
+  }
+
   startVideo() {
     if (this.videoOn) {
       this.stopVideo();
+      document.getElementById('videoIcon').setAttribute('class', 'fas fa-video-slash');
     } else {
+      document.getElementById('videoIcon').setAttribute('class', 'fas fa-video');
       this.localVideo = document.createElement('video');
-      var div = document.createElement('div');
-      console.log('selam');
-      div.setAttribute(
-        'style',
-        'shareOn && slideOn ? width: 23% : shareOn || slideOn ? width: 100% : width: 23%'
-      );
+      this.localVideo.setAttribute('style', 'width: 100% ');
       this.localVideo.setAttribute('id', 'my-video');
-      this.localVideo.setAttribute(
-        'style',
-        'width: 100%; min-height: 25vh; max-height: 50vh;'
-      );
       this.localVideo.autoplay = true;
       this.localVideo.muted = true;
-      div.appendChild(this.localVideo);
-      document.querySelector('.remote-videos').appendChild(div);
+
+      var labelDiv = document.createElement('div');
+      var label = document.createElement('p');
+      label.innerHTML = this.username;
+      labelDiv.appendChild(label);
+      labelDiv.setAttribute('style', labelStyle);
+
+      var parentDiv = document.createElement('div');
+      parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+      parentDiv.appendChild(this.localVideo);
+      parentDiv.appendChild(labelDiv);
+
+      document.querySelector('.remote-videos').appendChild(parentDiv);
+      this.updateStyles();
       var constraints = {
         video: true,
-        audio: false,
+        audio: true,
       };
       if (navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices
@@ -250,6 +354,7 @@ export class ConferenceComponent implements OnInit {
         alert('Your browser does not support getUserMedia API');
       }
     }
+    this.updateStyles();
   }
 
   setListeners() {
@@ -260,6 +365,10 @@ export class ConferenceComponent implements OnInit {
     //this.socket.on('connect', () => {
     this.socketId = this.socket.ioSocket.id;
 
+    this.socket.on('anEvent', () => {
+      console.log('geldi hocam eventiniz');
+    });
+
     this.socket.on('user-left', (id) => {
       var video = document.querySelector('[data-socket="' + id + '"]');
       var parentDiv = video.parentElement;
@@ -267,26 +376,34 @@ export class ConferenceComponent implements OnInit {
     });
 
     this.socket.on('user-joined', (id, count, clients) => {
-      clients.forEach((socketListId) => {
-        if (!this.connections[socketListId]) {
-          this.connections[socketListId] = new RTCPeerConnection(
-            this.iceservers
-          );
+      console.log('biri katıldı');
+      console.log(clients);
+      var socketID;
+      var name;
+      clients.forEach((client) => {
+        if (!this.connections[client.socketID] && client.socketID != this.socketId) {
+          socketID = client.socketID;
+          name = client.username;
+          console.log("we were connecting", name, "for the first time");
+          this.connections[socketID] = new RTCPeerConnection(this.iceservers);
           //Wait for their ice candidate
-          this.connections[socketListId].onicecandidate = (event) => {
+          this.connections[socketID].onicecandidate = (event) => {
             if (event.candidate != null) {
               this.socket.emit(
                 'signal',
-                socketListId,
+                socketID,
                 JSON.stringify({ ice: event.candidate })
               );
             }
           };
           //Wait for their video stream
-          this.connections[socketListId].ontrack = (event) => {
-            this.gotRemoteStream(event, socketListId);
+          this.connections[socketID].ontrack = (event) => {
+            console.log(name, 'added', event.track.kind, 'track');
+            if (event.track.kind === 'video')
+              this.gotRemoteStream(event, socketID, name);
           };
-          this.connections[socketListId].addStream(this.localStream);
+          console.log('addStream yapıcam');
+          this.connections[socketID].addStream(this.localStream);
           //Add the local video stream
         }
       });
@@ -314,7 +431,10 @@ export class ConferenceComponent implements OnInit {
       this.gotSlideUpdate(number);
     });
 
-    this.socket.emit('confirm');
+    this.socket.emit('confirm', {
+      roomID: this.roomID,
+      username: this.username,
+    });
     //})
   }
 
@@ -324,24 +444,27 @@ export class ConferenceComponent implements OnInit {
     this.localVideo.srcObject = stream;
   }
 
-  gotRemoteStream(event, id) {
-    var video = document.createElement('video'),
-      div = document.createElement('div');
-
-    div.setAttribute(
-      'style',
-      'shareOn && slideOn ? width: 23% : shareOn || slideOn ? width: 100% : width: 23%'
-    );
+  gotRemoteStream(event, id, name) {
+    console.log('called');
+    var video = document.createElement('video');
     video.setAttribute('data-socket', id);
-    video.setAttribute(
-      'style',
-      'width: 100%; min-height: 25vh; max-height: 50vh;'
-    );
-    video.srcObject = event.streams[0];
+    video.setAttribute('style', 'width: 100%;');
     video.autoplay = true;
-    video.muted = true;
-    div.appendChild(video);
-    document.querySelector('.remote-videos').appendChild(div);
+    // video.muted = true;
+    video.srcObject = event.streams[0];
+
+    var labelDiv = document.createElement('div');
+    var label = document.createElement('p');
+    label.innerHTML = name;
+    labelDiv.appendChild(label);
+    labelDiv.setAttribute('style', labelStyle);
+
+    var parentDiv = document.createElement('div');
+    parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+    parentDiv.appendChild(video);
+    parentDiv.appendChild(labelDiv);
+    document.querySelector('.remote-videos').appendChild(parentDiv);
+    this.updateStyles();
   }
 
   gotMessageFromServer(fromId, message) {
@@ -385,10 +508,10 @@ export class ConferenceComponent implements OnInit {
     }
   }
 
-  gotSlideUpdate(number){
+  gotSlideUpdate(number) {
     if (this.syncWithInstr) {
       this.slideComponent.changeSlide(number);
-      console.log("updating");
+      console.log('updating');
     }
   }
 }
