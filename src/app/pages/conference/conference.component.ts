@@ -244,15 +244,41 @@ export class ConferenceComponent implements OnInit {
       const formData = new FormData();
       formData.append('data', canvas.toDataURL());
       this.httpClient
-        .post(environment.HAND_ENPOINT, formData)
+        .post(environment.ANALYZE_IP + '/analyze/hand', formData)
         .subscribe(
-          (res) => console.log(res),
-          (err) => console.log(err),
-          () => {console.log("completed")}
+          (res) => {
+            console.log(res);
+            var taskID = res["task_id"]
+            this.getStatus(taskID); 
+          },
+          (err) => console.log(err)
         );
     } else {
       console.error('Video stream is not on!');
     }
+  }
+
+  getStatus(taskID) {
+    this.httpClient
+        .get(environment.ANALYZE_IP + '/result/' + taskID)
+        .subscribe(
+          (res) => {
+            console.log("res", res);
+            const taskStatus = res["task_status"];
+            if (taskStatus === 'SUCCESS') {
+              this.openTA(res["task_result"]);
+              return false;
+            }
+            else if ( taskStatus === 'FAILURE') {
+              return false;
+            }
+            setTimeout( () => {
+              console.log("retrying");
+              this.getStatus(res["task_id"]);
+            }, 1000);
+          },
+          (err) => console.log(err)
+        );
   }
 
   /* 
