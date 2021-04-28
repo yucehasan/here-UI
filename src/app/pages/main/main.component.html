@@ -1,13 +1,11 @@
-<mat-card> </mat-card>
-
 <mat-grid-list cols="8" [gutterSize]="'20px'" rowHeight="80vh">
-  <mat-grid-tile colspan="6" rowspan="1">
-    <mat-grid-tile-header> Weekly Schedule </mat-grid-tile-header>
-    <app-schedule-table></app-schedule-table>
+  <mat-grid-tile class="mat-elevation-z6" colspan="6" rowspan="1">
+    <mat-grid-tile-header> My Weekly Schedule </mat-grid-tile-header>
+    <app-schedule-table ></app-schedule-table>
   </mat-grid-tile>
 
-  <mat-grid-tile colspan="2" rowspan="1">
-    <mat-grid-tile-header> Upcoming Classes </mat-grid-tile-header>
+  <mat-grid-tile class="mat-elevation-z4" colspan="2" rowspan="1">
+    <mat-grid-tile-header id="notes"> <mat-icon style="color:white;" aria-hidden="false">sticky_note_2</mat-icon> My Notes</mat-grid-tile-header>
       <mat-list>
         <div *ngFor="let c of upcomingClasses" class="upcoming-classes">
           <mat-list-item>

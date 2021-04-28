@@ -1,82 +1,83 @@
-<mat-card class="example-card">
-  <mat-card-content id="buttons">
-    <div id="toolsSection" align="start">
-      <button mat-raised-button (click)="openTA('Text will appear here')">
-        TRY
-      </button>
-      <button (click)="captureVideo()" mat-raised-button color="primary">
-        Capture snaphot
-      </button>
-      <button mat-icon-button class="toolButton" id="">
-        <mat-icon id="chatIcon">chat_bubble</mat-icon>
-      </button>
-      <div #noteIcon class="dialog-btn-wrapper">
-        <button mat-icon-button (click)="openNote()">
-          <mat-icon id="taIcon">note</mat-icon>
+<link href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" rel="stylesheet">
+<div fxLayout="column" id='component'>
+  <mat-grid-list 
+    class="middle-panel"
+    cols="8"
+    rowHeight="26vh"
+    [gutterSize]="'10px'"
+  >
+    <mat-grid-tile 
+      [colspan]="!slideOn ? 0 : shareOn ? 4 : 6"
+      [rowspan]="!slideOn ? 0 : shareOn ? 2 : 3"
+    >
+      <!--<mat-grid-tile-header>Shared Slide</mat-grid-tile-header>-->
+      <div style="position: absolute; top: 0">
+        <button mat-raised-button value="prev" (click)="prevSlide()">prev</button>
+        <button mat-raised-button value="prev" (click)="syncWithInstructor()">
+          sync
         </button>
+        <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
       </div>
-      <button mat-icon-button class="toolButton" id="" (click)="startVideo()">
-        <mat-icon id="taIcon">videocam</mat-icon>
-      </button>
-      <button mat-icon-button class="toolButton" id="">
-        <mat-icon id="taIcon">mic</mat-icon>
-      </button>
-      <button mat-icon-button class="toolButton" id="" (click)="startShare()">
-        <mat-icon id="taIcon">screen_share</mat-icon>
-      </button>
-      <button mat-icon-button class="toolButton" id="" (click)="startSlide()">
-        <mat-icon id="taIcon">group</mat-icon>
-      </button>
-      <button mat-icon-button class="toolButton" id="">
-        <mat-icon id="taIcon">exit_to_app</mat-icon>
-      </button>
-    </div>
-    <div class="fill"></div>
-    <div align="end">
-      <div #taIcon class="dialog-btn-wrapper">
-        <button mat-icon-button [disabled]="!taOn">
-          <mat-icon id="taIcon">face</mat-icon>
-        </button>
-      </div>
-    </div>
-  </mat-card-content>
-</mat-card>
+      <app-slide
+        [ngStyle]="{ height: shareOn ? '51.5vh' : '78vh' }"
+        (onChange)="onSlideChange($event)"
+      ></app-slide>
+    </mat-grid-tile>
+    <mat-grid-tile
+      [colspan]="!shareOn ? 0 : slideOn ? 4 : 6"
+      [rowspan]="!shareOn ? 0 : slideOn ? 2 : 3"
+    >
+      <!--<mat-grid-tile-header>Shared Screen</mat-grid-tile-header>-->
+      <video id="shared-screen" autoplay></video>
+    </mat-grid-tile>
+    <mat-grid-tile
+      [colspan]="shareOn && slideOn ? 8 : shareOn || slideOn ? 2 : 8"
+      [rowspan]="shareOn && slideOn ? 1 : 3"
+    >
+      <!--<mat-grid-tile-header>Participants</mat-grid-tile-header>-->
+      <div class="remote-videos"></div>
+    </mat-grid-tile>
+  </mat-grid-list>
 
-<mat-grid-list
-  class="middle-panel"
-  cols="8"
-  rowHeight="25vh"
-  [gutterSize]="'10px'"
->
-  <mat-grid-tile
-    [colspan]="!slideOn ? 0 : shareOn ? 4 : 6"
-    [rowspan]="!slideOn ? 0 : shareOn ? 2 : 3"
-  >
-    <mat-grid-tile-header>Shared Slide</mat-grid-tile-header>
-    <div style="position: absolute; top: 0">
-      <button mat-raised-button value="prev" (click)="prevSlide()">prev</button>
-      <button mat-raised-button value="prev" (click)="syncWithInstructor()">
-        sync
-      </button>
-      <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
-    </div>
-    <app-slide
-      [ngStyle]="{ height: shareOn ? '51.5vh' : '78vh' }"
-      (onChange)="onSlideChange($event)"
-    ></app-slide>
-  </mat-grid-tile>
-  <mat-grid-tile
-    [colspan]="!shareOn ? 0 : slideOn ? 4 : 6"
-    [rowspan]="!shareOn ? 0 : slideOn ? 2 : 3"
-  >
-    <mat-grid-tile-header>Shared Screen</mat-grid-tile-header>
-    <video id="shared-screen" autoplay></video>
-  </mat-grid-tile>
-  <mat-grid-tile
-    [colspan]="shareOn && slideOn ? 8 : shareOn || slideOn ? 2 : 8"
-    [rowspan]="shareOn && slideOn ? 1 : 3"
-  >
-    <mat-grid-tile-header>Participants</mat-grid-tile-header>
-    <div class="remote-videos"></div>
-  </mat-grid-tile>
-</mat-grid-list>
+  <mat-card class="example-card" height='26vh'>
+    <mat-card-content id="buttons" class="dialog-btn-wrapper" align="center">
+      <span class="fill-remaining-space"></span>
+      <div id="toolsSection" >
+        <button mat-raised-button (click)="openTA('Text will appear here')">
+          TRY
+        </button>
+        <button (click)="captureVideo()" mat-raised-button color="primary">
+          Capture snaphot
+        </button>
+        <button mat-fab (click)="openChat()">
+          <i id="chatIcon" class="fas fa-comments"></i>
+        </button>
+        <div #noteIcon class="dialog-btn-wrapper">
+          <button #noteIcon mat-fab (click)="openNote()">
+            <i id="editIcon" class="fas fa-edit"></i>
+          </button>
+        </div>
+        <button mat-fab (click)="startVideo()">
+          <i id="videoIcon" class="fas fa-video-slash"></i>
+        </button>
+        <button mat-fab (click)="leaveSession()">
+          <i class="fas fa-phone-slash" style="color: red"></i>
+        </button>
+        <button mat-fab (click)="startMic()">
+          <i id="micIcon" class="fas fa-microphone-slash"></i>
+        </button>
+        <button mat-fab (click)="startShare()">
+          <mat-icon id="screenIcon">screen_share</mat-icon>
+        </button>
+        <button mat-fab (click)="showParticipants()">
+          <i id="participantsIcon" class="fas fa-users"></i>
+        </button>
+        <button mat-fab *ngIf="this.userType == 'instructor'" (click)="startSlide()">
+          <i id="slideIcon" class="fab fa-slideshare" style="font-size: 25px"></i>
+        </button>
+      </div>
+      <span class="fill-remaining-space"></span>
+      <div #taIcon class="dialog-btn-wrapper"><button mat-fab id='tabutton' [disabled]="!taOn"></button></div>
+    </mat-card-content>
+  </mat-card>
+</div>

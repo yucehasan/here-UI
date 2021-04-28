@@ -46,8 +46,9 @@ export class NoteCanvasComponent implements OnInit {
   setPosition(): void {
     this.filterData = this.data;
     const leftMosPos = Number(this.filterData.right);
+    console.log(this.filterData);
     this.dialogRef.updatePosition({
-      top: `${this.filterData.top}px`,
+      bottom: `${this.filterData.top}px`,
       left: `${leftMosPos}px`,
     });
   }

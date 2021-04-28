@@ -6,18 +6,19 @@ import { MainComponent } from './pages/main/main.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
-import { AuthComponent } from './pages/auth/auth.component';
 import { SlideComponent } from './components/slide/slide.component';
+import { LandingComponent } from './pages/landing/landing.component';
+import { AnalyticsComponent } from './pages/analytics/analytics.component';
 
 const routes: Routes = [
-  {path: '',  redirectTo: 'auth', pathMatch:'full'},
+  {path: '', component: LandingComponent},
   {path: 'main', component: MainComponent},
   {path: 'profile', component: ProfileComponent},
   {path: 'conference/:roomID', component: ConferenceComponent},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
-  {path: 'auth', component: AuthComponent},
   {path: 'slide', component: SlideComponent},
+  {path: 'analytics', component: AnalyticsComponent},
   {path: '**', component: PageNotFoundComponent},
 ];
 

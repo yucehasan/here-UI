@@ -1,24 +1,26 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
-
-import {RegisterComponent} from '../../components/register/register.component';
-import {LoginComponent} from '../../components/login/login.component';
+import { Component, OnInit } from '@angular/core';
+import {RegisterComponent} from '../register/register.component';
+import {LoginComponent} from '../login/login.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-auth',
-  templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.sass'],
+  selector: 'app-heading',
+  templateUrl: './heading.component.html',
+  styleUrls: ['./heading.component.sass']
 })
-export class AuthComponent implements OnInit {
+export class HeadingComponent implements OnInit {
+
   username: string;
   password: string;
 
-  constructor(public dialog: MatDialog) {}
-  ngOnInit(): void {}
+  isHeading = true;
+  isSubheading = true;
+  isHeadingBtn = true;
+
+  constructor(public dialog: MatDialog) { }
+
+  ngOnInit() {
+  }
 
   openLoginDialog(): void {
     const dialogRef = this.dialog.open(LoginComponent, {
@@ -42,6 +44,4 @@ export class AuthComponent implements OnInit {
     });
   }
 
-  
 }
-

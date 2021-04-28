@@ -12,7 +12,6 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { ConferenceComponent } from './pages/conference/conference.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { AuthComponent } from './pages/auth/auth.component';
 import { AssignStudentComponent } from './components/assign-student/assign-student.component';
 import { ScheduleTableComponent } from './components/schedule-table/schedule-table.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -21,8 +20,15 @@ import { SlideComponent } from './components/slide/slide.component';
 import { NoteCanvasComponent } from './components/note-canvas/note-canvas.component';
 import { TaComponent } from './components/ta/ta.component';
 import { AddCourseDialogComponent } from './components/add-course-dialog/add-course-dialog.component';
-import { JwtInterceptor } from './helpers/JwtInterceptor';
-import { ErrorInterceptor } from './helpers/ErrorInterceptor';
+import { AboutComponent } from './components/about/about.component';
+import { ContactComponent } from './components/contact/contact.component';
+import { HeadingComponent } from './components/heading/heading.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { DirectivesModule } from './directives/directives.module';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { LandingComponent } from './pages/landing/landing.component';
+import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
+import { AnalyticsComponent } from './pages/analytics/analytics.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -34,13 +40,19 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     ConferenceComponent,
     LoginComponent,
     RegisterComponent,
-    AuthComponent,
     AssignStudentComponent,
     ScheduleTableComponent,
     AddCourseDialogComponent,
     SlideComponent,
     NoteCanvasComponent,
     TaComponent,
+    AboutComponent,
+    ContactComponent,
+    HeadingComponent,
+    ToolbarComponent,
+    LandingComponent,
+    EditProfileComponent,
+    AnalyticsComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,7 +62,9 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FlexLayoutModule,
+    DirectivesModule
   ],
   providers: [
     // {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

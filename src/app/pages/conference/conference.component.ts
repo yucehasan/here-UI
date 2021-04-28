@@ -13,7 +13,7 @@ import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 import { TaComponent } from 'src/app/components/ta/ta.component';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Router, Params } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 const labelStyle =
@@ -40,6 +40,9 @@ export class ConferenceComponent implements OnInit {
   noteOn: boolean;
   slideOn: boolean;
   taOn: boolean;
+  micOn: boolean;
+  participantsOn: boolean;
+  chatOn: boolean;
 
   roomID: number;
   userType: string;
@@ -70,25 +73,37 @@ export class ConferenceComponent implements OnInit {
     private httpClient: HttpClient,
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
 
   ngOnInit(): void {
+    this.micOn = false;
     this.shareOn = false;
     this.taOn = false;
     this.noteOn = false;
     this.slideOn = false;
     this.syncWithInstr = true;
+    this.participantsOn = false;
+    this.chatOn = false;
     this.activatedRoute.params.subscribe((params: Params) => this.roomID = params['roomID']);
-    console.log(this.roomID);
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
     });
     this.authService.getUsername().subscribe((name) => {
       this.username = name;
     });
+  }
+
+  leaveSession(): void {
+    if (this.userType == 'instructor'){
+      this.router.navigate(['analytics'])
+    }
+    else{
+      this.router.navigate(['main']);
+    }
   }
 
   openTA(message: string): void {
@@ -118,8 +133,9 @@ export class ConferenceComponent implements OnInit {
 
   openNote(): void {
     if (!this.noteOn) {
+      document.getElementById('editIcon').style.color = 'blue';
       const filterData = {
-        top: this.noteIcon.nativeElement.getBoundingClientRect().bottom,
+        top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
         right: this.noteIcon.nativeElement.getBoundingClientRect().right,
         getSnip: this.getScreenshot,
       };
@@ -132,6 +148,7 @@ export class ConferenceComponent implements OnInit {
       this.noteOn = true;
       dialogRef.afterClosed().subscribe(() => {
         this.noteOn = false;
+        document.getElementById('editIcon').style.color = 'gray';
       });
     }
   }
@@ -139,7 +156,9 @@ export class ConferenceComponent implements OnInit {
   startShare(): void {
     if (this.shareOn) {
       this.stopSharing();
+      document.getElementById('screenIcon').style.color = 'gray';
     } else {
+      document.getElementById('screenIcon').style.color = 'blue';
       this.share = document.getElementById('shared-screen') as HTMLVideoElement;
       this.shareOn = true;
       // @ts-ignore
@@ -184,10 +203,34 @@ export class ConferenceComponent implements OnInit {
     }
   }
 
+  showParticipants(): void {
+    if (this.participantsOn) {
+      document.getElementById('participantsIcon').style.color = 'gray';
+      this.participantsOn = false;
+    } else {
+      document.getElementById('participantsIcon').style.color = 'blue';
+      this.participantsOn = true;
+    }
+    this.updateStyles();
+  }
+
+  openChat(): void {
+    if (this.chatOn) {
+      document.getElementById('chatIcon').style.color = 'gray';
+      this.chatOn = false;
+    } else {
+      document.getElementById('chatIcon').style.color = 'blue';
+      this.chatOn = true;
+    }
+    this.updateStyles();
+  }
+
   startSlide(): void {
     if (this.slideOn) {
       this.stopSlide();
+      document.getElementById('slideIcon').style.color = 'gray';
     } else {
+      document.getElementById('slideIcon').style.color = 'blue';
       this.slideOn = true;
     }
     this.updateStyles();
@@ -289,10 +332,24 @@ export class ConferenceComponent implements OnInit {
     Start of WebRTC functions
   */
 
+  startMic() {
+    if(this.micOn){
+      this.micOn = false;
+      document.getElementById('micIcon').setAttribute('class', 'fas fa-microphone-slash');
+    }
+    else {
+      this.micOn = true;
+      document.getElementById('micIcon').setAttribute('class', 'fas fa-microphone');
+    }
+    this.updateStyles();
+  }
+
   startVideo() {
     if (this.videoOn) {
       this.stopVideo();
+      document.getElementById('videoIcon').setAttribute('class', 'fas fa-video-slash');
     } else {
+      document.getElementById('videoIcon').setAttribute('class', 'fas fa-video');
       this.localVideo = document.createElement('video');
       this.localVideo.setAttribute('style', 'width: 100% ');
       this.localVideo.setAttribute('id', 'my-video');
