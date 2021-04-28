@@ -13,7 +13,7 @@ import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 import { TaComponent } from 'src/app/components/ta/ta.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 const labelStyle =
@@ -81,9 +81,8 @@ export class ConferenceComponent implements OnInit {
     this.noteOn = false;
     this.slideOn = false;
     this.syncWithInstr = true;
-    this.activatedRoute.queryParams.subscribe((params) => {
-      this.roomID = params['roomID'];
-    });
+    this.activatedRoute.params.subscribe((params: Params) => this.roomID = params['roomID']);
+    console.log(this.roomID);
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
     });

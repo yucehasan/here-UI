@@ -1,25 +1,24 @@
 <div mat-dialog-content>
 <div class="note-wrapper">
-    <canvas id="can" width="400" height="400" style="border:2px solid;"></canvas>
-    <div >
+    <canvas class="main-canvas" id="can" width="700" height="500" style="border:2px solid;"></canvas>
+    <div class="tools">
         <h3>Choose Color</h3>
-        <div style="width:10px;height:10px;background:green;" id="green" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:blue;" id="blue" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:red;" id="red" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:yellow;" id="yellow" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:orange;" id="orange" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:black;" id="black" (click)="color($event)"></div>
+        <button mat-raised-button class="color-btn" style="background:green;" id="green" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:blue;" id="blue" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:red;" id="red" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:yellow;" id="yellow" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:orange;" id="orange" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:black;" id="black" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:white;border:2px solid;" id="white" (click)="color($event)"></button> <!-- eraser -->
     </div>
-    <div >Eraser</div>
-    <div style="width:15px;height:15px;background:white;border:2px solid;" id="white" (click)="color($event)"></div>
     <img id="canvasimg" style="display:none;">
-    <input type="button" value="save" id="btn" size="30" (click)="save()" >
-    <input type="button" value="clear" id="clr" size="23" (click)="erase()" >
-    <input type="button" value="addtext" id="txt" size="23" (click)="addtext()" >
-    <input type="button" value="draw" id="drw" size="23" (click)="draw2()" >
-    <input type="button" value="Snip" id="drw" size="23" (click)="snip()" >
 </div>
 </div>
-<div mat-dialog-actions>
-  <button mat-button (click)="close()">Close</button>
+<div mat-dialog-actions class="action-btns">
+    <button mat-raised-button value="save" id="btn" (click)="save()" >Save</button>
+    <button mat-raised-button value="clear" id="clr" (click)="erase()" >Clear</button>
+    <button mat-raised-button value="addtext" id="txt" (click)="addtext()" >Add Text</button>
+    <button mat-raised-button value="draw" id="drw" (click)="draw2()" >Draw</button>
+    <button mat-raised-button value="Snip" id="drw" (click)="snip()" >Snip</button>
+    <button mat-raised-button color="warn" (click)="close()">Close</button>
 </div>

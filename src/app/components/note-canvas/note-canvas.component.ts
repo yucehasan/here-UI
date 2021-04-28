@@ -71,6 +71,7 @@ export class NoteCanvasComponent implements OnInit {
     this.prevY = 0;
     this.currY = 0;
     (this.brushColor = 'black'), (this.brushWidth = 2);
+    document.getElementById(this.brushColor).style.setProperty('border', 'solid 3px aquamarine')
     this.active = false;
     this.xOffset = 0;
     this.yOffset = 0;
@@ -112,6 +113,8 @@ export class NoteCanvasComponent implements OnInit {
   }
 
   color(obj) {
+    var selected = document.getElementById(this.brushColor)
+    selected.style.setProperty('border', '0')
     console.log(obj);
     switch (obj.srcElement.id) {
       case 'green':
@@ -138,6 +141,13 @@ export class NoteCanvasComponent implements OnInit {
     }
     if (this.brushColor == 'white') this.brushWidth = 14;
     else this.brushWidth = 2;
+    
+    selected = document.getElementById(this.brushColor)
+    if(this.brushColor === "black")
+      selected.style.setProperty('border', 'solid 3px aquamarine')
+    else
+      selected.style.setProperty('border', 'solid 3px black')
+
   }
 
   draw() {
