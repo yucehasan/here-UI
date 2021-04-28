@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ScheduleResponse, WeeklySchedule } from '../../interface';
 import { CourseService } from '../../services/course.service';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-schedule-table',
@@ -23,6 +24,7 @@ export class ScheduleTableComponent implements OnInit {
   constructor(
     private courseService: CourseService,
     private router: Router,
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
