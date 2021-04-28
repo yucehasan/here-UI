@@ -50,6 +50,8 @@ export class ConferenceComponent implements OnInit {
   socketId;
   localStream;
   connections = [];
+  shareStream;
+  expectScreen: boolean;
 
   type: 'instructor' | 'student' = 'instructor';
   currSlideInstr: number;
@@ -81,6 +83,7 @@ export class ConferenceComponent implements OnInit {
     this.noteOn = false;
     this.slideOn = false;
     this.syncWithInstr = true;
+    this.expectScreen = false;
     this.activatedRoute.params.subscribe((params: Params) => this.roomID = params['roomID']);
     console.log(this.roomID);
     this.authService.getUserType().subscribe((type) => {
@@ -89,6 +92,10 @@ export class ConferenceComponent implements OnInit {
     this.authService.getUsername().subscribe((name) => {
       this.username = name;
     });
+    this.socket.on("connect", () => {
+      this.socketId = this.socket.ioSocket.id;
+      this.setListeners();
+    })
   }
 
   openTA(message: string): void {
@@ -140,8 +147,42 @@ export class ConferenceComponent implements OnInit {
     if (this.shareOn) {
       this.stopSharing();
     } else {
+      alert("gonna share")
       this.share = document.getElementById('shared-screen') as HTMLVideoElement;
       this.shareOn = true;
+
+      this.share = document.createElement('video');
+      this.share.setAttribute('style', 'width: 100% ');
+      this.share.setAttribute('id', 'my-video');
+      this.share.autoplay = true;
+      this.share.muted = true;
+
+      var labelDiv = document.createElement('div');
+      var label = document.createElement('p');
+      label.innerHTML = this.username + '\'s screen';
+      labelDiv.appendChild(label);
+      labelDiv.setAttribute('style', labelStyle);
+
+      var parentDiv = document.createElement('div');
+      parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+      parentDiv.appendChild(this.share);
+      parentDiv.appendChild(labelDiv);
+
+      document.querySelector('.shared-screen').appendChild(parentDiv);
+      this.updateStyles();
+      if (navigator.mediaDevices.getUserMedia) {
+        this.socket.emit('screen-share', {roomID: this.roomID, username: this.username});
+        navigator.mediaDevices
+          //@ts-ignore
+          .getDisplayMedia()
+          .then((stream) => {
+            this.getUserScreenSuccess(stream);
+          });
+      } else {
+        alert('Your browser does not support getUserMedia API');
+      }
+    this.updateStyles();
+
       // @ts-ignore
       // navigator.mediaDevices.getDisplayMedia().then(
       //   (stream) => {
@@ -321,9 +362,6 @@ export class ConferenceComponent implements OnInit {
           .getUserMedia(constraints)
           .then((stream) => {
             this.getUserMediaSuccess(stream);
-          })
-          .then(() => {
-            this.setListeners();
           });
       } else {
         alert('Your browser does not support getUserMedia API');
@@ -333,13 +371,11 @@ export class ConferenceComponent implements OnInit {
   }
 
   setListeners() {
+    console.log("my-id", this.socketId)
     this.socket.on('signal', (fromId, message) =>
       this.gotMessageFromServer(fromId, message)
     );
-
-    //this.socket.on('connect', () => {
-    this.socketId = this.socket.ioSocket.id;
-
+    
     this.socket.on('anEvent', () => {
       console.log('geldi hocam eventiniz');
     });
@@ -378,10 +414,10 @@ export class ConferenceComponent implements OnInit {
           };
           //Wait for their video stream
           this.connections[socketID].ontrack = (event) => {
-            if (event.track.kind === 'video')
+            if (event.track.kind === 'video' && socketID != this.socketId)
               this.gotRemoteStream(event, socketID, name);
           };
-          this.connections[socketID].addStream(this.localStream);
+          
           //Add the local video stream
         }
       });
@@ -409,6 +445,10 @@ export class ConferenceComponent implements OnInit {
       this.gotSlideUpdate(number);
     });
 
+    this.socket.on('expect-screen', (data) => {
+      this.expectScreen = true;
+    });
+
     this.socket.emit('confirm', {
       roomID: this.roomID,
       username: this.username,
@@ -421,27 +461,90 @@ export class ConferenceComponent implements OnInit {
     this.videoOn = true;
     this.localStream = stream;
     this.localVideo.srcObject = stream;
+    console.log("connections", Object.keys( this.connections));
+    Object.keys( this.connections).forEach( (connectionID) => {
+      console.log("sending to", connectionID, this.connections[connectionID])
+      this.connections[connectionID].addStream(this.localStream);
+      this.connections[connectionID].createOffer().then((description) => {
+        this.connections[connectionID]
+          .setLocalDescription(description)
+          .then(() => {
+            this.socket.emit(
+              'signal',
+              connectionID,
+              JSON.stringify({ sdp: this.connections[connectionID].localDescription })
+            );
+          })
+          .catch((e) => console.log(e));
+      });
+    })
+  }
+
+  getUserScreenSuccess(stream) {
+    this.shareOn = true;
+    this.shareStream = stream;
+    this.share.srcObject = stream;
+    Object.keys( this.connections).forEach( (connectionID) => {
+      console.log("sending to", connectionID, this.connections[connectionID])
+      this.connections[connectionID].addStream(this.shareStream);
+      this.connections[connectionID].createOffer().then((description) => {
+        this.connections[connectionID]
+          .setLocalDescription(description)
+          .then(() => {
+            this.socket.emit(
+              'signal',
+              connectionID,
+              JSON.stringify({ sdp: this.connections[connectionID].localDescription })
+            );
+          })
+          .catch((e) => console.log(e));
+      });
+    })
   }
 
   gotRemoteStream(event, id, name) {
-    var video = document.createElement('video');
-    video.setAttribute('data-socket', id);
-    video.setAttribute('style', 'width: 100%;');
-    video.autoplay = true;
-    // video.muted = true;
-    video.srcObject = event.streams[0];
+    if(this.expectScreen){
+      var video = document.createElement('video');
+      video.setAttribute('data-socket', id);
+      video.setAttribute('style', 'width: 100%;');
+      video.autoplay = true;
+      // video.muted = true;
+      video.srcObject = event.streams[0];
 
-    var labelDiv = document.createElement('div');
-    var label = document.createElement('p');
-    label.innerHTML = name;
-    labelDiv.appendChild(label);
-    labelDiv.setAttribute('style', labelStyle);
+      var labelDiv = document.createElement('div');
+      var label = document.createElement('p');
+      label.innerHTML = name + '\s stream';
+      labelDiv.appendChild(label);
+      labelDiv.setAttribute('style', labelStyle);
 
-    var parentDiv = document.createElement('div');
-    parentDiv.setAttribute('style', 'z-index: -1; position: relative');
-    parentDiv.appendChild(video);
-    parentDiv.appendChild(labelDiv);
-    document.querySelector('.remote-videos').appendChild(parentDiv);
+      var parentDiv = document.createElement('div');
+      parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+      parentDiv.appendChild(video);
+      parentDiv.appendChild(labelDiv);
+      document.querySelector('.shared-screen').appendChild(parentDiv);
+      this.shareOn = true;
+      this.expectScreen = false;
+    }
+    else{
+      var video = document.createElement('video');
+      video.setAttribute('data-socket', id);
+      video.setAttribute('style', 'width: 100%;');
+      video.autoplay = true;
+      // video.muted = true;
+      video.srcObject = event.streams[0];
+
+      var labelDiv = document.createElement('div');
+      var label = document.createElement('p');
+      label.innerHTML = name;
+      labelDiv.appendChild(label);
+      labelDiv.setAttribute('style', labelStyle);
+
+      var parentDiv = document.createElement('div');
+      parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+      parentDiv.appendChild(video);
+      parentDiv.appendChild(labelDiv);
+      document.querySelector('.remote-videos').appendChild(parentDiv);
+    }
     this.updateStyles();
   }
 
