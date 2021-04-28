@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   FLASK_ENDPOINT: "https://hereapp-live.herokuapp.com/",
   RTC_ENDPOINT: "https://rtc-server-here.herokuapp.com",
-  TEST_ENDPOINT: "localhost:80"
+  TEST_ENDPOINT: "localhost:80",
+  BACKEND_IP: 'https://hereappbackend.com'
 };
 
 /*

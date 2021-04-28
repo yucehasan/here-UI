@@ -5,6 +5,7 @@ import { AddCourseDialogComponent } from 'src/app/components/add-course-dialog/a
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -18,7 +19,6 @@ export class ProfileComponent implements OnInit {
   user_id: number;
   saved_notes: any[];
   courses: any[];
-  SERVER_URL = 'https://hereappbackend.com/course';
   constructor(
     private assignStudentDialog: MatDialog,
     public addCourseDialog: MatDialog,
@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
       'Bearer ' + this.token
     );
 
-    this.httpClient.get<any>(this.SERVER_URL/*, { headers: headers }, {withCredentials: true}*/)
+    this.httpClient.get<any>(environment.BACKEND_IP + '/course' , { headers: headers })
       .subscribe((res) => {
         console.log(res);
         this.courses = res.courses;
