@@ -7,7 +7,7 @@ export const environment = {
   FLASK_ENDPOINT: "https://hereapp-live.herokuapp.com/",
   RTC_ENDPOINT: "https://rtc-server-here.herokuapp.com",
   TEST_ENDPOINT: "localhost:80",
-  HAND_ENPOINT: "http://34.118.87.165:5000/hand",
+  ANALYZE_IP: "http://34.118.26.115:5000",
   SCHEDULE_ENDPOINT: "https://hereapp-live.herokuapp.com/course",
 };
 

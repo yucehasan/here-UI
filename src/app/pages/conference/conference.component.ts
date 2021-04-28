@@ -96,6 +96,7 @@ export class ConferenceComponent implements OnInit {
       const filterData = {
         top: this.TAIcon.nativeElement.getBoundingClientRect().top,
         left: this.TAIcon.nativeElement.getBoundingClientRect().left,
+        message: message
       };
       let dialogRef = this.dialog.open(TaComponent, {
         data: filterData,
@@ -222,8 +223,12 @@ export class ConferenceComponent implements OnInit {
       });
       this.videoOn = false;
       this.localVideo.srcObject = undefined;
-      this.socket.emit('disconnectFrom', { roomID: this.roomID });
+      this.socket.emit('disconnectFrom', { roomID: this.roomID, userType: this.userType });
+      this.socket.removeAllListeners();
       this.socket.disconnect();
+      var video = document.getElementById('my-video');
+      var parentDiv = video.parentElement;
+      video.parentElement.parentElement.removeChild(parentDiv);
     }
   }
 
@@ -241,14 +246,44 @@ export class ConferenceComponent implements OnInit {
       const formData = new FormData();
       formData.append('data', canvas.toDataURL());
       this.httpClient
-        .post(environment.FLASK_ENDPOINT + 'image', formData)
+        .post(environment.ANALYZE_IP + '/analyze/hand', formData)
         .subscribe(
-          (res) => console.log(res),
+          (res) => {
+            console.log(res);
+            var taskID = res["task_id"]
+            this.getStatus(taskID); 
+          },
           (err) => console.log(err)
         );
     } else {
       console.error('Video stream is not on!');
     }
+  }
+
+  getStatus(taskID) {
+    this.httpClient
+        .get(environment.ANALYZE_IP + '/result/' + taskID)
+        .subscribe(
+          (res) => {
+            console.log("res", res);
+            const taskStatus = res["task_status"];
+            if (taskStatus === 'SUCCESS') {
+              if(this.userType === "student"){
+                this.socket.emit("analyze-result", {roomID: this.roomID, username: this.username, result: res["task_result"]})
+              }
+              this.openTA(res["task_result"]);
+              return false;
+            }
+            else if ( taskStatus === 'FAILURE') {
+              return false;
+            }
+            setTimeout( () => {
+              console.log("retrying");
+              this.getStatus(res["task_id"]);
+            }, 1000);
+          },
+          (err) => console.log(err)
+        );
   }
 
   /* 
@@ -310,7 +345,15 @@ export class ConferenceComponent implements OnInit {
       console.log('geldi hocam eventiniz');
     });
 
+    if(this.userType === "instructor"){
+      this.socket.on('raise-hand', (data) => {
+        console.log(data.username, 'raised hand');
+        this.openTA(data.username + ' raised hand');
+      });
+    }
+
     this.socket.on('user-left', (id) => {
+      console.log(id, "left");
       var video = document.querySelector('[data-socket="' + id + '"]');
       var parentDiv = video.parentElement;
       video.parentElement.parentElement.removeChild(parentDiv);
@@ -370,6 +413,7 @@ export class ConferenceComponent implements OnInit {
     this.socket.emit('confirm', {
       roomID: this.roomID,
       username: this.username,
+      userType: this.userType
     });
     //})
   }
