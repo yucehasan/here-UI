@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 import { ScheduleResponse, WeeklySchedule } from '../../interface';
 import { CourseService } from '../../services/course.service';
@@ -21,18 +22,23 @@ export class ScheduleTableComponent implements OnInit {
     'Friday',
   ];
   dataSource;
+  token;
   constructor(
     private courseService: CourseService,
+    private authService: AuthService,
     private router: Router,
     private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
-    this.dataSource = this.courseService.getEmptySchedule();
+    this.dataSource = this.courseService.getEmptySchedule().schedule;
+    this.authService.getToken().subscribe( (token) => {
+      this.token = token;
+    });
     this.courseService.getschedule().subscribe((schedule) => {
       this.dataSource = schedule.schedule;
     });
-    this.courseService.fetchCourses();
+    this.courseService.fetchCourses(this.token);
   }
 
   onClick(event: MouseEvent): void{

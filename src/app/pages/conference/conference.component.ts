@@ -287,7 +287,7 @@ export class ConferenceComponent implements OnInit {
       const formData = new FormData();
       formData.append('data', canvas.toDataURL());
       this.httpClient
-        .post(environment.ANALYZE_IP + '/analyze/hand', formData)
+        .post(environment.BACKEND_IP + '/analyze/hand', formData)
         .subscribe(
           (res) => {
             console.log(res);
@@ -303,7 +303,7 @@ export class ConferenceComponent implements OnInit {
 
   getStatus(taskID) {
     this.httpClient
-        .get(environment.ANALYZE_IP + '/result/' + taskID)
+        .get(environment.BACKEND_IP + '/result/' + taskID)
         .subscribe(
           (res) => {
             console.log("res", res);
