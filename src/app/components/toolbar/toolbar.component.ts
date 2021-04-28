@@ -47,12 +47,12 @@ export class ToolbarComponent implements OnDestroy, OnInit {
     this.authService.getToken().subscribe(token => {
       this.token = token;
       if (this.token === "") {
-        alert("You are not logged in");
         this.loggedIn = false;
         this.router.navigate(['/']);
       }
       else{
         this.loggedIn = true;
+        this.router.navigate(['/main']);
       }
     })
 
