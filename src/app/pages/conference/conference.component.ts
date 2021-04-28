@@ -271,7 +271,6 @@ export class ConferenceComponent implements OnInit {
               if(this.userType === "student"){
                 this.socket.emit("analyze-result", {roomID: this.roomID, username: this.username, result: res["task_result"]})
               }
-              this.openTA(res["task_result"]);
               return false;
             }
             else if ( taskStatus === 'FAILURE') {
