@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,6 @@ export class LoginComponent implements OnInit {
   email: string;
   password: string;
   loginForm: FormGroup;
-  SERVER_URL = "https://hereapp-live.herokuapp.com/login";
   constructor(
     private router: Router,
     public dialogRef: MatDialogRef<LoginComponent>,
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
     formData.append("email", this.email);
     formData.append("password", this.password);
 
-    this.httpClient.post<any>(this.SERVER_URL, formData).subscribe(
+    this.httpClient.post<any>(environment.BACKEND_IP + "/login", formData).subscribe(
       (res) => {
         if (res['access_token'] !== undefined) {
           this.authService.updateToken(res['access_token']);

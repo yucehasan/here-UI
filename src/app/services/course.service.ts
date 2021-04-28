@@ -89,7 +89,7 @@ export class CourseService {
   }
 
   fetchCourses(): void {
-    this.httpClient.get<any>(environment.SCHEDULE_ENDPOINT).subscribe((res) => {
+    this.httpClient.get<any>(environment.BACKEND_IP + "/course").subscribe((res) => {
       this.updateSchedule(res);
     });
   }

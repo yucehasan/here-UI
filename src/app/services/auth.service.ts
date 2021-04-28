@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  SERVER_URL = 'https://hereapp-live.herokuapp.com/token/refresh';
   constructor(private httpClient: HttpClient) { }
 
   private tokenSub = new BehaviorSubject<string>(localStorage.getItem('token'));
@@ -55,7 +55,7 @@ export class AuthService {
       'Bearer ' + this.refreshToken
     );
 
-    this.httpClient.post<any>(this.SERVER_URL, {headers: headers})
+    this.httpClient.post<any>(environment.BACKEND_IP + "/token/refresh", {headers: headers})
     .subscribe((res) => {
       console.log("AUTH SERVICE: response for token refresh: " + res);
       this.updateToken(res.access_token);

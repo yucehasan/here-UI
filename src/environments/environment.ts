@@ -8,7 +8,7 @@ export const environment = {
   RTC_ENDPOINT: "https://rtc-server-here.herokuapp.com",
   TEST_ENDPOINT: "localhost:80",
   ANALYZE_IP: "https://hereappbackend.com",
-  SCHEDULE_ENDPOINT: "https://hereapp-live.herokuapp.com/course",
+  BACKEND_IP: "https://hereappbackend.com",
 };
 
 /*
