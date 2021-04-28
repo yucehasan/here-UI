@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -88,8 +88,14 @@ export class CourseService {
     return EMPTYDATA;
   }
 
-  fetchCourses(): void {
-    this.httpClient.get<any>(environment.BACKEND_IP + "/course").subscribe((res) => {
+  fetchCourses(token): void {
+    var header = new HttpHeaders().set(      
+      'Authorization',
+      'Bearer ' + token
+    );
+    console.log(header);
+    this.httpClient.get<any>(environment.BACKEND_IP + "/course", {headers: header}).subscribe((res) => {
+      console.log(res)
       this.updateSchedule(res);
     });
   }
