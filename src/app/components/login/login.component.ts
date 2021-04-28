@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
   email: string;
   password: string;
   loginForm: FormGroup;
-  SERVER_URL = "https://hereapp-live.herokuapp.com/login";
+  SERVER_URL = "https://hereappbackend.com/login";
   constructor(
     private router: Router,
     public dialogRef: MatDialogRef<LoginComponent>,

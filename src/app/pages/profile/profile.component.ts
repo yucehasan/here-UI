@@ -18,7 +18,7 @@ export class ProfileComponent implements OnInit {
   user_id: number;
   saved_notes: any[];
   courses: any[];
-  SERVER_URL = 'https://hereapp-live.herokuapp.com/course';
+  SERVER_URL = 'https://hereappbackend.com/course';
   constructor(
     private assignStudentDialog: MatDialog,
     public addCourseDialog: MatDialog,
