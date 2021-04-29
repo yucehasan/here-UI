@@ -205,7 +205,7 @@ export class ConferenceComponent implements OnInit {
 
   stopSharing(): void {
     if (this.shareOn) {
-      (<MediaStream>this.share.srcObject).getTracks().forEach((track) => {
+      (<MediaStream>this.shareStream).getTracks().forEach((track) => {
         track.stop();
       });
       this.shareOn = false;
@@ -479,14 +479,14 @@ export class ConferenceComponent implements OnInit {
       //Create an offer to connect with your local description
 
       if (count >= 2) {
-        this.connections[id].createOffer().then((description) => {
-          this.connections[id]
+        this.connections[socketID].createOffer().then((description) => {
+          this.connections[socketID]
             .setLocalDescription(description)
             .then(() => {
               this.socket.emit(
                 'signal',
-                id,
-                JSON.stringify({ sdp: this.connections[id].localDescription })
+                socketID,
+                JSON.stringify({ sdp: this.connections[socketID].localDescription })
               );
             })
             .catch((e) => console.log(e));
