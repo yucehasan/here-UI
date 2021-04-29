@@ -55,6 +55,7 @@ export class NoteCanvasComponent implements OnInit {
 
   snip() {
     var video = this.data.getSnip();
+    console.log('in note canvas', video);
     this.canvas
       .getContext('2d')
       .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
@@ -72,7 +73,9 @@ export class NoteCanvasComponent implements OnInit {
     this.prevY = 0;
     this.currY = 0;
     (this.brushColor = 'black'), (this.brushWidth = 2);
-    document.getElementById(this.brushColor).style.setProperty('border', 'solid 3px aquamarine')
+    document
+      .getElementById(this.brushColor)
+      .style.setProperty('border', 'solid 3px aquamarine');
     this.active = false;
     this.xOffset = 0;
     this.yOffset = 0;
@@ -114,8 +117,8 @@ export class NoteCanvasComponent implements OnInit {
   }
 
   color(obj) {
-    var selected = document.getElementById(this.brushColor)
-    selected.style.setProperty('border', '0')
+    var selected = document.getElementById(this.brushColor);
+    selected.style.setProperty('border', '0');
     console.log(obj);
     switch (obj.srcElement.id) {
       case 'green':
@@ -142,13 +145,11 @@ export class NoteCanvasComponent implements OnInit {
     }
     if (this.brushColor == 'white') this.brushWidth = 14;
     else this.brushWidth = 2;
-    
-    selected = document.getElementById(this.brushColor)
-    if(this.brushColor === "black")
-      selected.style.setProperty('border', 'solid 3px aquamarine')
-    else
-      selected.style.setProperty('border', 'solid 3px black')
 
+    selected = document.getElementById(this.brushColor);
+    if (this.brushColor === 'black')
+      selected.style.setProperty('border', 'solid 3px aquamarine');
+    else selected.style.setProperty('border', 'solid 3px black');
   }
 
   draw() {

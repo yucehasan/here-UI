@@ -135,7 +135,7 @@ export class ConferenceComponent implements OnInit {
   }
 
   getScreenshot(): HTMLVideoElement {
-    return document.getElementById('my-video') as HTMLVideoElement;
+    return document.querySelector('.screen-stream');
   }
 
   openNote(): void {
@@ -199,31 +199,21 @@ export class ConferenceComponent implements OnInit {
       } else {
         alert('Your browser does not support getUserMedia API');
       }
-    this.updateStyles();
-
-      // @ts-ignore
-      // navigator.mediaDevices.getDisplayMedia().then(
-      //   (stream) => {
-      //     this.share.srcObject = stream;
-      //     console.log('Sharing screen');
-      //     (<MediaStream>this.share.srcObject)
-      //       .getVideoTracks()[0]
-      //       .addEventListener('ended', () => {
-      //         this.stopSharing();
-      //       });
-      //   },
-      //   (error) => {
-      //     console.log('Error: ' + error);
-      //     this.shareOn = false;
-      //   }
-      // );
     }
     this.updateStyles();
   }
 
   stopSharing(): void {
-    this.share.srcObject = undefined;
-    this.shareOn = false;
+    if (this.shareOn) {
+      (<MediaStream>this.share.srcObject).getTracks().forEach((track) => {
+        track.stop();
+      });
+      this.shareOn = false;
+      this.share.srcObject = undefined;
+      var parentDiv = document.querySelector('.shared-screen');
+      parentDiv.removeChild(parentDiv.firstChild);
+      this.socket.emit("close-share", {roomID: this.roomID});
+    }
   }
 
   updateStyles(): void {
@@ -241,6 +231,10 @@ export class ConferenceComponent implements OnInit {
     for (var i = 0; i < remoteVids.length; i++) {
       (remoteVids[i] as HTMLDivElement).style.width = width;
     }
+    if(this.shareOn)
+      document.getElementById('screenIcon').style.color = 'blue';
+    else
+      document.getElementById('screenIcon').style.color = 'gray';
   }
 
   showParticipants(): void {
@@ -306,12 +300,10 @@ export class ConferenceComponent implements OnInit {
       });
       this.videoOn = false;
       this.localVideo.srcObject = undefined;
-      this.socket.emit('disconnectFrom', { roomID: this.roomID, userType: this.userType });
-      this.socket.removeAllListeners();
-      this.socket.disconnect();
       var video = document.getElementById('my-video');
       var parentDiv = video.parentElement;
       video.parentElement.parentElement.removeChild(parentDiv);
+      this.socket.emit("close-video", {roomID: this.roomID});
     }
   }
 
@@ -444,10 +436,16 @@ export class ConferenceComponent implements OnInit {
     }
 
     this.socket.on('user-left', (id) => {
-      console.log(id, "left");
       var video = document.querySelector('[data-socket="' + id + '"]');
       var parentDiv = video.parentElement;
       video.parentElement.parentElement.removeChild(parentDiv);
+    });
+
+    this.socket.on('close-share', (id) => {
+      var parentDiv = document.querySelector('.shared-screen');
+      parentDiv.removeChild(parentDiv.firstChild);
+      this.shareOn = false
+      this.updateStyles();
     });
 
     this.socket.on('user-joined', (id, count, clients) => {
@@ -517,9 +515,7 @@ export class ConferenceComponent implements OnInit {
     this.videoOn = true;
     this.localStream = stream;
     this.localVideo.srcObject = stream;
-    console.log("connections", Object.keys( this.connections));
     Object.keys( this.connections).forEach( (connectionID) => {
-      console.log("sending to", connectionID, this.connections[connectionID])
       this.connections[connectionID].addStream(this.localStream);
       this.connections[connectionID].createOffer().then((description) => {
         this.connections[connectionID]
@@ -561,6 +557,7 @@ export class ConferenceComponent implements OnInit {
   gotRemoteStream(event, id, name) {
     if(this.expectScreen){
       var video = document.createElement('video');
+      video.setAttribute('class', 'screen-stream');
       video.setAttribute('data-socket', id);
       video.setAttribute('style', 'width: 100%;');
       video.autoplay = true;
@@ -569,7 +566,7 @@ export class ConferenceComponent implements OnInit {
 
       var labelDiv = document.createElement('div');
       var label = document.createElement('p');
-      label.innerHTML = name + '\s stream';
+      label.innerHTML = name + '\'s stream';
       labelDiv.appendChild(label);
       labelDiv.setAttribute('style', labelStyle);
 
