@@ -1,0 +1,23 @@
+<mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+    <mat-panel-title>
+        {{classTitle}}
+    </mat-panel-title>
+    <mat-panel-description>
+        notes saved on {{classTitle}}
+    </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-card *ngFor="let note of notes" class="saved-note">
+        <mat-card-content> 
+            <p>Note saved on {{note.date}} </p>
+        </mat-card-content>
+        <mat-card-actions class="action-btns">
+            <button (click)="download($event)" id="{{note.id}}-{{note.course_id}}" mat-raised-button>
+                <mat-icon id="screenIcon">download</mat-icon>
+            </button>
+            <button (click)="preview($event)" id="{{note.id}}-{{note.course_id}}" mat-raised-button>
+                <mat-icon id="screenIcon">visibility</mat-icon>
+            </button>
+        </mat-card-actions>
+    </mat-card>
+</mat-expansion-panel>
