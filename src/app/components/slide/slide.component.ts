@@ -43,7 +43,6 @@ export class SlideComponent implements AfterViewInit {
     WebViewer(
       {
         path: '../../../assets/lib',
-        initialDoc: 'http://cs.bilkent.edu.tr/~ozan.karsavuran/473/pdf/08-Heapsort.pdf',
       },
       this.viewer.nativeElement
     ).then((instance) => {
