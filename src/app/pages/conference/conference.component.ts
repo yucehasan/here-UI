@@ -142,6 +142,7 @@ export class ConferenceComponent implements OnInit {
     if (!this.noteOn) {
       document.getElementById('editIcon').style.color = 'blue';
       const filterData = {
+        courseID: this.roomID,
         top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
         right: this.noteIcon.nativeElement.getBoundingClientRect().right,
         getSnip: this.getScreenshot,
@@ -473,6 +474,8 @@ export class ConferenceComponent implements OnInit {
           };
           
           //Add the local video stream
+          if(this.videoOn)
+            this.connections[socketID].addStream(this.localStream);
         }
       });
 
