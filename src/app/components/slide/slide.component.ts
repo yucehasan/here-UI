@@ -7,9 +7,11 @@ import {
   Output,
   EventEmitter,
   Input,
+  OnInit,
 } from '@angular/core';
 import WebViewer, { Actions, WebViewerInstance } from '@pdftron/webviewer';
 import { Action } from 'rxjs/internal/scheduler/Action';
+import { FileService } from 'src/app/services/file.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -17,7 +19,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './slide.component.html',
   styleUrls: ['./slide.component.sass'],
 })
-export class SlideComponent implements AfterViewInit {
+export class SlideComponent implements OnInit, AfterViewInit {
   @ViewChild('viewer') viewer: ElementRef;
   @Input() next: EventEmitter<void>;
   @Input() prev: EventEmitter<void>;
@@ -26,7 +28,9 @@ export class SlideComponent implements AfterViewInit {
   nextButton: HTMLButtonElement;
   prevButton: HTMLButtonElement;
   currentSlide: number;
+  slideB64: string;
 
+  constructor(private fileService: FileService){}
 
   base64ToBlob(base64) {
     const binaryString = window.atob(base64);
@@ -35,8 +39,12 @@ export class SlideComponent implements AfterViewInit {
     for (let i = 0; i < len; ++i) {
       bytes[i] = binaryString.charCodeAt(i);
     }
-
     return new Blob([bytes], { type: 'application/pdf' });
+  }
+
+  ngOnInit() {
+    //this.slideB64 = this.fileService.getSlide();
+    this.wvDocumentLoadedHandler = this.wvDocumentLoadedHandler.bind(this);
   }
 
   ngAfterViewInit(): void {
@@ -84,10 +92,6 @@ export class SlideComponent implements AfterViewInit {
       this.prevButton = element[0] as HTMLButtonElement;
       this.nextButton = element[1] as HTMLButtonElement;
     });
-  }
-
-  ngOnInit() {
-    this.wvDocumentLoadedHandler = this.wvDocumentLoadedHandler.bind(this);
   }
 
   changeSlide(number) {
