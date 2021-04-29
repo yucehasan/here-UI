@@ -1,0 +1,33 @@
+<div class="mat-elevation-z8">
+    <table mat-table class="full-width-table" matSort [dataSource]="participantsDetails">
+      <!-- Id Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+        <td mat-cell *matCellDef="let row">{{row.id}}</td>
+      </ng-container>
+   
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let row">{{row.name}}</td>
+      </ng-container>
+   
+      <!-- Participation Column -->
+      <ng-container matColumnDef="participation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Participation</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-chip-list>
+            <mat-chip color="{{ row.participation == 'active' ? 'accent' : ( row.participation == 'normal' ? 'primary' : 'warn' ) }}" selected>
+              {{row.participation}}
+            </mat-chip>
+          </mat-chip-list>
+        </td>
+      </ng-container>
+   
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+   
+    <mat-paginator #paginator [length]="dataLength" [pageIndex]="0" [pageSize]="5" [pageSizeOptions]="[5, 10, 15, 20]">
+    </mat-paginator>
+   </div>
