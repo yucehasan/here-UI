@@ -47,9 +47,9 @@ export class SlideComponent implements AfterViewInit {
       },
       this.viewer.nativeElement
     ).then((instance) => {
-      // instance.loadDocument(this.base64ToBlob(environment.pdf), {
-      //   filename: 'mypdf.pdf',
-      // });
+      instance.loadDocument(this.base64ToBlob(environment.pdf), {
+        filename: 'mypdf.pdf',
+      });
 
       this.wvInstance = instance;
       this.currentSlide = instance.docViewer.getCurrentPage();
