@@ -10,6 +10,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
+import { FileService } from 'src/app/services/file.service';
 import { CanvasTextInputComponent } from '../canvas-text-input/canvas-text-input.component';
 
 @Component({
@@ -49,7 +50,8 @@ export class NoteCanvasComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<NoteCanvasComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -182,15 +184,14 @@ export class NoteCanvasComponent implements OnInit {
     var m = confirm('Want to clear');
     if (m) {
       this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-      document.getElementById('canvasimg').style.display = 'none';
     }
   }
 
   save() {
-    var canvasimg = document.getElementById('canvasimg') as HTMLImageElement;
-    canvasimg.style.border = '2px solid';
-    canvasimg.src = this.canvas.toDataURL();
-    canvasimg.style.display = 'inline';
+    console.log(this.data.courseID);
+    console.log(this.canvas.toDataURL());
+    this.fileService.uploadNote(this.data.courseID, this.canvas.toDataURL())
+    alert("Note saved");
   }
 
   addtext() {
@@ -206,7 +207,6 @@ export class NoteCanvasComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log("reso", result)
       this.textInput = result;
       this.canvas.addEventListener(
         'click',
