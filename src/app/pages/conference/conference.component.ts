@@ -10,7 +10,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { SlideComponent } from 'src/app/components/slide/slide.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.component';
 import { TaComponent } from 'src/app/components/ta/ta.component';
 import { ActivatedRoute, Router, Params } from '@angular/router';
@@ -59,7 +59,10 @@ export class ConferenceComponent implements OnInit {
   connections = [];
   shareStream;
   expectScreen: boolean;
+
   chat;
+  chatDialogRef: MatDialogRef<ChatComponent>;
+  unreadCount: number;
 
   type: 'instructor' | 'student';
   currSlideInstr: number;
@@ -96,8 +99,9 @@ export class ConferenceComponent implements OnInit {
     this.syncWithInstr = true;
     this.participantsOn = false;
     this.chatOn = false;
-    this.expectScreen = false;
     this.chat = [];
+    this.unreadCount = 0;
+    this.expectScreen = false;
     this.activatedRoute.params.subscribe((params: Params) => this.roomID = params['roomID']);
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
@@ -281,18 +285,19 @@ export class ConferenceComponent implements OnInit {
         username: this.username,
         chat: this.chat
       };
-      let dialogRef = this.dialog.open(ChatComponent, {
+        this.chatDialogRef = this.dialog.open(ChatComponent, {
         data: filterData,
         hasBackdrop: false,
         panelClass: 'chat-box',
       });
       (event.target as HTMLButtonElement).addEventListener('click', () => {
-        dialogRef.close();
+        this.chatDialogRef.close();
       })
+      this.unreadCount = 0;
       this.chatOn = true;
       document.getElementById('chatIcon').style.color = 'blue';
 
-      dialogRef.afterClosed().subscribe(() => {
+      this.chatDialogRef.afterClosed().subscribe(() => {
         this.chatOn = false;
         document.getElementById('chatIcon').style.color = 'gray';
       });
@@ -584,7 +589,9 @@ export class ConferenceComponent implements OnInit {
     this.socket.on("chat-msg", (data) => {
       console.log("message from:", data);
       this.chat.push(data);
-      console.log(this.chat);
+      if(!this.chatOn){
+        this.unreadCount += 1;
+      }
     })
 
     this.socket.on('user-joined', (id, count, clients) => {
