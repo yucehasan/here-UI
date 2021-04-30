@@ -273,7 +273,10 @@ export class ConferenceComponent implements OnInit {
         courseID: this.roomID,
         top: window.innerHeight - this.chatIcon.nativeElement.getBoundingClientRect().top,
         right: this.chatIcon.nativeElement.getBoundingClientRect().right,
-        send: this.sendChat
+        send: this.sendChat,
+        socket: this.socket,
+        roomID: this.roomID,
+        username: this.username
       };
       let dialogRef = this.dialog.open(ChatComponent, {
         data: filterData,
@@ -506,6 +509,10 @@ export class ConferenceComponent implements OnInit {
     this.socket.on('expect-screen', (data) => {
       this.expectScreen = true;
     });
+
+    this.socket.on("chat-msg", (data) => {
+      console.log("message from:", data.sender, data.message);
+    })
 
     this.socket.on('user-joined', (id, count, clients) => {
       var socketID;
