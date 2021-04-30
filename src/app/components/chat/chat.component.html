@@ -1,0 +1,22 @@
+<mat-card class="wrapper">
+    <mat-card-header>
+        <mat-card-title>Chatbox</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div class="message-container">
+            <strong>User said: </strong><p>Hey there, this is an example message</p>
+        </div>
+        <div class="send-msg">
+            <mat-form-field class="form-field">
+                <mat-label>Enter your message</mat-label>
+                <input matInput type="text" [(ngModel)]="value">
+                <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <button class="send-btn" mat-fab (click)="send()">
+                <i class="far fa-paper-plane"></i>
+            </button>
+        </div>
+    </mat-card-content>
+</mat-card>

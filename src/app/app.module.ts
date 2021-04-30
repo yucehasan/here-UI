@@ -33,6 +33,7 @@ import { ParticipantTableComponent } from './components/participant-table/partic
 import { TimelineComponent } from './components/timeline/timeline.component';
 import { CanvasTextInputComponent } from './components/canvas-text-input/canvas-text-input.component';
 import { SavedNotesComponent } from './components/saved-notes/saved-notes.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -61,6 +62,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     TimelineComponent,
     CanvasTextInputComponent,
     SavedNotesComponent,
+    ChatComponent,
   ],
   imports: [
     BrowserModule,

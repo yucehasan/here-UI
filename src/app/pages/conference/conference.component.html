@@ -49,9 +49,11 @@
         <button (click)="captureVideo()" mat-raised-button color="primary">
           Capture snaphot
         </button>
-        <button mat-fab (click)="openChat()">
-          <i id="chatIcon" class="fas fa-comments"></i>
-        </button>
+        <div #chatIcon class="dialog-btn-wrapper">
+          <button mat-fab (click)="openChat($event)">
+            <i id="chatIcon" class="fas fa-comments"></i>
+          </button>
+        </div>  
         <div #noteIcon class="dialog-btn-wrapper">
           <button #noteIcon mat-fab (click)="openNote()">
             <i id="editIcon" class="fas fa-edit"></i>

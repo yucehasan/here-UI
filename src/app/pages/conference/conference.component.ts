@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,6 +15,7 @@ import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.
 import { TaComponent } from 'src/app/components/ta/ta.component';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { ChatComponent } from 'src/app/components/chat/chat.component';
 
 const labelStyle =
   'position: absolute; bottom: 5px; width: calc(100% - 20px); \
@@ -47,6 +48,9 @@ export class ConferenceComponent implements OnInit {
   roomID: number;
   userType: string;
   username: string;
+  token: string;
+
+  interval: NodeJS.Timeout;
 
   localVideo: HTMLVideoElement;
   share: HTMLVideoElement;
@@ -55,8 +59,9 @@ export class ConferenceComponent implements OnInit {
   connections = [];
   shareStream;
   expectScreen: boolean;
+  chat;
 
-  type: 'instructor' | 'student' = 'instructor';
+  type: 'instructor' | 'student';
   currSlideInstr: number;
   syncWithInstr: boolean;
 
@@ -80,9 +85,10 @@ export class ConferenceComponent implements OnInit {
   ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
+  @ViewChild('chatIcon') chatIcon: ElementRef;
 
   ngOnInit(): void {
-    this.micOn = false;
+    this.micOn = true;
     this.shareOn = false;
     this.taOn = false;
     this.noteOn = false;
@@ -91,6 +97,7 @@ export class ConferenceComponent implements OnInit {
     this.participantsOn = false;
     this.chatOn = false;
     this.expectScreen = false;
+    this.chat = [];
     this.activatedRoute.params.subscribe((params: Params) => this.roomID = params['roomID']);
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
@@ -98,6 +105,9 @@ export class ConferenceComponent implements OnInit {
     this.authService.getUsername().subscribe((name) => {
       this.username = name;
     });
+    this.authService.getToken().subscribe( (token) => {
+      this.token = token;
+    })
     this.socket.on("connect", () => {
       this.socketId = this.socket.ioSocket.id;
       this.setListeners();
@@ -140,7 +150,6 @@ export class ConferenceComponent implements OnInit {
 
   getSlideSnip(): HTMLVideoElement {
       var innerDoc = (document.getElementById("webviewer-1") as HTMLIFrameElement).contentWindow.document;
-      console.log(innerDoc.querySelector('.hacc'))
       return innerDoc.querySelector('.hacc');
   }
 
@@ -256,13 +265,37 @@ export class ConferenceComponent implements OnInit {
     this.updateStyles();
   }
 
-  openChat(): void {
-    if (this.chatOn) {
-      document.getElementById('chatIcon').style.color = 'gray';
-      this.chatOn = false;
-    } else {
-      document.getElementById('chatIcon').style.color = 'blue';
+  sendChat(message: string){
+    console.log("Message sent:", message);
+  }
+
+  openChat(event: MouseEvent): void {
+    if (!this.chatOn) {
+      const filterData = {
+        courseID: this.roomID,
+        top: window.innerHeight - this.chatIcon.nativeElement.getBoundingClientRect().top,
+        right: this.chatIcon.nativeElement.getBoundingClientRect().right,
+        send: this.sendChat,
+        socket: this.socket,
+        roomID: this.roomID,
+        username: this.username,
+        chat: this.chat
+      };
+      let dialogRef = this.dialog.open(ChatComponent, {
+        data: filterData,
+        hasBackdrop: false,
+        panelClass: 'chat-box',
+      });
+      (event.target as HTMLButtonElement).addEventListener('click', () => {
+        dialogRef.close();
+      })
       this.chatOn = true;
+      document.getElementById('chatIcon').style.color = 'blue';
+
+      dialogRef.afterClosed().subscribe(() => {
+        this.chatOn = false;
+        document.getElementById('chatIcon').style.color = 'gray';
+      });
     }
     this.updateStyles();
   }
@@ -310,6 +343,8 @@ export class ConferenceComponent implements OnInit {
 
   stopVideo(): void {
     if (this.videoOn) {
+      if(this.userType == "student")
+        clearInterval(this.interval);
       (<MediaStream>this.localVideo.srcObject).getTracks().forEach((track) => {
         track.stop();
       });
@@ -322,7 +357,7 @@ export class ConferenceComponent implements OnInit {
     }
   }
 
-  captureVideo() {
+  videoToCanvas(): string {
     if (this.videoOn) {
       const canvas = document.createElement('canvas');
       // scale the canvas accordingly
@@ -332,34 +367,94 @@ export class ConferenceComponent implements OnInit {
       canvas
         .getContext('2d')
         .drawImage(this.localVideo, 0, 0, canvas.width, canvas.height);
-      // convert it to a usable data URL
-      const formData = new FormData();
-      formData.append('data', canvas.toDataURL());
-      this.httpClient
-        .post(environment.BACKEND_IP + '/analyze/hand', formData)
-        .subscribe(
-          (res) => {
-            console.log(res);
-            var taskID = res["task_id"]
-            this.getStatus(taskID); 
-          },
-          (err) => console.log(err)
-        );
+      return canvas.toDataURL();
     } else {
       console.error('Video stream is not on!');
     }
   }
 
-  getStatus(taskID) {
+  captureVideo() {
+    const formData = new FormData();
+    var photo = this.videoToCanvas();
+    formData.append('data', photo);
+    formData.append('session_id', '1');
+    this.sendHandCapture(formData);
+    this.sendHeadCapture(formData);
+    //this.sendPhoneCapture(formData);
+  }
+
+  sendPhoneCapture(formData: FormData): void {
+    var header = new HttpHeaders().set(      
+      'Authorization',
+      'Bearer ' + this.token
+    );
+    formData.append('timestamp', Date.now().toString());
+    this.httpClient
+      .post(environment.BACKEND_IP + '/analyze/phone', formData, {headers: header})
+      .subscribe(
+        (res) => {            
+          var taskID = res["task_id"]
+          this.getStatus(taskID, 1000, "phone"); 
+        },
+        (err) => console.log(err)
+      );
+  }
+
+  sendHeadCapture(formData: FormData): void {
+    var header = new HttpHeaders().set(      
+      'Authorization',
+      'Bearer ' + this.token
+    );
+    formData.append('timestamp', Date.now().toString());
+    this.httpClient
+      .post(environment.BACKEND_IP + '/analyze/head', formData, {headers: header})
+      .subscribe(
+        (res) => {          
+          var taskID = res["task_id"]
+          this.getStatus(taskID, 3000, "head"); 
+        },
+        (err) => console.log(err)
+      );
+  }
+
+  sendHandCapture(formData: FormData): void {
+    var header = new HttpHeaders().set(      
+      'Authorization',
+      'Bearer ' + this.token
+    );
+    this.httpClient
+      .post(environment.BACKEND_IP + '/analyze/hand', formData, {headers: header})
+      .subscribe(
+        (res) => {           
+          var taskID = res["task_id"]
+          this.getStatus(taskID, 1500, "hand"); 
+        },
+        (err) => console.log(err)
+      );
+  }
+
+  getStatus(taskID, checkInterval: number, type: string) {
     this.httpClient
         .get(environment.BACKEND_IP + '/result/' + taskID)
         .subscribe(
           (res) => {
-            console.log("res", res);
             const taskStatus = res["task_status"];
             if (taskStatus === 'SUCCESS') {
-              if(this.userType === "student"){
-                this.socket.emit("analyze-result", {roomID: this.roomID, username: this.username, result: res["task_result"]})
+              if(res["distraction_type"]){
+                if( res["feedback_message"] != ""){
+                  //display feedback to student
+                  this.openTA(res["feedback_message"]);
+                }
+              }
+              else if(res["hand_raised"]){
+                if(res["hand_raised"]){
+                  // send notification to instructore
+                  this.openTA("You raised hand");
+                }
+                if(res["feedback_message"] != ""){
+                  //show feedback to student
+                  this.openTA(res["feedback_message"])
+                }
               }
               return false;
             }
@@ -367,9 +462,8 @@ export class ConferenceComponent implements OnInit {
               return false;
             }
             setTimeout( () => {
-              console.log("retrying");
-              this.getStatus(res["task_id"]);
-            }, 1000);
+              this.getStatus(taskID, checkInterval, type);
+            }, checkInterval);
           },
           (err) => console.log(err)
         );
@@ -425,6 +519,12 @@ export class ConferenceComponent implements OnInit {
           .getUserMedia(constraints)
           .then((stream) => {
             this.getUserMediaSuccess(stream);
+          })
+          .then( () => {
+            if(this.userType == "student")
+              this.interval = setInterval( () => {
+                this.captureVideo();
+              }, 5000);
           });
       } else {
         alert('Your browser does not support getUserMedia API');
@@ -434,7 +534,6 @@ export class ConferenceComponent implements OnInit {
   }
 
   setListeners() {
-    console.log("my-id", this.socketId)
     this.socket.on('signal', (fromId, message) =>
       this.gotMessageFromServer(fromId, message)
     );
@@ -481,6 +580,12 @@ export class ConferenceComponent implements OnInit {
     this.socket.on('expect-screen', (data) => {
       this.expectScreen = true;
     });
+
+    this.socket.on("chat-msg", (data) => {
+      console.log("message from:", data);
+      this.chat.push(data);
+      console.log(this.chat);
+    })
 
     this.socket.on('user-joined', (id, count, clients) => {
       var socketID;
@@ -564,7 +669,6 @@ export class ConferenceComponent implements OnInit {
     this.shareStream = stream;
     this.share.srcObject = stream;
     Object.keys( this.connections).forEach( (connectionID) => {
-      console.log("sending to", connectionID, this.connections[connectionID])
       this.connections[connectionID].addStream(this.shareStream);
       this.connections[connectionID].createOffer().then((description) => {
         this.connections[connectionID]
