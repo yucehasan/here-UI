@@ -135,18 +135,13 @@ export class ConferenceComponent implements OnInit {
   }
 
   getScreenShareSnip(): HTMLVideoElement {
-    if(this.shareOn)
-      return document.querySelector('.screen-stream');
-    return null;
+    return document.querySelector('.screen-stream');
   }
 
   getSlideSnip(): HTMLVideoElement {
-    if(this.slideOn){
       var innerDoc = (document.getElementById("webviewer-1") as HTMLIFrameElement).contentWindow.document;
       console.log(innerDoc.querySelector('.hacc'))
       return innerDoc.querySelector('.hacc');
-    }
-    return null;
   }
 
   openNote(): void {
