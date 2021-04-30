@@ -470,10 +470,12 @@ export class ConferenceComponent implements OnInit {
 
     this.socket.on('slide-start', () => {
       this.slideOn = true;
+      this.updateStyles();
     });
 
     this.socket.on('slide-stop', () => {
       this.slideOn = false;
+      this.updateStyles();
     });
 
     this.socket.on('slideChange', (number) => {
