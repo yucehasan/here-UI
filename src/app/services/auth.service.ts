@@ -34,7 +34,7 @@ export class AuthService {
     this.refreshTokenSub.next(newRefreshToken);
     this.refreshToken = newRefreshToken;
     localStorage.setItem("refresh_token", newRefreshToken);
-    console.log("AUTH SERVICE: Refresh token is updated. New Token: \n" + newRefreshToken.substr(0, 5) + "...");
+    console.log("AUTH SERVICE: Refresh token is updated. New Token: \n" + this.refreshToken.substr(0, 5) + "...");
   }
 
   updateUsername(newUsername: string): void {
@@ -50,15 +50,23 @@ export class AuthService {
   }
 
   refreshAccessToken(): void {
-    const headers = new HttpHeaders().set(
+    const headers = new HttpHeaders() // {'Authorization': 'Bearer ' + this.refreshToken}
+    .set(
       'Authorization',
-      'Bearer ' + this.refreshToken
+      'Bearer ' + localStorage.getItem('refresh_token')
     );
 
-    this.httpClient.post<any>(environment.BACKEND_IP + "/token/refresh", {headers: headers})
+    var link = environment.BACKEND_IP + "/token/refresh"; 
+    this.httpClient.post<any>(link, {}, {headers: headers})
     .subscribe((res) => {
       console.log("AUTH SERVICE: response for token refresh: " + res);
       this.updateToken(res.access_token);
+    },
+    (err) => {
+      console.log("Error on refresh", err);
+      console.log(link);
+      console.log(headers);
+      console.log("Refresh token: " + this.refreshToken);
     })
 
   }
