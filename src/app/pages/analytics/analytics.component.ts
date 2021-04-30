@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import jspdf from 'jspdf';
+import html2canvas from 'html2canvas'; 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-analytics',
@@ -7,9 +10,30 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AnalyticsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+  }
+
+  captureScreen()  
+  {  
+    console.log("hlelo");
+    var data = document.getElementById('grid'); 
+    html2canvas(data).then(canvas => {  
+      // Few necessary setting options  
+      let imgWidth = 208;   
+      let imgHeight = canvas.height * imgWidth / canvas.width;  
+
+      const contentDataURL = canvas.toDataURL('image/png')  
+      let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF  
+      let position = 0;  
+      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight)  
+      pdf.save('analytics.pdf'); // Generated PDF   
+    });  
+  }  
+
+  goHome(){
+    this.router.navigate(['main']);
   }
 
 }

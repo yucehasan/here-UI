@@ -1,19 +1,27 @@
+<link href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" rel="stylesheet">
+
 <body>
-    <div class="container">
-        <mat-card id="analytics">
-            <mat-card-title id="analyticsTitle">Session Analytics</mat-card-title><hr>
-            <div fxLayout="column" fxLayoutWrap="nowrap" fxLayoutGap="3%">
-                <div fxFlex="30%">
-                    <mat-card id="timeline"> 
-                        <mat-card-title id="subtitle">Timeline</mat-card-title>
-                    </mat-card>
-                </div>
-                <div fxFlex="70%">
-                    <mat-card id="participantDetails"> 
-                        <mat-card-title id="subtitle">Participant Details</mat-card-title>
-                    </mat-card>
-                </div>
-            </div>
-        </mat-card>
-    </div>
-</body>
+    <mat-card id="analytics">
+        <div  fxLayout="row" >
+            <mat-card-title id="analyticsTitle">Your session has ended. Let's see how it went.</mat-card-title>
+            <span id="empty"></span>
+            <div id="editor"></div>
+            <button id='saveButton' mat-fab (click)="captureScreen()">
+                <i id="save" class="fas fa-download"></i>
+            </button>
+            <button id='homeButton' mat-fab (click)="goHome()">
+                <i id="home" class="fas fa-home"></i>
+            </button>
+        </div>
+        <mat-grid-list id="grid" [gutterSize]="'20px'" cols="1" rowHeight="4rem" >
+            <mat-grid-tile id="timeline1" [rowspan]="4" class="mat-elevation-z4" >
+                <mat-grid-tile-header id="timeline"> Timeline </mat-grid-tile-header>
+                <app-timeline ></app-timeline>
+            </mat-grid-tile>
+            <mat-grid-tile id="participants1" [rowspan]="7.5" class="mat-elevation-z4" >
+                <mat-grid-tile-header id="participants"> Participants Details</mat-grid-tile-header>
+                <app-participant-table ></app-participant-table>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </mat-card>
+</body>  

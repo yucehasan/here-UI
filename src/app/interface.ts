@@ -25,3 +25,16 @@ interface Course{
     name: string,
     id: number
 }
+
+export interface ParticipantsResponse {
+  participants: 
+    {
+      name: string,
+      hand_raise_count: number;
+    }[]
+}
+
+export interface ParticipantsDetails {
+    name: string,
+    participation: string
+}
