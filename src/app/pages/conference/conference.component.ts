@@ -134,8 +134,19 @@ export class ConferenceComponent implements OnInit {
     }
   }
 
-  getScreenshot(): HTMLVideoElement {
-    return document.querySelector('.screen-stream');
+  getScreenShareSnip(): HTMLVideoElement {
+    if(this.shareOn)
+      return document.querySelector('.screen-stream');
+    return null;
+  }
+
+  getSlideSnip(): HTMLVideoElement {
+    if(this.slideOn){
+      var innerDoc = (document.getElementById("webviewer-1") as HTMLIFrameElement).contentWindow.document;
+      console.log(innerDoc.querySelector('.hacc'))
+      return innerDoc.querySelector('.hacc');
+    }
+    return null;
   }
 
   openNote(): void {
@@ -145,7 +156,8 @@ export class ConferenceComponent implements OnInit {
         courseID: this.roomID,
         top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
         right: this.noteIcon.nativeElement.getBoundingClientRect().right,
-        getSnip: this.getScreenshot,
+        getSlide: this.getSlideSnip,
+        getShareScreen: this.getScreenShareSnip
       };
       let dialogRef = this.dialog.open(NoteCanvasComponent, {
         data: filterData,
@@ -261,18 +273,25 @@ export class ConferenceComponent implements OnInit {
   }
 
   startSlide(): void {
-    if (this.slideOn) {
-      this.stopSlide();
-      document.getElementById('slideIcon').style.color = 'gray';
-    } else {
-      document.getElementById('slideIcon').style.color = 'blue';
-      this.slideOn = true;
+    if(this.userType == "instructor"){
+      if (this.slideOn) {
+        this.stopSlide();
+        document.getElementById('slideIcon').style.color = 'gray';
+      } else {
+        document.getElementById('slideIcon').style.color = 'blue';
+        this.socket.emit("slide-start", {roomID: this.roomID})
+        this.slideOn = true;
+      }
+      this.updateStyles();
     }
-    this.updateStyles();
+    else{
+      console.error("You are not authorized to share slide")
+    }
   }
 
   stopSlide(): void {
-    this.slideOn = false;
+    this.socket.emit("slide-stop", {roomID: this.roomID})
+    this.shareOn = false;
   }
 
   onSlideChange(number) {
@@ -449,11 +468,29 @@ export class ConferenceComponent implements OnInit {
       this.updateStyles();
     });
 
+    this.socket.on('slide-start', () => {
+      this.slideOn = true;
+    });
+
+    this.socket.on('slide-stop', () => {
+      this.slideOn = false;
+    });
+
+    this.socket.on('slideChange', (number) => {
+      this.currSlideInstr = number;
+      this.gotSlideUpdate(number);
+    });
+
+    this.socket.on('expect-screen', (data) => {
+      this.expectScreen = true;
+    });
+
     this.socket.on('user-joined', (id, count, clients) => {
       var socketID;
       var name;
       clients.forEach((client) => {
         if (!this.connections[client.socketID] && client.socketID != this.socketId) {
+          console.log("client", client)
           socketID = client.socketID;
           name = client.username;
           this.connections[socketID] = new RTCPeerConnection(this.iceservers);
@@ -495,23 +532,13 @@ export class ConferenceComponent implements OnInit {
             .catch((e) => console.log(e));
         });
       }
-    });
-
-    this.socket.on('slideChange', (number) => {
-      this.currSlideInstr = number;
-      this.gotSlideUpdate(number);
-    });
-
-    this.socket.on('expect-screen', (data) => {
-      this.expectScreen = true;
-    });
+    })
 
     this.socket.emit('confirm', {
       roomID: this.roomID,
       username: this.username,
       userType: this.userType
     });
-    //})
   }
 
   getUserMediaSuccess(stream) {
