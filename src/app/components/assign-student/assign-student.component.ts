@@ -5,6 +5,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-assign-student',
@@ -16,7 +17,6 @@ export class AssignStudentComponent implements OnInit {
   username: string;
   token: string;
   userType: string;
-  SERVER_URL: string;
   constructor(@Inject(MAT_DIALOG_DATA) public data: { courseName: string, courseId: number},
     private dialogRef: MatDialogRef<AssignStudentComponent>,
     private httpClient: HttpClient,
@@ -24,7 +24,6 @@ export class AssignStudentComponent implements OnInit {
     this.username = '';
     this.token = '';
     this.userType = '';
-    this.SERVER_URL = 'https://hereapp-live.herokuapp.com/course/' + this.data.courseId;
   }
 
   ngOnInit(): void {
@@ -52,12 +51,12 @@ export class AssignStudentComponent implements OnInit {
           'Authorization',
           'Bearer ' + this.token
         );
-        this.httpClient.post<any>(this.SERVER_URL, formData, { headers: headers })
+        this.httpClient.post<any>(environment.BACKEND_IP + '/course/' + this.data.courseId, formData, { headers: headers })
           .subscribe((res) => {
             console.log(res);
           },
           (error) => {
-            console.log("Error: " + error);
+            console.log("Error:", error);
           })
         this.dialogRef.close();
       }
