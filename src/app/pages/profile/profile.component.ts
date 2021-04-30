@@ -6,7 +6,8 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { delay, retry, retryWhen, tap } from 'rxjs/operators';
+import { catchError, delay, map, retry, retryWhen, tap } from 'rxjs/operators';
+import { HttpService } from '../../services/http.service';
 
 @Component({
   selector: 'app-profile',
@@ -25,7 +26,8 @@ export class ProfileComponent implements OnInit {
     public addCourseDialog: MatDialog,
     private httpClient: HttpClient,
     private router: Router,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private httpService: HttpService) {
     this.username = "";
     this.token = "";
   }
@@ -49,21 +51,28 @@ export class ProfileComponent implements OnInit {
       'Bearer ' + this.token
     );
 
-    this.httpClient.get<any>(environment.BACKEND_IP + '/course' , { headers: headers })
-      .subscribe((res) => {
-        console.log(res);
-        this.courses = res.courses;
-      },
-      (err) => {
-        console.log("Err: ", err);
-        if ( err.status === 401) {
-          console.log("yes");
-          this.authService.refreshAccessToken();
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000)
-        }
-      })
+    // var getResponse = this.httpService.get(environment.BACKEND_IP + '/course', headers);
+    // console.log(getResponse)
+    this.httpService.get(environment.BACKEND_IP + '/course', headers).then((res) => {
+      console.log("Retrieved: ", res);
+    })
+    
+    
+    // this.httpClient.get<any>(environment.BACKEND_IP + '/course', { headers: headers })
+    //   .subscribe((res) => {
+    //     console.log(res);
+    //     this.courses = res.courses;
+    //   },
+    //     (err) => {
+    //       console.log("Err: ", err);
+    //       if (err.status === 401) {
+    //         console.log("yes");
+    //         this.authService.refreshAccessToken();
+    //         setTimeout(() => {
+    //           window.location.reload();
+    //         }, 1000)
+    //       }
+    //     })
 
     if (this.token === "") {
       alert("You are not logged in");
