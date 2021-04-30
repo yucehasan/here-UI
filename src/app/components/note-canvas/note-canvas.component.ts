@@ -10,6 +10,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
+import { FileService } from 'src/app/services/file.service';
 import { CanvasTextInputComponent } from '../canvas-text-input/canvas-text-input.component';
 
 @Component({
@@ -49,7 +50,8 @@ export class NoteCanvasComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<NoteCanvasComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -67,12 +69,32 @@ export class NoteCanvasComponent implements OnInit {
     });
   }
 
-  snip() {
-    var video = this.data.getSnip();
-    var ratioConstant = Math.min( this.canvasWidth / video.videoWidth, this.canvasHeight / video.videoHeight);
-    this.canvas
-      .getContext('2d')
-      .drawImage(video, 0, 0, video.videoWidth * ratioConstant, video.videoHeight * ratioConstant);
+  screenSnip(){    
+    var video = this.data.getShareScreen() as HTMLVideoElement;
+    if(video){
+      var ratioConstant = Math.min( this.canvasWidth / video.videoWidth, this.canvasHeight / video.videoHeight);
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.canvas
+        .getContext('2d')
+        .drawImage(video, 0, 0, video.videoWidth * ratioConstant, video.videoHeight * ratioConstant);
+    }
+    else{
+      alert("Screen share is not on.")
+    }
+  }
+
+  slideSnip() {
+    var sourceCanvas = this.data.getSlide() as HTMLCanvasElement;
+    if(sourceCanvas){
+      var ratioConstant = Math.min( this.canvasWidth / sourceCanvas.width, this.canvasHeight / sourceCanvas.height);
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.canvas
+        .getContext('2d')
+        .drawImage(sourceCanvas, 0, 0, sourceCanvas.width * ratioConstant, sourceCanvas.height * ratioConstant);
+    }
+    else{
+      alert("Slide share is not on.")
+    }
   }
 
   initCanvas(): void {
@@ -182,15 +204,14 @@ export class NoteCanvasComponent implements OnInit {
     var m = confirm('Want to clear');
     if (m) {
       this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-      document.getElementById('canvasimg').style.display = 'none';
     }
   }
 
   save() {
-    var canvasimg = document.getElementById('canvasimg') as HTMLImageElement;
-    canvasimg.style.border = '2px solid';
-    canvasimg.src = this.canvas.toDataURL();
-    canvasimg.style.display = 'inline';
+    console.log(this.data.courseID);
+    console.log(this.canvas.toDataURL());
+    this.fileService.uploadNote(this.data.courseID, this.canvas.toDataURL())
+    alert("Note saved");
   }
 
   addtext() {
@@ -206,7 +227,6 @@ export class NoteCanvasComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log("reso", result)
       this.textInput = result;
       this.canvas.addEventListener(
         'click',
