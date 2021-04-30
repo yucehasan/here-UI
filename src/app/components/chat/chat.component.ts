@@ -9,6 +9,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 export class ChatComponent implements OnInit {
   filterData;
   value;
+  chat;
 
   constructor(
     private dialogRef: MatDialogRef<ChatComponent>,
@@ -18,6 +19,7 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
     this.setPosition();
+    this.chat = this.data.chat;
   }
 
   setPosition(): void {
@@ -31,8 +33,8 @@ export class ChatComponent implements OnInit {
 
   send(){
     if(this.value != ""){
-      console.log(this.data);
       this.data.socket.emit('chat-msg', {roomID: this.data.roomID, message: this.value, sender: this.data.username});
+      this.data.chat.push({message: this.value, sender: "You"})
       this.value = "";
     }
   }

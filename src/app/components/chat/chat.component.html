@@ -4,7 +4,9 @@
     </mat-card-header>
     <mat-card-content>
         <div class="message-container">
-            <strong>User said: </strong><p>Hey there, this is an example message</p>
+            <div class="message" *ngFor="let msg of chat">
+                <strong>{{msg.sender}} said: </strong><p>{{msg.message}}</p>
+            </div>
         </div>
         <div class="send-msg">
             <mat-form-field class="form-field">
