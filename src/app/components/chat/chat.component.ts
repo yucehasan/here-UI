@@ -17,7 +17,6 @@ export class ChatComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    
     this.setPosition();
   }
 
@@ -31,9 +30,11 @@ export class ChatComponent implements OnInit {
   }
 
   send(){
-    this.data.send("mesajınız geldi");
-    var message = "mesajınız geldi";
-    this.data.socket.emit('chat-msg', {roomID: this.data.roomID, message: message, sender: this.data.username});
+    if(this.value != ""){
+      console.log(this.data);
+      this.data.socket.emit('chat-msg', {roomID: this.data.roomID, message: this.value, sender: this.data.username});
+      this.value = "";
+    }
   }
 
 }
