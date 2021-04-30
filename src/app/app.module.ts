@@ -31,6 +31,7 @@ import { EditProfileComponent } from './components/edit-profile/edit-profile.com
 import { AnalyticsComponent } from './pages/analytics/analytics.component';
 import { CanvasTextInputComponent } from './components/canvas-text-input/canvas-text-input.component';
 import { SavedNotesComponent } from './components/saved-notes/saved-notes.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -57,6 +58,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     AnalyticsComponent,
     CanvasTextInputComponent,
     SavedNotesComponent,
+    ChatComponent,
   ],
   imports: [
     BrowserModule,

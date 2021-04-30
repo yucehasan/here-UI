@@ -15,6 +15,7 @@ import { NoteCanvasComponent } from 'src/app/components/note-canvas/note-canvas.
 import { TaComponent } from 'src/app/components/ta/ta.component';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { ChatComponent } from 'src/app/components/chat/chat.component';
 
 const labelStyle =
   'position: absolute; bottom: 5px; width: calc(100% - 20px); \
@@ -261,13 +262,28 @@ export class ConferenceComponent implements OnInit {
     this.updateStyles();
   }
 
-  openChat(): void {
-    if (this.chatOn) {
-      document.getElementById('chatIcon').style.color = 'gray';
-      this.chatOn = false;
-    } else {
-      document.getElementById('chatIcon').style.color = 'blue';
+  openChat(event: MouseEvent): void {
+    if (!this.chatOn) {
+      const filterData = {
+        courseID: this.roomID,
+        top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
+        right: this.noteIcon.nativeElement.getBoundingClientRect().right
+      };
+      let dialogRef = this.dialog.open(ChatComponent, {
+        data: filterData,
+        hasBackdrop: false,
+        panelClass: 'filter-popup',
+      });
+      (event.target as HTMLButtonElement).addEventListener('click', () => {
+        dialogRef.close();
+      })
       this.chatOn = true;
+      document.getElementById('chatIcon').style.color = 'blue';
+
+      dialogRef.afterClosed().subscribe(() => {
+        this.chatOn = false;
+        document.getElementById('chatIcon').style.color = 'gray';
+      });
     }
     this.updateStyles();
   }
