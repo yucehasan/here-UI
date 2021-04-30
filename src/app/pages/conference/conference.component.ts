@@ -59,6 +59,7 @@ export class ConferenceComponent implements OnInit {
   connections = [];
   shareStream;
   expectScreen: boolean;
+  chat;
 
   type: 'instructor' | 'student';
   currSlideInstr: number;
@@ -96,6 +97,7 @@ export class ConferenceComponent implements OnInit {
     this.participantsOn = false;
     this.chatOn = false;
     this.expectScreen = false;
+    this.chat = [];
     this.activatedRoute.params.subscribe((params: Params) => this.roomID = params['roomID']);
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
@@ -151,7 +153,6 @@ export class ConferenceComponent implements OnInit {
   getSlideSnip(): HTMLVideoElement {
     if(this.slideOn){
       var innerDoc = (document.getElementById("webviewer-1") as HTMLIFrameElement).contentWindow.document;
-      console.log(innerDoc.querySelector('.hacc'))
       return innerDoc.querySelector('.hacc');
     }
     return null;
@@ -282,7 +283,8 @@ export class ConferenceComponent implements OnInit {
         send: this.sendChat,
         socket: this.socket,
         roomID: this.roomID,
-        username: this.username
+        username: this.username,
+        chat: this.chat
       };
       let dialogRef = this.dialog.open(ChatComponent, {
         data: filterData,
@@ -379,7 +381,6 @@ export class ConferenceComponent implements OnInit {
   captureVideo() {
     const formData = new FormData();
     var photo = this.videoToCanvas();
-    console.log(photo);
     formData.append('data', photo);
     formData.append('session_id', '1');
     this.sendHandCapture(formData);
@@ -396,8 +397,7 @@ export class ConferenceComponent implements OnInit {
     this.httpClient
       .post(environment.BACKEND_IP + '/analyze/phone', formData, {headers: header})
       .subscribe(
-        (res) => {
-          console.log(res);            
+        (res) => {            
           var taskID = res["task_id"]
           this.getStatus(taskID, 1000, "phone"); 
         },
@@ -414,10 +414,8 @@ export class ConferenceComponent implements OnInit {
     this.httpClient
       .post(environment.BACKEND_IP + '/analyze/head', formData, {headers: header})
       .subscribe(
-        (res) => {
-          console.log(res);           
+        (res) => {          
           var taskID = res["task_id"]
-          console.log("Task id of head", taskID)
           this.getStatus(taskID, 3000, "head"); 
         },
         (err) => console.log(err)
@@ -432,10 +430,8 @@ export class ConferenceComponent implements OnInit {
     this.httpClient
       .post(environment.BACKEND_IP + '/analyze/hand', formData, {headers: header})
       .subscribe(
-        (res) => {
-          console.log(res);             
+        (res) => {           
           var taskID = res["task_id"]
-          console.log("Task id of hand", taskID)
           this.getStatus(taskID, 1500, "hand"); 
         },
         (err) => console.log(err)
@@ -443,29 +439,26 @@ export class ConferenceComponent implements OnInit {
   }
 
   getStatus(taskID, checkInterval: number, type: string) {
-    console.log("querying for", type, "at", environment.BACKEND_IP + '/result/' + taskID);
     this.httpClient
         .get(environment.BACKEND_IP + '/result/' + taskID)
         .subscribe(
           (res) => {
-            console.log("res", res);
             const taskStatus = res["task_status"];
             if (taskStatus === 'SUCCESS') {
               if(res["distraction_type"]){
-                console.log("distraction type is not empty", res["distraction_type"]);
                 if( res["feedback_message"] != ""){
                   //display feedback to student
-                  console.log(res["feedback_message"])
+                  this.openTA(res["feedback_message"]);
                 }
               }
               else if(res["hand_raised"]){
                 if(res["hand_raised"]){
                   // send notification to instructore
-                  console.log("You raised hand")
+                  this.openTA("You raised hand");
                 }
                 if(res["feedback_message"] != ""){
                   //show feedback to student
-                  console.log(res["feedback_message"])
+                  this.openTA(res["feedback_message"])
                 }
               }
               return false;
@@ -474,8 +467,7 @@ export class ConferenceComponent implements OnInit {
               return false;
             }
             setTimeout( () => {
-              console.log("retrying");
-              this.getStatus(res["task_id"], checkInterval, type);
+              this.getStatus(taskID, checkInterval, type);
             }, checkInterval);
           },
           (err) => console.log(err)
@@ -532,13 +524,13 @@ export class ConferenceComponent implements OnInit {
           .getUserMedia(constraints)
           .then((stream) => {
             this.getUserMediaSuccess(stream);
+          })
+          .then( () => {
+            if(this.userType == "student")
+              this.interval = setInterval( () => {
+                this.captureVideo();
+              }, 5000);
           });
-          // .then( () => {
-          //   if(this.userType == "student")
-          //     this.interval = setInterval( () => {
-          //       this.captureVideo();
-          //     }, 5000);
-          // });
       } else {
         alert('Your browser does not support getUserMedia API');
       }
@@ -547,7 +539,6 @@ export class ConferenceComponent implements OnInit {
   }
 
   setListeners() {
-    console.log("my-id", this.socketId)
     this.socket.on('signal', (fromId, message) =>
       this.gotMessageFromServer(fromId, message)
     );
@@ -595,6 +586,8 @@ export class ConferenceComponent implements OnInit {
 
     this.socket.on("chat-msg", (data) => {
       console.log("message from:", data);
+      this.chat.push(data);
+      console.log(this.chat);
     })
 
     this.socket.on('user-joined', (id, count, clients) => {
