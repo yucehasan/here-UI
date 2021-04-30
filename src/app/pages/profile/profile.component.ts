@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { delay, retry, retryWhen, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile',
@@ -52,6 +53,16 @@ export class ProfileComponent implements OnInit {
       .subscribe((res) => {
         console.log(res);
         this.courses = res.courses;
+      },
+      (err) => {
+        console.log("Err: ", err);
+        if ( err.status === 401) {
+          console.log("yes");
+          this.authService.refreshAccessToken();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000)
+        }
       })
 
     if (this.token === "") {
