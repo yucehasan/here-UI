@@ -40,6 +40,7 @@ export class MainComponent implements OnInit {
   username: string;
   token: string;
   classesWithNotes;
+  userType: string;
 
   constructor(private router: Router, private authService: AuthService) {
     this.username = '';
@@ -59,6 +60,11 @@ export class MainComponent implements OnInit {
       alert('You are not logged in');
       this.router.navigate(['/']);
     }
+    this.authService.getUserType().subscribe((type) => {
+      this.userType = type;
+    });
+
+    console.log(this.userType)
   }
 
   formatResponse(input: { [name: string]: {id: number, date: string, course_id: number}[]}): {id: string, notes: {id: number, date: string, course_id: number}[] }[] {

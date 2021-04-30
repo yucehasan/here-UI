@@ -1,0 +1,22 @@
+<div fxLayout="column" fxLayout.lt-md="row" fxLayoutWrap="nowrap" fxLayoutAlign="center center">
+    <mat-card id="addCourse" (click)="addCourse()">
+        <h2 id="addCourseHeader">Add a new course</h2>
+    </mat-card>
+    <span fxFlex="30px"></span>
+    <mat-card class="bottom-card">
+        <mat-card-header>
+            <mat-card-title>Courses</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <mat-list>
+                <mat-divider *ngIf="courses.length > 0"></mat-divider>
+                <div *ngFor="let course of courses">
+                    <mat-list-item >
+                        <button (click)="assignStudent(course.name, course.id)" class="course-btn" mat-raised-button>{{course.code}} {{course.name}}</button>
+                    </mat-list-item>
+                    <mat-divider ></mat-divider>
+                </div>
+            </mat-list>
+        </mat-card-content>
+    </mat-card>
+</div>

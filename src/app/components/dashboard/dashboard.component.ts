@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog} from '@angular/material/dialog';
 import { AssignStudentComponent } from 'src/app/components/assign-student/assign-student.component';
 import { AddCourseDialogComponent } from 'src/app/components/add-course-dialog/add-course-dialog.component';
 import { AuthService } from '../../services/auth.service';
@@ -8,16 +8,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.sass']
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.sass']
 })
-export class ProfileComponent implements OnInit {
-  userType: string;
-  username: string;
+export class DashboardComponent implements OnInit {
   token: string;
-  user_id: number;
-  saved_notes: any[];
   courses: any[];
   constructor(
     private assignStudentDialog: MatDialog,
@@ -25,7 +21,6 @@ export class ProfileComponent implements OnInit {
     private httpClient: HttpClient,
     private router: Router,
     private authService: AuthService) {
-    this.username = "";
     this.token = "";
   }
 
@@ -33,14 +28,6 @@ export class ProfileComponent implements OnInit {
     this.courses = [];
     this.authService.getToken().subscribe(token => {
       this.token = token;
-    })
-
-    this.authService.getUsername().subscribe(username => {
-      this.username = username;
-    })
-
-    this.authService.getUserType().subscribe(userType => {
-      this.userType = userType;
     })
 
     const headers = new HttpHeaders().set(
@@ -56,24 +43,18 @@ export class ProfileComponent implements OnInit {
 
     if (this.token === "") {
       alert("You are not logged in");
-      this.router.navigate(['/auth']);
+      this.router.navigate(['/']);
     }
   }
 
   addCourse(): void {
-    if (this.userType === "instructor") {
-      // alert("Not yet implemented");
-      // TODO
       this.addCourseDialog.open(AddCourseDialogComponent, {
         height: '800px',
         width: '1200px',
       });
-    }
   }
 
   assignStudent(courseName: string, courseId: number): void {
-    console.log(courseId);
-    console.log(courseName);
     this.assignStudentDialog.open(AssignStudentComponent, {
       data: { courseName: courseName, courseId: courseId }
     });
