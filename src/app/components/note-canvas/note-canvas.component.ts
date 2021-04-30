@@ -69,12 +69,32 @@ export class NoteCanvasComponent implements OnInit {
     });
   }
 
-  snip() {
-    var video = this.data.getSnip();
-    var ratioConstant = Math.min( this.canvasWidth / video.videoWidth, this.canvasHeight / video.videoHeight);
-    this.canvas
-      .getContext('2d')
-      .drawImage(video, 0, 0, video.videoWidth * ratioConstant, video.videoHeight * ratioConstant);
+  screenSnip(){    
+    var video = this.data.getShareScreen() as HTMLVideoElement;
+    if(video){
+      var ratioConstant = Math.min( this.canvasWidth / video.videoWidth, this.canvasHeight / video.videoHeight);
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.canvas
+        .getContext('2d')
+        .drawImage(video, 0, 0, video.videoWidth * ratioConstant, video.videoHeight * ratioConstant);
+    }
+    else{
+      alert("Screen share is not on.")
+    }
+  }
+
+  slideSnip() {
+    var sourceCanvas = this.data.getSlide() as HTMLCanvasElement;
+    if(sourceCanvas){
+      var ratioConstant = Math.min( this.canvasWidth / sourceCanvas.width, this.canvasHeight / sourceCanvas.height);
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.canvas
+        .getContext('2d')
+        .drawImage(sourceCanvas, 0, 0, sourceCanvas.width * ratioConstant, sourceCanvas.height * ratioConstant);
+    }
+    else{
+      alert("Slide share is not on.")
+    }
   }
 
   initCanvas(): void {
