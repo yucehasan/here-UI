@@ -50,7 +50,7 @@
           Capture snaphot
         </button>
         <div #chatIcon class="dialog-btn-wrapper">
-          <button mat-fab (click)="openChat($event)">
+          <button matBadgeColor="warn" [matBadge]="unreadCount" [matBadgeHidden]="unreadCount == 0" mat-fab (click)="openChat($event)">
             <i id="chatIcon" class="fas fa-comments"></i>
           </button>
         </div>  
