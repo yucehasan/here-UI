@@ -2,9 +2,9 @@
 
 @include mat-core();
 
-$nglp-primary: mat-palette($mat-grey, 50, 700, 100);
+$nglp-primary: mat-palette($mat-grey, 400, 700, 100);
 
-$nglp-accent:  mat-palette($mat-orange, A700);
+$nglp-accent:  mat-palette($mat-green, A700);
 
 $nglp-warn:    mat-palette($mat-red, 500);
 

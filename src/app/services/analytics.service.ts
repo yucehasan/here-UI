@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ParticipantsDetails, ParticipantsResponse } from '../interface';
 
@@ -8,12 +8,14 @@ import { ParticipantsDetails, ParticipantsResponse } from '../interface';
   providedIn: 'root'
 })
 export class AnalyticsService {
-  participantList: Array<ParticipantsDetails>;
+  participantList: ParticipantsDetails[];
+  subParticipantList: Subject<ParticipantsDetails[]>;
+
   constructor(private httpClient: HttpClient) {
     this.participantList = [];
    }
 
-  fetchParticipants(): Array<ParticipantsDetails> {
+  fetchParticipants(): ParticipantsDetails[] {
     this.httpClient.get<any>(environment.BACKEND_IP + "/session").subscribe((res) => {
       this.updateParticipants(res);
     });
@@ -35,5 +37,10 @@ export class AnalyticsService {
       }
       this.participantList.push({name: participant.name, participation: part});
     });
+    this.subParticipantList.next(this.participantList);
+  }
+
+  getParticipantList(): Observable<ParticipantsDetails[]> {
+    return this.subParticipantList.asObservable();
   }
 }

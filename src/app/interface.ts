@@ -27,15 +27,14 @@ interface Course{
 }
 
 export interface ParticipantsResponse {
-  participants: [
+  participants: 
     {
-      name: string;
+      name: string,
       hand_raise_count: number;
-    }
-  ];
+    }[]
 }
 
 export interface ParticipantsDetails {
-    name: string;
-    participation: string;
+    name: string,
+    participation: string
 }
