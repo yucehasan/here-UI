@@ -11,22 +11,12 @@ import { AuthService } from './services/auth.service';
 export class AppComponent implements OnInit {
   loggedIn: boolean;
   token: string;
+
   constructor(private authService: AuthService, private router: Router) {
   }
 
   ngOnInit(): void {
-    this.authService.getToken().subscribe(token => {
-      this.token = token;
-      if (this.token === "") {
-        this.loggedIn = false;
-      }
-      else{
-        this.loggedIn = true;
-      }
-    })
-    if (this.loggedIn) {
-      this.router.navigate(['main']);
-    }
+    
   }
   
 }

@@ -8,7 +8,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ProfileComponent } from './pages/profile/profile.component';
 import { ConferenceComponent } from './pages/conference/conference.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
@@ -33,6 +32,7 @@ import { ParticipantTableComponent } from './components/participant-table/partic
 import { TimelineComponent } from './components/timeline/timeline.component';
 import { CanvasTextInputComponent } from './components/canvas-text-input/canvas-text-input.component';
 import { SavedNotesComponent } from './components/saved-notes/saved-notes.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -40,7 +40,6 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     AppComponent,
     MainComponent,
     PageNotFoundComponent,
-    ProfileComponent,
     ConferenceComponent,
     LoginComponent,
     RegisterComponent,
@@ -61,6 +60,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     TimelineComponent,
     CanvasTextInputComponent,
     SavedNotesComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
