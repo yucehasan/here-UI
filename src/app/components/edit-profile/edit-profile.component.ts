@@ -50,9 +50,8 @@ export class EditProfileComponent implements OnInit {
       
       const formData = new FormData();
       formData.append("username", this.username);
-      formData.append("oldPassword", this.oldPassword);
-      formData.append("newPassword", this.newPassword);
-      formData.append("newPasswordAgain", this.newPasswordAgain);
+      formData.append("old_password", this.oldPassword);
+      formData.append("new_password", this.newPassword);
   
       this.httpClient.post<any>(this.SERVER_URL, formData, { headers: headers }).subscribe(
         (res) => {
