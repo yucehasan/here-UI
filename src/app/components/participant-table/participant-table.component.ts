@@ -27,6 +27,18 @@ export class ParticipantTableComponent implements OnInit {
       {
         name: "Yuce Hasan Kilic",
         participation: 'active'
+      } ,
+      {
+        name: "Ozan Aydin",
+        participation: 'inactive'
+      },
+      {
+        name: "Mert Aslan",
+        participation: 'active'
+      },
+      {
+        name: "Burak Okumus",
+        participation: 'normal'
       } 
     ];
     this.dataLength = 2;

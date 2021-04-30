@@ -30,6 +30,7 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { AnalyticsComponent } from './pages/analytics/analytics.component';
 import { ParticipantTableComponent } from './components/participant-table/participant-table.component';
+import { TimelineComponent } from './components/timeline/timeline.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -55,6 +56,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     EditProfileComponent,
     AnalyticsComponent,
     ParticipantTableComponent,
+    TimelineComponent,
   ],
   imports: [
     BrowserModule,
