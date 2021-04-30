@@ -81,6 +81,7 @@ export class ConferenceComponent implements OnInit {
   ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
+  @ViewChild('chatIcon') chatIcon: ElementRef;
 
   ngOnInit(): void {
     this.micOn = false;
@@ -262,12 +263,17 @@ export class ConferenceComponent implements OnInit {
     this.updateStyles();
   }
 
+  sendChat(message: string){
+    console.log("Message sent:", message);
+  }
+
   openChat(event: MouseEvent): void {
     if (!this.chatOn) {
       const filterData = {
         courseID: this.roomID,
-        top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
-        right: this.noteIcon.nativeElement.getBoundingClientRect().right
+        top: window.innerHeight - this.chatIcon.nativeElement.getBoundingClientRect().top,
+        right: this.chatIcon.nativeElement.getBoundingClientRect().right,
+        send: this.sendChat
       };
       let dialogRef = this.dialog.open(ChatComponent, {
         data: filterData,
