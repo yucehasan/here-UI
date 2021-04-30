@@ -7,50 +7,48 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class SessionService {
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  token;
 
-  openSession(userType: string, courseID: string): void {
-    if (userType == 'instructor') {
-      var formData = new FormData();
-      formData.append('course_id', courseID);
-      var header = new HttpHeaders();
-      header.set(      
-        'Authorization',
-        'Bearer ' + this.authService.currentToken
-      );
-      this.http.post(environment.BACKEND_IP + '/session', formData, {headers: header}).subscribe(
-        (res) => {
-          console.log(res);
-        },
-        (err) => {
-          console.error("Error is -->", err);
-        },
-        () => {
-          console.log("Completed")
-        }
-      );
-    }
+  constructor(private http: HttpClient, private authService: AuthService) {
   }
 
-  joinSession(courseID: string): boolean {
+  openSession(courseID: string, token: string): boolean {
     var formData = new FormData();
     formData.append('course_id', courseID);
-    var header = new HttpHeaders();
-    header.set(      
+    var header = new HttpHeaders().set(      
       'Authorization',
-      'Bearer ' + this.authService.currentToken
+      'Bearer ' + token
     );
-    this.http.post(environment.BACKEND_IP + '/join', formData, {headers: header}).subscribe(
+    this.http.post(environment.BACKEND_IP + '/session', formData, {headers: header}).subscribe(
       (res) => {
         console.log(res);
+        return true;
       },
       (err) => {
         console.error("Error is -->", err);
-      },
-      () => {
-        console.log("Completed")
+        return false;
       }
-    )
+    );
+    return false;
+  }
+
+  joinSession(courseID: string, token): boolean {
+    var formData = new FormData();
+    formData.append('course_id', courseID);
+    var header = new HttpHeaders().set(      
+      'Authorization',
+      'Bearer ' + token
+    );
+    this.http.post(environment.BACKEND_IP + '/session/join', formData, {headers: header}).subscribe(
+      (res) => {
+        console.log(res);
+        return true;
+      },
+      (err) => {
+        console.error("Error is -->", err);
+        return false;
+      }
+    );
     return false;
   }
 

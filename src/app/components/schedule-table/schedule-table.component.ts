@@ -23,6 +23,7 @@ export class ScheduleTableComponent implements OnInit {
   ];
   dataSource;
   token;
+  userType;
   constructor(
     private courseService: CourseService,
     private authService: AuthService,
@@ -35,6 +36,9 @@ export class ScheduleTableComponent implements OnInit {
     this.authService.getToken().subscribe( (token) => {
       this.token = token;
     });
+    this.authService.getUserType().subscribe( (userType) => {
+      this.userType = userType;
+    });
     this.courseService.getschedule().subscribe((schedule) => {
       this.dataSource = schedule.schedule;
     });
@@ -43,6 +47,14 @@ export class ScheduleTableComponent implements OnInit {
 
   onClick(event: MouseEvent): void{
     var target: HTMLButtonElement = event.target as HTMLButtonElement
-    this.router.navigate(['conference', target.id], )
+    if(this.userType == "student")
+      this.sessionService.joinSession((event.target as HTMLButtonElement).id, this.token);
+    else if(this.userType == "instructor")
+      this.sessionService.openSession((event.target as HTMLButtonElement).id, this.token);
+    else
+      console.error("Invalid user type");
+
+    // REDIRECT THE USER
+    //this.router.navigate(['conference', target.id], )
   }
 }
