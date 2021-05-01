@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-edit-profile',
@@ -17,7 +18,6 @@ export class EditProfileComponent implements OnInit {
   newPasswordAgain: string;
   token: string;
   editProfileForm: FormGroup;
-  SERVER_URL = "https://hereapp-live.herokuapp.com/profile";
   constructor(
     private router: Router,
     public dialogRef: MatDialogRef<EditProfileComponent>,
@@ -26,10 +26,10 @@ export class EditProfileComponent implements OnInit {
     private authService: AuthService,
     private fb: FormBuilder) {
       this.editProfileForm = fb.group({
-        username: [this.username, [Validators.required]],
-        oldPassword: ['', [Validators.required]],
-        newPassword: ['', [Validators.required]],
-        newPasswordAgain: ['', [Validators.required]]
+        username: [this.username],
+        oldPassword: [''],
+        newPassword: [''],
+        newPasswordAgain: ['']
       });
     }
   ngOnInit(): void { 
@@ -53,8 +53,9 @@ export class EditProfileComponent implements OnInit {
       formData.append("old_password", this.oldPassword);
       formData.append("new_password", this.newPassword);
   
-      this.httpClient.post<any>(this.SERVER_URL, formData, { headers: headers }).subscribe(
+      this.httpClient.post<any>(environment.BACKEND_IP + "/editProfile", formData, { headers: headers }).subscribe(
         (res) => {
+          console.log(res)
           this.authService.updateUsername(res["username"]);
           this.dialogRef.close();
         }

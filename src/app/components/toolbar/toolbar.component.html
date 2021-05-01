@@ -4,7 +4,8 @@
     </a>
     <ng-container *ngIf="this.loggedIn">
         <span class="navigation-spacer"></span>
-        <mat-label class="name">Welcome, {{username}}.</mat-label>
+        <mat-label  *ngIf="this.userType == 'instructor'" class="name">Welcome, Instructor {{username}}.</mat-label>
+        <mat-label  *ngIf="this.userType == 'student'" class="name">Welcome, Student {{username}}.</mat-label>
         <span class="navigation-spacer"></span>
         <button mat-mini-fab class="icon" [matMenuTriggerFor]="menu">
             <mat-icon [inline]="true">person</mat-icon>
