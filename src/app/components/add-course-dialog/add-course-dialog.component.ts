@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { CourseService } from 'src/app/services/course.service';
 
 // TODO: Add text input for course code and course name, merge them together and send to the backend as a single string
 @Component({
@@ -13,15 +14,32 @@ export class AddCourseDialogComponent implements OnInit {
   username: string;
   token: string;
   userType: string;
-  dataSource = DATA_SOURCE;
-  days = DAYS;
-  hours = HOURS;
+  displayedColumns: string[] = [
+    'hour',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ];
+  hours: String[] = [
+    '8.30',
+    '9.30',
+    '10.30',
+    '11.30',
+    '13.30',
+    '14.30',
+    '15.30',
+    '16.30',
+  ];
+  dataSource;
   courseName: string = '';
   checkboxes: boolean[][];
   SERVER_URL = 'https://hereapp-live.herokuapp.com/course';
   // /course/id: parameter: student email
 
   constructor(
+    private courseService: CourseService,
     public dialogRef: MatDialogRef<AddCourseDialogComponent>,
     private httpClient: HttpClient,
     private authService: AuthService
@@ -35,6 +53,7 @@ export class AddCourseDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.dataSource = this.courseService.getEmptySchedule().schedule;
     this.authService.getToken().subscribe((token) => {
       this.token = token;
     });
@@ -96,9 +115,9 @@ export class AddCourseDialogComponent implements OnInit {
   onCheckChange(event) {
     // console.log(event.checked);
     // console.log(event.source.id);
-    var hour = event.source.id.split('-')[0];
+    var hour = this.hours[event.source.id.split('-')[0] as number];
     var day = event.source.id.split('-')[1];
-    var hourIndex = HOURS.indexOf(hour);
+    var hourIndex = event.source.id.split('-')[0];
     var dayIndex = DAYS.indexOf(day);
     // console.log("Hour: " + hour);
     // console.log("Day: " + day);
@@ -106,6 +125,7 @@ export class AddCourseDialogComponent implements OnInit {
     // console.log("Day Index:" + dayIndex);
     // console.log("Hour Index:" + hourIndex);
     this.checkboxes[dayIndex][hourIndex] = event.checked;
+    console.log(this.checkboxes);
   }
 }
 

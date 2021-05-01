@@ -1,6 +1,5 @@
 <div class="outer">
-    <input id="course-name-input" [(ngModel)]="courseName" matInput placeholder="Course Name">
-    <table class="mat-elevation-z8">
+    <!-- <table class="mat-elevation-z8">
         <tr>
             <td></td>
             <td align="center" *ngFor="let day of days">
@@ -14,9 +13,63 @@
                 <mat-checkbox id="{{hour}}-{{day}}" (change)="onCheckChange($event)"></mat-checkbox>
             </td>
         </tr>
-    </table>
+    </table> -->
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="hour" [sticky]="true">
+          <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Hours </th>
+          <td mat-cell class="table-header-cell" *matCellDef="let element"> {{element.hour}} </td>
+        </ng-container>
+      
+        <ng-container matColumnDef="Monday">
+          <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Monday </th>
+          <td mat-cell *matCellDef="let element; let i = index"> 
+            <mat-checkbox id="{{i}}-Monday" (change)="onCheckChange($event)"></mat-checkbox>
+          </td>
+        </ng-container>
+      
+        <ng-container matColumnDef="Tuesday">
+          <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Tuesday </th>
+          <td mat-cell *matCellDef="let element; let i = index"> 
+            <mat-checkbox id="{{i}}-Tuesday" (change)="onCheckChange($event)"></mat-checkbox>
+            <!-- <button (click)="onClick($event)" id="{{element.Tuesday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Tuesday.name}}</button> -->
+          </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="Wednesday">
+          <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Wednesday </th>
+          <td mat-cell *matCellDef="let element; let i = index"> 
+            <mat-checkbox id="{{i}}-Wednesday" (change)="onCheckChange($event)"></mat-checkbox>
+            <!-- <button (click)="onClick($event)" id="{{element.Wednesday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Wednesday.name}}</button> -->
+          </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="Thursday">
+          <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Thursday </th>
+          <td mat-cell *matCellDef="let element; let i = index"> 
+            <mat-checkbox id="{{i}}-Thursday" (change)="onCheckChange($event)"></mat-checkbox>
+            <!-- <button (click)="onClick($event)" id="{{element.Thursday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Thursday.name}}</button> -->
+          </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="Friday">
+          <th mat-header-cell class="table-header-cell" *matHeaderCellDef> Friday </th>
+          <td mat-cell *matCellDef="let element; let i = index"> 
+            <mat-checkbox id="{{i}}-Friday" (change)="onCheckChange($event)"></mat-checkbox>
+            <!-- <button (click)="onClick($event)" id="{{element.Friday.id}}" class="schedule-cell-btn" mat-raised-button>{{element.Friday.name}}</button> -->
+          </td>
+        </ng-container>
+      
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
 
-    <button mat-raised-button color="primary" (click)="onSave()">Apply</button>
-    <button mat-raised-button color="warn" (click)="onCancel()">Cancel</button>
+    <mat-form-field >
+        <mat-label>Course Name</mat-label>
+        <input matInput id="course-name-input" [(ngModel)]="courseName">
+    </mat-form-field>
+    <div>
+        <button mat-raised-button color="primary" (click)="onSave()">Apply</button>
+        <button mat-raised-button color="warn" (click)="onCancel()">Cancel</button>
+    </div>
 
 </div>
