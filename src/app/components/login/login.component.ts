@@ -48,6 +48,7 @@ export class LoginComponent implements OnInit {
           this.authService.updateRefreshToken(res['refresh_token']);
           this.authService.updateUsername(res["message"].substr(13));
           this.authService.updateUserType(res["type"]);
+          this.router.navigate(['main']);
         }
         else {
           console.log(res);
@@ -58,7 +59,6 @@ export class LoginComponent implements OnInit {
       (err) => console.error(err),
       () => {
         this.dialogRef.close();
-        this.router.navigate(['main']);
       }
     );
   }

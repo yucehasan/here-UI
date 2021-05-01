@@ -13,7 +13,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AssignStudentComponent } from './components/assign-student/assign-student.component';
 import { ScheduleTableComponent } from './components/schedule-table/schedule-table.component';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { SlideComponent } from './components/slide/slide.component';
 import { NoteCanvasComponent } from './components/note-canvas/note-canvas.component';
@@ -34,6 +34,7 @@ import { CanvasTextInputComponent } from './components/canvas-text-input/canvas-
 import { SavedNotesComponent } from './components/saved-notes/saved-notes.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ErrorComponent } from './components/error/error.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -63,6 +64,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     SavedNotesComponent,
     ChatComponent,
     DashboardComponent,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,
@@ -77,8 +79,6 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     DirectivesModule
   ],
   providers: [
-    // {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
-    // {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
   ],
   bootstrap: [AppComponent],
 })
