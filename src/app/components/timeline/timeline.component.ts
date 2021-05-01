@@ -1,5 +1,18 @@
 
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
+import { data } from "jquery";
+import {
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexTitleSubtitle,
+  ApexDataLabels,
+  ApexFill,
+  ApexMarkers,
+  ApexYAxis,
+  ApexXAxis,
+  ApexTooltip
+} from "ng-apexcharts";
+import { AnalyticsService } from "src/app/services/analytics.service";
 
 @Component({
   selector: 'app-timeline',
@@ -7,91 +20,111 @@ import { Component, ElementRef, OnInit } from '@angular/core';
   styleUrls: ['./timeline.component.sass']
 })
 export class TimelineComponent implements OnInit {
-  timeline = [
-    1619780400, 1619780700, 1619781000,	1619781180, 1619781300
-  ];
-  minutes= [];
-  firstTitle: string;
-  firstMin: string;
-  secondTitle: string;
-  secondMin: string;
-  thirdTitle: string;
-  thirdMin: string;
-  fourthTitle: string;
-  fourthMin: string;
-  fifthTitle: string;
-  fifthMin: string;
-  constructor(private elementRef: ElementRef) { }
+  public series: ApexAxisChartSeries;
+  public chart: ApexChart;
+  public dataLabels: ApexDataLabels;
+  public markers: ApexMarkers;
+  public title: ApexTitleSubtitle;
+  public fill: ApexFill;
+  public yaxis: ApexYAxis;
+  public xaxis: ApexXAxis;
+  public tooltip: ApexTooltip;
+  dataSeries: number[];
 
-  ngOnInit(): void {
-    this.timestampToMins();
-    var first = this.minutes[0];
-    var last = this.minutes[this.minutes.length - 1];
-    var gap = ((last - first) / 5) + 1 ; 
-    var index = 0
-    var end = 1;
-    var start = 0;
-    var j = 0;
-    var arr = [0,0,0,0,0];
-    
+  constructor(private analyticsService: AnalyticsService) {
+    this.initChartData();
+  }
 
-    for (let i = 0; i < 5; i++){
-      var min = first + gap * end;
-      if ( min >= 10){
-        min = min + ":00"
-      }
-      else{
-        min = "0" + min + ":00"
-      }
-      if(i == 0){
-        this.firstMin = min;
-      }
-      else if(i == 1){
-        this.secondMin = min;
-      }
-      else if(i == 2){
-        this.thirdMin = min;
-      }
-      else if(i == 3){
-        this.fourthMin = min;
-      }
-      else if(i == 4){
-        this.fifthMin = min;
-      }
-      while(this.minutes[index] >= (first + gap * start) && this.minutes[index] <= (first + gap * end)){
-        arr[i]++;
+  ngOnInit() {
+    this.analyticsService.getTimeline().subscribe((res) => {
+      this.dataSeries = res;
+    });
+  }
+
+  public initChartData(): void {
+    for(let i = 0; i < this.dataSeries.length; i++){
+      this.dataSeries[i] = this.dataSeries[i] * 1000;
+    }
+    let time = this.dataSeries[0];
+    let end = this.dataSeries[this.dataSeries.length -1];
+    let totalms = end-time;
+    let gap = totalms / 10;
+    let dates = [];
+    let counter = 0;
+    let index = 1;
+    dates.push([time, counter]);
+    for (let i = 0; i < 10; i++) {
+      time = time + gap;
+      while(this.dataSeries[index] <= time){
+        counter++;
         index++;
       }
-      start++;
-      end++;
+      if( counter != 0){
+        dates.push([time, counter]);
+      }
+      counter = 0;
     }
-    
-    for(let i = 0; i < 5; i++){
-      var title = "Distracted students: " + arr[i] + ".";
-      if(i == 0){
-        this.firstTitle = title;
-      }
-      else if(i == 1){
-        this.secondTitle = title;
-      }
-      else if(i == 2){
-        this.thirdTitle = title;
-      }
-      else if(i == 3){
-        this.fourthTitle = title;
-      }
-      else if(i == 4){
-        this.fifthTitle = title;
-      }
-    }
-  }
 
-  timestampToMins(): void {
-    for (var val of this.timeline) {
-      var date = new Date(val * 1000);
-      var min = "0" + date.getMinutes();
-      this.minutes.push(Number(min));
-    }
+    this.series = [
+      {
+        name: "Distracted Student Count",
+        data: dates
+      }
+    ];
+    this.chart = {
+      type: "area",
+      stacked: false,
+      height: 350,
+      zoom: {
+        type: "x",
+        enabled: true,
+        autoScaleYaxis: true
+      },
+      toolbar: {
+        autoSelected: "zoom"
+      }
+    };
+    this.dataLabels = {
+      enabled: false
+    };
+    this.markers = {
+      size: 0
+    };
+    this.title = {
+      text: "See how well your students did.",
+      align: "left"
+    };
+    this.fill = {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        inverseColors: false,
+        opacityFrom: 0.5,
+        opacityTo: 0,
+        stops: [0, 90, 100]
+      }
+    };
+    this.yaxis = {
+      labels: {
+        formatter: function(val) {
+          return val.toFixed(0);
+        }
+      },
+      title: {
+        text: "Distracted Students"
+      }
+    };
+    this.xaxis = {
+      type: "datetime"
+    };
+    this.tooltip = {
+      shared: false,
+      y: {
+        formatter: function(val) {
+          return val.toFixed(0);
+        }
+      }
+    };
   }
-
 }
+

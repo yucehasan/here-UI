@@ -120,9 +120,16 @@ export class ConferenceComponent implements OnInit {
 
   leaveSession(): void {
     if (this.userType == 'instructor'){
-      this.router.navigate(['analytics'])
+      this.router.navigate(['analytics']);
     }
     else{
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + this.token
+      )
+
+      const formData = new FormData();
+      this.httpClient.post<any>(environment.BACKEND_IP + "/session/end", formData, {headers: headers}).subscribe((res) => {});
       this.router.navigate(['main']);
     }
   }

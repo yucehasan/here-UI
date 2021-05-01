@@ -16,7 +16,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'slide', component: SlideComponent},
-  {path: 'analytics', component: AnalyticsComponent},
+  {path: 'analytics/:sessionID', component: AnalyticsComponent},
   {path: '**', component: PageNotFoundComponent},
 ];
 

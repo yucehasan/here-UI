@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import jspdf from 'jspdf';
 import html2canvas from 'html2canvas'; 
 import { Router } from '@angular/router';
+import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
   selector: 'app-analytics',
@@ -10,9 +11,12 @@ import { Router } from '@angular/router';
 })
 export class AnalyticsComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private analyticsService: AnalyticsService) {
+    
+   }
 
   ngOnInit(): void {
+    this.analyticsService.fetchData();
   }
 
   captureScreen()  
