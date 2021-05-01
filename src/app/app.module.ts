@@ -37,6 +37,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { ErrorComponent } from './components/error/error.component';
 import { NotePreviewComponent } from './components/note-preview/note-preview.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
@@ -69,6 +70,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     DashboardComponent,
     ErrorComponent,
     NotePreviewComponent,
+    ReportsComponent,
   ],
   imports: [
     BrowserModule,
