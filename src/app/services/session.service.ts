@@ -1,7 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,17 +10,18 @@ import { AuthService } from './auth.service';
 export class SessionService {
   token;
 
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(private authService: AuthService,
+    private httpService: HttpService) {
   }
 
   openSession(courseID: string, token: string): boolean {
     var formData = new FormData();
     formData.append('course_id', courseID);
-    var header = new HttpHeaders().set(      
+    var headers = new HttpHeaders().set(      
       'Authorization',
       'Bearer ' + token
     );
-    this.http.post(environment.BACKEND_IP + '/session', formData, {headers: header}).subscribe(
+    this.httpService.post(environment.BACKEND_IP + '/session', formData, headers).subscribe(
       (res) => {
         console.log(res);
         return true;
@@ -35,11 +37,11 @@ export class SessionService {
   joinSession(courseID: string, token): boolean {
     var formData = new FormData();
     formData.append('course_id', courseID);
-    var header = new HttpHeaders().set(      
+    var headers = new HttpHeaders().set(      
       'Authorization',
       'Bearer ' + token
     );
-    this.http.post(environment.BACKEND_IP + '/session/join', formData, {headers: header}).subscribe(
+    this.httpService.post(environment.BACKEND_IP + '/session/join', formData, headers).subscribe(
       (res) => {
         console.log(res);
         return true;
@@ -60,12 +62,12 @@ export class SessionService {
   endSession(userType: string, courseID: string): void {
     if (userType == 'instructor') {
       var formData = new FormData();
-      var header = new HttpHeaders();
-      header.set(      
+      var headers = new HttpHeaders();
+      headers.set(      
         'Authorization',
         'Bearer ' + this.authService.currentToken
       );
-      this.http.post(environment.BACKEND_IP + '/session', formData);
+      this.httpService.post(environment.BACKEND_IP + '/session', formData);
     }
   }
 }

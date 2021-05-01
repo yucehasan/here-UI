@@ -1,75 +1,76 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ScheduleResponse, WeeklySchedule } from '../interface';
 import { AuthService } from './auth.service';
+import { HttpService } from 'src/app/services/http.service';
 
 const EMPTYDATA: WeeklySchedule = {
   schedule: [
     {
       hour: '8.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
     {
       hour: '9.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
     {
       hour: '10.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
     {
       hour: '11.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
     {
       hour: '13.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
     {
       hour: '14.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
     {
       hour: '15.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
     {
       hour: '16.30',
-      Monday: {name: '', id: undefined},
-      Tuesday: {name: '', id: undefined},
-      Wednesday: {name: '', id: undefined},
-      Thursday: {name: '', id: undefined},
-      Friday: {name: '', id: undefined},
+      Monday: { name: '', id: undefined },
+      Tuesday: { name: '', id: undefined },
+      Wednesday: { name: '', id: undefined },
+      Thursday: { name: '', id: undefined },
+      Friday: { name: '', id: undefined },
     },
   ],
 };
@@ -81,41 +82,42 @@ export class CourseService {
   schedule: WeeklySchedule;
   scheduleSub = new Subject<WeeklySchedule>();
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) {
+  constructor(private authService: AuthService, 
+    private httpService: HttpService) {
     this.schedule = EMPTYDATA;
   }
 
-  getEmptySchedule(): WeeklySchedule{
+  getEmptySchedule(): WeeklySchedule {
     return EMPTYDATA;
   }
 
   fetchCourses(token): void {
-    var header = new HttpHeaders().set(      
+    var headers = new HttpHeaders().set(
       'Authorization',
       'Bearer ' + token
     );
-    console.log(header);
-    this.httpClient.get<any>(environment.BACKEND_IP + "/course", {headers: header}).subscribe((res) => {
+    console.log(headers);
+    this.httpService.get(environment.BACKEND_IP + "/course", headers).subscribe((res) => {
       console.log(res)
       this.updateSchedule(res);
     },
-    (err) => {
-      console.log("Got an error")
-      this.authService.refreshAccessToken().then( (token) => {
-        console.log("new token:", token)
-        const headers = new HttpHeaders().set(
-          'Authorization',
-          'Bearer ' + token
-        );
-        this.httpClient.get<any>(environment.BACKEND_IP + '/course', { headers: headers }).subscribe(
-          (res) => {
-            console.log(res);
-            this.updateSchedule(res)
-          })
-      }).catch( (err) => {
-        console.log(err);
-      });
-    }
+      (err) => {
+        console.log("Got an error")
+        this.authService.refreshAccessToken().then((token) => {
+          console.log("new token:", token)
+          const headers = new HttpHeaders().set(
+            'Authorization',
+            'Bearer ' + token
+          );
+          this.httpService.get(environment.BACKEND_IP + '/course', headers).subscribe(
+            (res) => {
+              console.log(res);
+              this.updateSchedule(res)
+            })
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
     );
   }
 
@@ -125,7 +127,7 @@ export class CourseService {
     fetchedData.forEach((course) => {
       course.slots.split(',').forEach((slot) => {
         aSlot = slot.split('-');
-        this.schedule.schedule[this.getHourIndex(aSlot[1])][aSlot[0]] ={
+        this.schedule.schedule[this.getHourIndex(aSlot[1])][aSlot[0]] = {
           name: course.name,
           id: course.id
         }

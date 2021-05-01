@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { CourseService } from 'src/app/services/course.service';
 import {HttpService} from '../../services/http.service';
@@ -42,7 +42,6 @@ export class AddCourseDialogComponent implements OnInit {
   constructor(
     private courseService: CourseService,
     public dialogRef: MatDialogRef<AddCourseDialogComponent>,
-    private httpClient: HttpClient,
     private authService: AuthService,
     private httpService: HttpService
   ) {

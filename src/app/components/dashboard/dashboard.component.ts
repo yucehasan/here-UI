@@ -4,7 +4,7 @@ import { AssignStudentComponent } from 'src/app/components/assign-student/assign
 import { AddCourseDialogComponent } from 'src/app/components/add-course-dialog/add-course-dialog.component';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { HttpService } from 'src/app/services/http.service';
 
@@ -19,7 +19,6 @@ export class DashboardComponent implements OnInit {
   constructor(
     private assignStudentDialog: MatDialog,
     public addCourseDialog: MatDialog,
-    private httpClient: HttpClient,
     private router: Router,
     private authService: AuthService,
     private httpService: HttpService
