@@ -402,24 +402,25 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     const formData = new FormData();
     var photo = this.videoToCanvas();
     formData.append('data', photo);
-    formData.append('session_id', '1');
+    formData.append('session_id', (this.roomID as unknown as string));
     this.sendHandCapture(formData);
     this.sendHeadCapture(formData);
-    //this.sendPhoneCapture(formData);
+    this.sendObjectCapture(formData);
+    console.log("sent");
   }
 
-  sendPhoneCapture(formData: FormData): void {
+  sendObjectCapture(formData: FormData): void {
     var header = new HttpHeaders().set(      
       'Authorization',
       'Bearer ' + this.token
     );
     formData.append('timestamp', Date.now().toString());
     this.httpClient
-      .post(environment.BACKEND_IP + '/analyze/phone', formData, {headers: header})
+      .post(environment.BACKEND_IP + '/analyze/object', formData, {headers: header})
       .subscribe(
         (res) => {            
           var taskID = res["task_id"]
-          this.getStatus(taskID, 1000, "phone"); 
+          this.getStatus(taskID, 3000, "phone"); 
         },
         (err) => console.log(err)
       );
@@ -638,7 +639,8 @@ export class ConferenceComponent implements OnInit, OnDestroy{
             if (event.track.kind === 'video' && socketID != this.socketId)
               this.gotRemoteStream(event, socketID, name);
           };
-          
+          console.log(this.connections[socketID].connectionState)
+          console.log(socketID, this.connections[socketID]);
           //Add the local video stream
           if(this.videoOn)
             this.connections[socketID].addStream(this.localStream);
@@ -676,6 +678,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     this.localVideo.srcObject = stream;
     Object.keys( this.connections).forEach( (connectionID) => {
       this.connections[connectionID].addStream(this.localStream);
+      console.log(connectionID, this.connections[connectionID])
       this.connections[connectionID].createOffer().then((description) => {
         this.connections[connectionID]
           .setLocalDescription(description)
@@ -766,9 +769,13 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     //Make sure it's not coming from yourself
     if (fromId != this.socketId) {
       if (signal.sdp) {
+        console.log(signal.sdp);
+        console.log("before setting remote", this.connections[fromId])
+        console.log("before setting remote", signal.sdp)
         this.connections[fromId]
           .setRemoteDescription(new RTCSessionDescription(signal.sdp))
           .then(() => {
+            console.log(signal.sdp.type)
             if (signal.sdp.type == 'offer') {
               this.connections[fromId]
                 .createAnswer()
