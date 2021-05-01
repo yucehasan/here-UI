@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { ParticipantsDetails, ParticipantsResponse } from '../interface';
+import { HttpService } from 'src/app/services/http.service';
 import { AnalyticsResponse, ParticipantsDetails } from '../interface';
 import { AuthService } from './auth.service';
 
@@ -47,14 +49,14 @@ export class AnalyticsService {
     fetchedParticipants.forEach((participant) => {
       if(participant.hand_raise_count >= 2){
         part = "active";
-      } 
-      else if(participant.hand_raise_count == 1){
+      }
+      else if (participant.hand_raise_count == 1) {
         part = "normal";
       }
-      else{
+      else {
         part = "inactive";
       }
-      this.participantList.push({name: participant.name, participation: part});
+      this.participantList.push({ name: participant.name, participation: part });
     });
     this.subParticipantList.next(this.participantList);
     this.subTimeline.next(fetchedTimeline);

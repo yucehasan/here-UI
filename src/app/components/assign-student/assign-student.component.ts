@@ -1,11 +1,13 @@
 import { _isNumberValue } from '@angular/cdk/coercion';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { HttpService } from 'src/app/services/http.service';
+
 
 @Component({
   selector: 'app-assign-student',
@@ -19,8 +21,8 @@ export class AssignStudentComponent implements OnInit {
   userType: string;
   constructor(@Inject(MAT_DIALOG_DATA) public data: { courseName: string, courseId: number},
     private dialogRef: MatDialogRef<AssignStudentComponent>,
-    private httpClient: HttpClient,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private httpService: HttpService) {
     this.username = '';
     this.token = '';
     this.userType = '';
@@ -51,7 +53,7 @@ export class AssignStudentComponent implements OnInit {
           'Authorization',
           'Bearer ' + this.token
         );
-        this.httpClient.post<any>(environment.BACKEND_IP + '/course/' + this.data.courseId, formData, { headers: headers })
+        this.httpService.post(environment.BACKEND_IP + '/course/' + this.data.courseId, formData, headers)
           .subscribe((res) => {
             console.log(res);
           },

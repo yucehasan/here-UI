@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { SlideComponent } from 'src/app/components/slide/slide.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -17,6 +17,7 @@ import { TaComponent } from 'src/app/components/ta/ta.component';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ChatComponent } from 'src/app/components/chat/chat.component';
+import { HttpService } from 'src/app/services/http.service';
 
 const labelStyle =
   'position: absolute; bottom: 5px; width: calc(100% - 20px); \
@@ -84,11 +85,11 @@ export class ConferenceComponent implements OnInit, OnDestroy{
 
   constructor(
     private socket: Socket,
-    private httpClient: HttpClient,
     private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private httpService: HttpService
   ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
@@ -427,13 +428,13 @@ export class ConferenceComponent implements OnInit, OnDestroy{
   }
 
   sendHeadCapture(formData: FormData): void {
-    var header = new HttpHeaders().set(      
+    var headers = new HttpHeaders().set(      
       'Authorization',
       'Bearer ' + this.token
     );
     formData.append('timestamp', Date.now().toString());
-    this.httpClient
-      .post(environment.BACKEND_IP + '/analyze/head', formData, {headers: header})
+    this.httpService
+      .post(environment.BACKEND_IP + '/analyze/head', formData, headers)
       .subscribe(
         (res) => {          
           var taskID = res["task_id"]
@@ -444,12 +445,12 @@ export class ConferenceComponent implements OnInit, OnDestroy{
   }
 
   sendHandCapture(formData: FormData): void {
-    var header = new HttpHeaders().set(      
+    var headers = new HttpHeaders().set(      
       'Authorization',
       'Bearer ' + this.token
     );
-    this.httpClient
-      .post(environment.BACKEND_IP + '/analyze/hand', formData, {headers: header})
+    this.httpService
+      .post(environment.BACKEND_IP + '/analyze/hand', formData, headers)
       .subscribe(
         (res) => {           
           var taskID = res["task_id"]
@@ -460,7 +461,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
   }
 
   getStatus(taskID, checkInterval: number, type: string) {
-    this.httpClient
+    this.httpService
         .get(environment.BACKEND_IP + '/result/' + taskID)
         .subscribe(
           (res) => {

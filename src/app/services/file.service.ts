@@ -1,8 +1,8 @@
-import { DatePipe } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,19 +10,21 @@ import { AuthService } from './auth.service';
 export class FileService {
   token;
 
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private httpService: HttpService) {
     this.authService.getToken().subscribe( (token) => {
       this.token = token;
     })
-  }
+    }
 
-  getSlide(): string{    
-    var header = new HttpHeaders();
-    header.set(      
+  getSlide(): string {
+    var headers = new HttpHeaders();
+    headers.set(
       'Authorization',
       'Bearer ' + this.authService.currentToken
     );
-    this.http.get(environment.BACKEND_IP + '/slide', {headers: header}).subscribe(
+    this.httpService.get(environment.BACKEND_IP + '/slide', headers).subscribe(
       (res) => {
         console.log(res);
       },
@@ -36,9 +38,9 @@ export class FileService {
     return "";
   }
 
-  uploadSlide(courseID: string, b64: string): void{      
-    var header = new HttpHeaders();
-    header.set(      
+  uploadSlide(courseID: string, b64: string): void {
+    var headers = new HttpHeaders();
+    headers.set(
       'Authorization',
       'Bearer ' + this.authService.currentToken
     );
@@ -46,7 +48,7 @@ export class FileService {
     formData.append('course_id', courseID);
     formData.append('file', b64);
     var formData = new FormData();
-    this.http.post(environment.BACKEND_IP + '/slide', formData, {headers: header}).subscribe(
+    this.httpService.post(environment.BACKEND_IP + '/slide', formData, headers).subscribe(
       (res) => {
         console.log(res);
       },
@@ -68,7 +70,7 @@ export class FileService {
     formData.append('course_id', courseID);
     formData.append('file', b64);
     formData.append('date', new Date().toDateString())
-    this.http.post(environment.BACKEND_IP + '/note', formData, {headers: header}).subscribe(
+    this.httpService.post(environment.BACKEND_IP + '/note', formData, headers).subscribe(
       (res) => {
         console.log(res);
       },
@@ -81,13 +83,13 @@ export class FileService {
     );
   }
 
-  fetchNotes(): void{
-    var header = new HttpHeaders();
-    header.set(      
+  fetchNotes(): void {
+    var headers = new HttpHeaders();
+    headers.set(
       'Authorization',
       'Bearer ' + this.authService.currentToken
     );
-    this.http.get(environment.BACKEND_IP + '/note', {headers: header}).subscribe(
+    this.httpService.get(environment.BACKEND_IP + '/note', headers).subscribe(
       (res) => {
         console.log(res);
       },

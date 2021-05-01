@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-edit-profile',
@@ -23,6 +24,7 @@ export class EditProfileComponent implements OnInit {
     public dialogRef: MatDialogRef<EditProfileComponent>,
     private formBuilder: FormBuilder,
     private httpClient: HttpClient,
+    private httpService: HttpService,
     private authService: AuthService,
     private fb: FormBuilder) {
       this.editProfileForm = fb.group({

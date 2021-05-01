@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { CourseService } from 'src/app/services/course.service';
+import {HttpService} from '../../services/http.service';
+import {environment} from '../../../environments/environment';
 
 // TODO: Add text input for course code and course name, merge them together and send to the backend as a single string
 @Component({
@@ -35,14 +37,13 @@ export class AddCourseDialogComponent implements OnInit {
   dataSource;
   courseName: string = '';
   checkboxes: boolean[][];
-  SERVER_URL = 'https://hereapp-live.herokuapp.com/course';
   // /course/id: parameter: student email
 
   constructor(
     private courseService: CourseService,
     public dialogRef: MatDialogRef<AddCourseDialogComponent>,
-    private httpClient: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private httpService: HttpService
   ) {
     this.checkboxes = new Array(5)
       .fill(false)
@@ -97,13 +98,18 @@ export class AddCourseDialogComponent implements OnInit {
 
       console.log('Form data Course name: ' + formData.get('course_name'));
       console.log('Form data Slots: ' + formData.get('slots'));
-      this.httpClient
-        .post<any>(this.SERVER_URL, formData /*, { headers: headers } */)
-        .subscribe((res) => {
+      
+      this.httpService.post(environment.BACKEND_IP + "/course", formData, headers).
+      subscribe(
+        (res) => {
           console.log(res);
           alert("The course is added");
           this.dialogRef.close();
-        });
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
     }
   }
 
@@ -113,17 +119,12 @@ export class AddCourseDialogComponent implements OnInit {
   }
 
   onCheckChange(event) {
-    // console.log(event.checked);
-    // console.log(event.source.id);
+    
     var hour = this.hours[event.source.id.split('-')[0] as number];
     var day = event.source.id.split('-')[1];
     var hourIndex = event.source.id.split('-')[0];
     var dayIndex = DAYS.indexOf(day);
-    // console.log("Hour: " + hour);
-    // console.log("Day: " + day);
-    // console.log("Checked: " + event.checked);
-    // console.log("Day Index:" + dayIndex);
-    // console.log("Hour Index:" + hourIndex);
+    
     this.checkboxes[dayIndex][hourIndex] = event.checked;
     console.log(this.checkboxes);
   }
