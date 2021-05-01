@@ -50,16 +50,19 @@ export class NotesService {
     );
   }
 
-  fetchANote(note_id, token): void {
-    var header = new HttpHeaders().set(      
-      'Authorization',
-      'Bearer ' + token
-    );
-    this.httpClient.get(environment.BACKEND_IP + '/note/' + note_id, {headers: header}).subscribe(
-      (res) => {console.log("response of preview", res)},
-      (err) => {console.log("error of preview", err)},
-      ()    => {console.log("preview completed")}
-    );
+  fetchANote(note_id, token): Promise<string> {
+    return new Promise<string>( (resolve, reject) => {
+      var header = new HttpHeaders().set(      
+        'Authorization',
+        'Bearer ' + token
+        );
+      this.httpClient.get(environment.BACKEND_IP + '/note/' + note_id, {headers: header}).subscribe(
+        (res) => {
+          resolve(res as string);
+        },
+        (err) => {reject(err)}
+        );
+    });
   }
 
   getNotes(): Observable<any> {

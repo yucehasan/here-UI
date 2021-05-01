@@ -35,6 +35,7 @@ import { SavedNotesComponent } from './components/saved-notes/saved-notes.compon
 import { ChatComponent } from './components/chat/chat.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ErrorComponent } from './components/error/error.component';
+import { NotePreviewComponent } from './components/note-preview/note-preview.component';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -65,6 +66,7 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     ChatComponent,
     DashboardComponent,
     ErrorComponent,
+    NotePreviewComponent,
   ],
   imports: [
     BrowserModule,
