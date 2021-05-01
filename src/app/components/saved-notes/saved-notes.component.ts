@@ -23,7 +23,8 @@ export class SavedNotesComponent implements OnInit {
     })
   }
 
-  fetchAnote(note_id) {
+
+  preview(note_id) {
     this.notesService.fetchANote(note_id, this.token).then(
       (res) => {
           console.log(res);
@@ -38,9 +39,20 @@ export class SavedNotesComponent implements OnInit {
     );
   }
 
-  preview(note_id) {
-    this.fetchAnote(note_id);
+  download(note_id) {
+    this.notesService.fetchANote(note_id, this.token).then(
+      (res) => {
+          console.log(res);
+          const downloadLink = document.createElement("a");
+          const fileName = "Image.png";
+          downloadLink.href = "data:image/png;base64," + res;
+          downloadLink.download = fileName;
+          downloadLink.click();
+      }
+    ).catch(
+      (err) => {
+        console.error("Error -->", err);
+      }
+    );
   }
-
-  download(event: MouseEvent) {}
 }

@@ -16,4 +16,16 @@ export class NotePreviewComponent implements OnInit {
     this.b64 = "data:image/png;base64," + this.data
   }
 
+  download(): void {
+    const downloadLink = document.createElement("a");
+    const fileName = "Image.png";
+  
+    downloadLink.href = this.b64;
+    downloadLink.download = fileName;
+    downloadLink.click();
+  }
+
+  close(): void {
+    this.dialogRef.close();
+  }
 }
