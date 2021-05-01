@@ -8,6 +8,7 @@ import {RegisterComponent} from '../register/register.component';
 import {LoginComponent} from '../login/login.component';
 import { AuthService } from 'src/app/services/auth.service';  
 import { Router } from '@angular/router';
+import { EditProfileComponent } from '../edit-profile/edit-profile.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -116,15 +117,20 @@ export class ToolbarComponent implements OnDestroy, OnInit {
     });
   }
 
-  goProfile() {
-    if (this.loggedIn) { this.router.navigate(['/profile']); }
-    console.log(this.token);
-  }
-
   logout() {
     this.router.navigate(['/']); 
     localStorage.clear();
     this.authService.updateToken("");
+  }
+
+  editProfile() {
+    const dialogRef = this.dialog.open(EditProfileComponent, {
+      width: '500px',
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('The edit profile dialog was closed');
+    });
   }
 
 }

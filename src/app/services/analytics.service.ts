@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { HttpService } from 'src/app/services/http.service';
 import { AnalyticsResponse, ParticipantsDetails } from '../interface';
 import { AuthService } from './auth.service';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,14 +18,15 @@ export class AnalyticsService {
   sessionID: number;
   token: string;
 
-  constructor(private httpClient: HttpClient, private activatedRoute: ActivatedRoute, private authService: AuthService) {
+
+  constructor(private httpClient: HttpClient, private activatedRoute: ActivatedRoute, private authService: AuthService, private sessionService: SessionService) {
     this.participantList = [];
     this.activatedRoute.params.subscribe((params: Params) => this.sessionID = params['sessionID']);
     this.token = '';
    }
 
   fetchData(): void {
-    this.httpClient.get<any>(environment.BACKEND_IP + "/session/analytics/"+ this.sessionID).subscribe((res) => {
+    this.httpClient.get<any>(environment.BACKEND_IP + "/session/statistics/"+ this.sessionID + "?start_timestamp=" + this.sessionService.getStartTimestamp() + "&end_timestamp=" + Date.now().toString()).subscribe((res) => {
       this.updateData(res);
     });
 
@@ -38,7 +40,7 @@ export class AnalyticsService {
     );
     
     const formData = new FormData();
-    this.httpClient.post<any>(environment.BACKEND_IP + "/session/end", formData, { headers: headers }).subscribe((res) => {});
+    this.httpClient.post<any>(environment.BACKEND_IP + "/session/leave", formData, { headers: headers }).subscribe((res) => {});
   }
 
   updateData(response: AnalyticsResponse): void {

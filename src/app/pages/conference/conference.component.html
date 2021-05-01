@@ -4,22 +4,26 @@
     class="middle-panel"
     cols="8"
     rowHeight="27.35vh"
-    [gutterSize]="'10px'"
+    
   >
     <mat-grid-tile 
       [colspan]="!slideOn ? 0 : shareOn ? 4 : 6"
       [rowspan]="!slideOn ? 0 : shareOn ? 2 : 3"
     >
       <!--<mat-grid-tile-header>Shared Slide</mat-grid-tile-header>-->
-      <div style="position: absolute; top: 0">
-        <button mat-raised-button value="prev" (click)="prevSlide()">prev</button>
-        <button mat-raised-button value="prev" (click)="syncWithInstructor()">
-          sync
+      <div style="position: absolute; bottom: 0; margin-bottom: 10px; ">
+        <button mat-fab value="prev" (click)="prevSlide()">
+          <i class="fas fa-arrow-left"></i>
         </button>
-        <button mat-raised-button value="prev" (click)="nextSlide()">next</button>
+        <button *ngIf="this.userType == 'instructor'" mat-fab value="prev" (click)="syncWithInstructor()">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+        <button mat-fab value="prev" (click)="nextSlide()">
+          <i class="fas fa-arrow-right"></i>
+        </button>
       </div>
       <app-slide
-        [ngStyle]="{ height: shareOn ? '51.5vh' : '78vh' }"
+        [ngStyle]="{ height: '-webkit-fill-available' }"
         (onChange)="onSlideChange($event)"
       ></app-slide>
     </mat-grid-tile>
@@ -28,7 +32,7 @@
       [rowspan]="!shareOn ? 0 : slideOn ? 2 : 3"
     >
       <!--<mat-grid-tile-header>Shared Screen</mat-grid-tile-header>-->
-      <div class="shared-screen"></div>
+      <div class="shared-screen" style='height: -webkit-fill-available; margin: -5px'></div>
     </mat-grid-tile>
     <mat-grid-tile
       [colspan]="shareOn && slideOn ? 8 : shareOn || slideOn ? 2 : 8"
@@ -39,7 +43,7 @@
     </mat-grid-tile>
   </mat-grid-list>
 
-  <mat-card class="example-card" height='26vh'>
+  <mat-card class="example-card" height='26vh' style='margin-top: -5px;'>
     <mat-card-content id="buttons" class="dialog-btn-wrapper" align="center">
       <span class="fill-remaining-space"></span>
       <div id="toolsSection" >

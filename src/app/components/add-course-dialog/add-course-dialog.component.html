@@ -63,13 +63,13 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-    <mat-form-field >
-        <mat-label>Course Name</mat-label>
-        <input matInput id="course-name-input" [(ngModel)]="courseName">
-    </mat-form-field>
     <div>
-        <button mat-raised-button color="primary" (click)="onSave()">Apply</button>
-        <button mat-raised-button color="warn" (click)="onCancel()">Cancel</button>
+      <mat-form-field id="bottom">
+          <mat-label id="enterName">Enter course name</mat-label>
+          <input matInput id="course-name-input" [(ngModel)]="courseName">
+      </mat-form-field>
+      <button mat-raised-button id="apply" (click)="onSave()">Apply</button>
+      <button mat-raised-button color="warn" (click)="onCancel()">Cancel</button>
     </div>
 
 </div>

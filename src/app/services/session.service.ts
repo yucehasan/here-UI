@@ -12,6 +12,7 @@ import { HttpService } from 'src/app/services/http.service';
 })
 export class SessionService {
   token;
+  startTimestamp: string;
 
   constructor(private authService: AuthService,
     private router: Router, private dialogController: MatDialog, private httpService: HttpService) {
@@ -28,12 +29,17 @@ export class SessionService {
     this.httpService.post(environment.BACKEND_IP + '/session', formData, headers).subscribe(
       (res) => {
         console.log(res);
-        this.router.navigate(['conference', res["id"], courseID])
+        this.router.navigate(['conference', res["id"], courseID]);
+        this.startTimestamp = Date.now().toString();
       },
       (err) => {
         console.error("Error is -->", err);
       }
     );
+  }
+
+  getStartTimestamp(){
+    return this.startTimestamp;
   }
 
   joinSession(courseID: string, token): void {

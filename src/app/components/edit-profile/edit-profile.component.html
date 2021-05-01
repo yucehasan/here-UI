@@ -1,25 +1,26 @@
 <div class="editProfile-wrapper" fxLayout="row" fxLayoutAlign="center center">
     <mat-card class="box">
       <mat-card-header>
-        <mat-card-title>Login</mat-card-title>
+        <mat-card-title>Edit Profile</mat-card-title>
       </mat-card-header>
   
       <form class="editProfile-form" *ngIf="editProfileForm" [formGroup] = "editProfileForm" (ngSubmit)="editProfile()">
+        <mat-label  >Change username</mat-label>
         <mat-card-content>
           <mat-form-field class="full-width">
             <input
               matInput
-              required
               [(ngModel)]="username"
-              placeholder=this.username
+              placeholder="New Username"
               formControlName="username"
             />
           </mat-form-field>
 
+          <mat-label >Change password</mat-label>
+
           <mat-form-field class="full-width">
             <input
               matInput
-              required
               type="password"
               [(ngModel)]="oldPassword"
               placeholder="Old Password"
@@ -30,7 +31,6 @@
           <mat-form-field class="full-width">
             <input
               matInput
-              required
               type="password"
               [(ngModel)]="newPassword"
               placeholder="New Password"
@@ -41,7 +41,6 @@
           <mat-form-field class="full-width">
             <input
               matInput
-              required
               type="password"
               [(ngModel)]="newPasswordAgain"
               placeholder="Re-Enter New Password"
@@ -55,7 +54,7 @@
           class="btn-block"
           (click)="editProfile()"
         >
-          Login
+          Submit
         </button>
       </form>
     </mat-card>
