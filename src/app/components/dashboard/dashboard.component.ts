@@ -49,8 +49,6 @@ export class DashboardComponent implements OnInit {
 
   addCourse(): void {
       this.addCourseDialog.open(AddCourseDialogComponent, {
-        height: '800px',
-        width: '1200px',
       });
   }
 
