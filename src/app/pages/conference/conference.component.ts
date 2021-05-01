@@ -127,13 +127,26 @@ export class ConferenceComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
-    this.dialogRef.close();
-    this.chatDialogRef.close();
+    if(this.dialogRef){
+      this.dialogRef.close();
+    }
+
+    if(this.chatDialogRef){
+      this.chatDialogRef.close();
+    }
+
+    if(this.videoOn){
+      this.stopVideo();
+    }
+
+    if(this.shareOn && this.userType == 'instructor'){
+      this.stopSharing();
+    }
   }
 
   leaveSession(): void {
     if (this.userType == 'instructor'){
-      this.router.navigate(['analytics']);
+      this.router.navigate(['analytics/' + this.roomID]);
     }
     else{
       const headers = new HttpHeaders().set(

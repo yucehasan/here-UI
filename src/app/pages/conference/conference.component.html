@@ -15,7 +15,7 @@
         <button mat-fab value="prev" (click)="prevSlide()">
           <i class="fas fa-arrow-left"></i>
         </button>
-        <button *ngIf="this.userType == 'instructor'" mat-fab value="prev" (click)="syncWithInstructor()">
+        <button *ngIf="this.userType == 'student'" mat-fab value="prev" (click)="syncWithInstructor()">
           <i class="fas fa-sync-alt"></i>
         </button>
         <button mat-fab value="prev" (click)="nextSlide()">

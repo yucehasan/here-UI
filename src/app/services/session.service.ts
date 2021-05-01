@@ -29,8 +29,9 @@ export class SessionService {
     this.httpService.post(environment.BACKEND_IP + '/session', formData, headers).subscribe(
       (res) => {
         console.log(res);
-        this.router.navigate(['conference', res["id"], courseID]);
         this.startTimestamp = Date.now().toString();
+        localStorage.setItem("startTimestamp", this.startTimestamp);
+        this.router.navigate(['conference', res["id"], courseID]);
       },
       (err) => {
         console.error("Error is -->", err);
@@ -38,12 +39,11 @@ export class SessionService {
     );
   }
 
-  getStartTimestamp(){
+  getStartTimestamp(): string {
     return this.startTimestamp;
   }
 
   joinSession(courseID: string, token): void {
-    console.log("trying to join course", courseID)
     var formData = new FormData();
     formData.append('course_id', courseID);
     var headers = new HttpHeaders().set(      

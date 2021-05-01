@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import jspdf from 'jspdf';
 import html2canvas from 'html2canvas'; 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AnalyticsService } from 'src/app/services/analytics.service';
 
 @Component({
@@ -10,18 +10,19 @@ import { AnalyticsService } from 'src/app/services/analytics.service';
   styleUrls: ['./analytics.component.sass']
 })
 export class AnalyticsComponent implements OnInit {
+  sessionID: string;
 
-  constructor(private router: Router, private analyticsService: AnalyticsService) {
-    
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private analyticsService: AnalyticsService) {
+    this.activatedRoute.params.subscribe((params: Params) => this.sessionID = params['sessionID']);
+    this.analyticsService.fetchData(this.sessionID);
    }
 
   ngOnInit(): void {
-    this.analyticsService.fetchData();
+    
   }
 
   captureScreen()  
   {  
-    console.log("hlelo");
     var data = document.getElementById('grid'); 
     html2canvas(data).then(canvas => {  
       // Few necessary setting options  

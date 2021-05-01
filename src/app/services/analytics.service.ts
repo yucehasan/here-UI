@@ -13,21 +13,23 @@ import { SessionService } from './session.service';
 })
 export class AnalyticsService {
   participantList: ParticipantsDetails[];
-  subParticipantList: Subject<ParticipantsDetails[]>;
-  subTimeline: Subject<number[]>;
+  subParticipantList = new Subject<ParticipantsDetails[]>();
+  subTimeline = new Subject<number[]>();
   sessionID: number;
   token: string;
 
 
-  constructor(private httpClient: HttpClient, private activatedRoute: ActivatedRoute, private authService: AuthService, private sessionService: SessionService) {
+  constructor(private httpClient: HttpClient, private authService: AuthService) {
     this.participantList = [];
-    this.activatedRoute.params.subscribe((params: Params) => this.sessionID = params['sessionID']);
     this.token = '';
    }
 
-  fetchData(): void {
-    this.httpClient.get<any>(environment.BACKEND_IP + "/session/statistics/"+ this.sessionID + "?start_timestamp=" + this.sessionService.getStartTimestamp() + "&end_timestamp=" + Date.now().toString()).subscribe((res) => {
+  fetchData(sessionID): void {
+    console.log("startimestamp" + localStorage.getItem("startTimestamp"));
+    
+    this.httpClient.get<any>(environment.BACKEND_IP + "/session/statistics/"+ sessionID + "?start_timestamp=" + localStorage.getItem("startTimestamp") + "&end_timestamp=" + Date.now().toString()).subscribe((res) => {
       this.updateData(res);
+      console.log(res);
     });
 
     this.authService.getToken().subscribe((token) => {
@@ -40,12 +42,13 @@ export class AnalyticsService {
     );
     
     const formData = new FormData();
-    this.httpClient.post<any>(environment.BACKEND_IP + "/session/leave", formData, { headers: headers }).subscribe((res) => {});
+    this.httpClient.post<any>(environment.BACKEND_IP + "/session/leave", formData, { headers: headers }).subscribe((res) => {console.log(res);});
   }
 
   updateData(response: AnalyticsResponse): void {
     var fetchedParticipants = response.participants;
     var fetchedTimeline = response.timestamps;
+    console.log("analyticsteki timeline" + fetchedTimeline);
     var part = ""
     fetchedParticipants.forEach((participant) => {
       if(participant.hand_raise_count >= 2){

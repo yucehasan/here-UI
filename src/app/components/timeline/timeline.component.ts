@@ -32,38 +32,45 @@ export class TimelineComponent implements OnInit {
   dataSeries: number[];
 
   constructor(private analyticsService: AnalyticsService) {
-    this.initChartData();
   }
 
   ngOnInit() {
     this.analyticsService.getTimeline().subscribe((res) => {
+      console.log("dönen response" + res);
       this.dataSeries = res;
+      this.dataSeries.sort();
+      this.initChartData();
     });
   }
 
   public initChartData(): void {
-    for(let i = 0; i < this.dataSeries.length; i++){
-      this.dataSeries[i] = this.dataSeries[i] * 1000;
-    }
-    let time = this.dataSeries[0];
-    let end = this.dataSeries[this.dataSeries.length -1];
-    let totalms = end-time;
-    let gap = totalms / 10;
     let dates = [];
-    let counter = 0;
-    let index = 1;
-    dates.push([time, counter]);
-    for (let i = 0; i < 10; i++) {
-      time = time + gap;
-      while(this.dataSeries[index] <= time){
-        counter++;
-        index++;
+    if(this.dataSeries){
+      for(let i = 0; i < this.dataSeries.length; i++){
+        this.dataSeries[i] = Number(this.dataSeries[i]);
       }
-      if( counter != 0){
-        dates.push([time, counter]);
+
+      let time = this.dataSeries[0];
+      let end = this.dataSeries[this.dataSeries.length -1];
+      let totalms = end-time;
+      let gap = totalms / 10;
+      console.log(gap);
+      let counter = 0;
+      let index = 1;
+      dates.push([time, counter]);
+      for (let i = 0; i < 10; i++) {
+        time = time + gap;
+        while(this.dataSeries[index] <= time){
+          counter++;
+          index++;
+        }
+        if( counter != 0){
+          dates.push([time, counter]);
+        }
+        counter = 0;
       }
-      counter = 0;
     }
+    
 
     this.series = [
       {
