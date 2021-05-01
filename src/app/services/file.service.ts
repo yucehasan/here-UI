@@ -62,7 +62,7 @@ export class FileService {
   }
 
   uploadNote(courseID: string, b64: string): void{
-    var header = new HttpHeaders().set(      
+    var headers = new HttpHeaders().set(      
       'Authorization',
       'Bearer ' + this.token
     );

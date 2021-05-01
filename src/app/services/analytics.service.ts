@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ParticipantsDetails, ParticipantsResponse } from '../interface';
 import { HttpService } from 'src/app/services/http.service';
 import { AnalyticsResponse, ParticipantsDetails } from '../interface';
 import { AuthService } from './auth.service';
