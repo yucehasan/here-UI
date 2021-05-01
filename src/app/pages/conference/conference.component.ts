@@ -142,7 +142,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
       )
 
       const formData = new FormData();
-      this.httpClient.post<any>(environment.BACKEND_IP + "/session/end", formData, {headers: headers}).subscribe((res) => {});
+      this.httpService.post(environment.BACKEND_IP + "/session/end", formData, headers).subscribe((res) => {});
       this.router.navigate(['main']);
     }
   }
@@ -416,8 +416,8 @@ export class ConferenceComponent implements OnInit, OnDestroy{
       'Bearer ' + this.token
     );
     formData.append('timestamp', Date.now().toString());
-    this.httpClient
-      .post(environment.BACKEND_IP + '/analyze/object', formData, {headers: header})
+    this.httpService
+      .post(environment.BACKEND_IP + '/analyze/object', formData, header)
       .subscribe(
         (res) => {            
           var taskID = res["task_id"]
