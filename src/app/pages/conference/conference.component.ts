@@ -141,7 +141,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
       )
 
       const formData = new FormData();
-      this.httpClient.post<any>(environment.BACKEND_IP + "/session/end", formData, {headers: headers}).subscribe((res) => {});
+      this.httpClient.post<any>(environment.BACKEND_IP + "/session/leave", formData, {headers: headers}).subscribe((res) => {});
       this.router.navigate(['main']);
     }
   }
