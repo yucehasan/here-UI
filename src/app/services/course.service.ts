@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, BehaviorSubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ScheduleResponse, WeeklySchedule } from '../interface';
+import { AuthService } from './auth.service';
 
 const EMPTYDATA: WeeklySchedule = {
   schedule: [
@@ -80,7 +81,7 @@ export class CourseService {
   schedule: WeeklySchedule;
   scheduleSub = new Subject<WeeklySchedule>();
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private authService: AuthService) {
     this.schedule = EMPTYDATA;
   }
 
@@ -97,7 +98,25 @@ export class CourseService {
     this.httpClient.get<any>(environment.BACKEND_IP + "/course", {headers: header}).subscribe((res) => {
       console.log(res)
       this.updateSchedule(res);
-    });
+    },
+    (err) => {
+      console.log("Got an error")
+      this.authService.refreshAccessToken().then( (token) => {
+        console.log("new token:", token)
+        const headers = new HttpHeaders().set(
+          'Authorization',
+          'Bearer ' + token
+        );
+        this.httpClient.get<any>(environment.BACKEND_IP + '/course', { headers: headers }).subscribe(
+          (res) => {
+            console.log(res);
+            this.updateSchedule(res)
+          })
+      }).catch( (err) => {
+        console.log(err);
+      });
+    }
+    );
   }
 
   updateSchedule(response: ScheduleResponse): void {

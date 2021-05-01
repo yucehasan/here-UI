@@ -12,6 +12,7 @@ import {
 } from '@angular/material/dialog';
 import { FileService } from 'src/app/services/file.service';
 import { CanvasTextInputComponent } from '../canvas-text-input/canvas-text-input.component';
+import { ErrorComponent } from '../error/error.component';
 
 @Component({
   selector: 'app-note-canvas',
@@ -208,10 +209,10 @@ export class NoteCanvasComponent implements OnInit {
   }
 
   save() {
-    console.log(this.data.courseID);
-    console.log(this.canvas.toDataURL());
     this.fileService.uploadNote(this.data.courseID, this.canvas.toDataURL())
-    alert("Note saved");
+    this.dialog.open(ErrorComponent, {
+      data: "Note saved"
+    });
   }
 
   addtext() {

@@ -12,7 +12,7 @@ import { AnalyticsComponent } from './pages/analytics/analytics.component';
 const routes: Routes = [
   {path: '', component: LandingComponent},
   {path: 'main', component: MainComponent},
-  {path: 'conference/:roomID', component: ConferenceComponent},
+  {path: 'conference/:sessionID/:courseID', component: ConferenceComponent},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'slide', component: SlideComponent},

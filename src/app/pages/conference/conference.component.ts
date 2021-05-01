@@ -46,6 +46,7 @@ export class ConferenceComponent implements OnInit {
   chatOn: boolean;
 
   roomID: number;
+  courseID: number;
   userType: string;
   username: string;
   token: string;
@@ -102,7 +103,10 @@ export class ConferenceComponent implements OnInit {
     this.chat = [];
     this.unreadCount = 0;
     this.expectScreen = false;
-    this.activatedRoute.params.subscribe((params: Params) => this.roomID = params['roomID']);
+    this.activatedRoute.params.subscribe((params: Params) => {
+      this.roomID = params['sessionID']
+      this.courseID = params['courseID']
+    });
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
     });
@@ -161,11 +165,12 @@ export class ConferenceComponent implements OnInit {
     if (!this.noteOn) {
       document.getElementById('editIcon').style.color = 'blue';
       const filterData = {
-        courseID: this.roomID,
+        courseID: this.courseID,
         top: window.innerHeight - this.noteIcon.nativeElement.getBoundingClientRect().top,
         right: this.noteIcon.nativeElement.getBoundingClientRect().right,
         getSlide: this.getSlideSnip,
-        getShareScreen: this.getScreenShareSnip
+        getShareScreen: this.getScreenShareSnip,
+        sessionID: this.roomID
       };
       let dialogRef = this.dialog.open(NoteCanvasComponent, {
         data: filterData,
