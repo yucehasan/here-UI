@@ -20,7 +20,7 @@ import { ChatComponent } from 'src/app/components/chat/chat.component';
 
 const labelStyle =
   'position: absolute; bottom: 5px; width: calc(100% - 20px); \
-                    padding-left: 20px; background-color: rgba(0,0,0,0.5);\
+                    padding-left: 20px; background-color: rgba(0,0,0,1.0);\
                     font-size: 25px; color: white; padding-top: 10px;';
 
 @Component({
@@ -211,7 +211,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
       this.shareOn = true;
 
       this.share = document.createElement('video');
-      this.share.setAttribute('style', 'width: 100% ');
+      this.share.setAttribute('style', 'width: 100%;');
       this.share.setAttribute('id', 'my-video');
       this.share.autoplay = true;
       this.share.muted = true;
@@ -223,7 +223,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
       labelDiv.setAttribute('style', labelStyle);
 
       var parentDiv = document.createElement('div');
-      parentDiv.setAttribute('style', 'z-index: -1; position: relative');
+      parentDiv.setAttribute('style', 'z-index: -1; position: relative; height: -webkit-fill-available;');
       parentDiv.appendChild(this.share);
       parentDiv.appendChild(labelDiv);
 
