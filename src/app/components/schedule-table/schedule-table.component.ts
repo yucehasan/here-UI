@@ -48,13 +48,10 @@ export class ScheduleTableComponent implements OnInit {
   onClick(event: MouseEvent): void{
     var target: HTMLButtonElement = event.target as HTMLButtonElement
     if(this.userType == "student")
-      this.sessionService.joinSession((event.target as HTMLButtonElement).id, this.token);
+      this.sessionService.joinSession(target.id, this.token);
     else if(this.userType == "instructor")
-      this.sessionService.openSession((event.target as HTMLButtonElement).id, this.token);
+      this.sessionService.openSession(target.id, this.token);
     else
       console.error("Invalid user type");
-
-    // REDIRECT THE USER
-    //this.router.navigate(['conference', target.id], )
   }
 }
