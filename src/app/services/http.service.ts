@@ -44,9 +44,9 @@ export class HttpService {
     return result;
   }
 
-  post(url: string, headers?: HttpHeaders): Observable<any> {
+  post(url: string, body:any ,headers?: HttpHeaders): Observable<any> {
     const result = new Observable<any>((observer) => {
-      this.httpClient.post<any>(url, {}, { headers: headers }).subscribe(
+      this.httpClient.post<any>(url, body, { headers: headers }).subscribe(
         (res) => {
           observer.next(res);
         },
@@ -56,7 +56,7 @@ export class HttpService {
               'Authorization',
               'Bearer ' + this.token
             );
-            this.httpClient.post<any>(url, {}, {headers: headers})
+            this.httpClient.post<any>(url, body, {headers: headers})
             .subscribe( (res) => {
               observer.next(res);
             })
