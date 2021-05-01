@@ -34,8 +34,10 @@ import { CanvasTextInputComponent } from './components/canvas-text-input/canvas-
 import { SavedNotesComponent } from './components/saved-notes/saved-notes.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import { ErrorComponent } from './components/error/error.component';
 import { NotePreviewComponent } from './components/note-preview/note-preview.component';
+
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -78,7 +80,8 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     ReactiveFormsModule,
     HttpClientModule,
     FlexLayoutModule,
-    DirectivesModule
+    DirectivesModule,
+    NgApexchartsModule
   ],
   providers: [
   ],

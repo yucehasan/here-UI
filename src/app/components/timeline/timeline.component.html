@@ -1,89 +1,12 @@
-<div class="Timeline">
-
-    <svg height="5" width="200">
-    <line x1="0" y1="0" x2="200" y2="0" />
-    Sorry, your browser does not support inline SVG.
-  </svg>
-  
-    <div class="event1">
-      
-      <div class="event1Bubble">
-        <div id="title1" class="eventTitle">{{firstTitle}}</div>
-      </div>
-      <svg height="30" width="30">
-         <circle cx="15" cy="15" r="11" fill="#ff685a" />
-       </svg>
-      <div class="time">{{firstMin}}</div>
-      
-    </div>
-    
-    <svg height="5" width="200">
-    <line x1="0" y1="0" x2="200" y2="0" />
-    Sorry, your browser does not support inline SVG.
-  </svg>
-  
-    <div class="event2">
-      
-      <div class="event2Bubble">
-        <div id="title2" class="eventTitle">{{secondTitle}}</div>
-      </div>
-        <svg height="30" width="30">
-            <circle cx="15" cy="15" r="11" fill="#ff685a" />
-      </svg>
-      <div class="time2">{{secondMin}}</div>
-    </div>
-    
-    <svg height="5" width="200">
-        <line x1="0" y1="0" x2="200" y2="0" />
-        Sorry, your browser does not support inline SVG.
-      </svg>
-
-  <div class="event1">
-      
-    <div class="event1Bubble">
-      <div id="title3" class="eventTitle">{{thirdTitle}}</div>
-    </div>
-    <svg height="30" width="30">
-        <circle cx="15" cy="15" r="11" fill="#ff685a" />
-  </svg>
-    <div class="time">{{thirdMin}}</div>
-    
-  </div>
-    
-    <svg height="5" width="200">
-    <line x1="0" y1="0" x2="200" y2="0" />
-    Sorry, your browser does not support inline SVG.
-  </svg>
-
-  <div class="event2">
-      
-    <div class="event2Bubble">
-      <div id="title4" class="eventTitle">{{fourthTitle}}</div>
-    </div>
-    <svg height="30" width="30">
-        <circle cx="15" cy="15" r="11" fill="#ff685a" />
-  </svg>
-    <div class="time2">{{fourthMin}}</div>
-  </div>
-  
-  <svg height="5" width="200">
-      <line x1="0" y1="0" x2="200" y2="0" />
-      Sorry, your browser does not support inline SVG.
-    </svg>
-  <div class="event1">
-      
-    <div class="event1Bubble">
-      <div id="title5" class="eventTitle">{{fifthTitle}}</div>
-    </div>
-    <svg height="30" width="30">
-        <circle cx="15" cy="15" r="11" fill="#ff685a" />
-  </svg>
-    <div class="time">{{fifthMin}}</div>
-    
-    
-    <svg height="13" width="200">
-        <line x1="0" y1="0" x2="200" y2="0" />
-        Sorry, your browser does not support inline SVG.
-      </svg>
-    <div class="event1">
-  </div>
+<apx-chart
+  [series]="series"
+  [chart]="chart"
+  [dataLabels]="dataLabels"
+  [markers]="markers"
+  [title]="title"
+  [fill]="fill"
+  [yaxis]="yaxis"
+  [xaxis]="xaxis"
+  [tooltip]="tooltip"
+  [autoUpdateSeries]="true"
+></apx-chart>

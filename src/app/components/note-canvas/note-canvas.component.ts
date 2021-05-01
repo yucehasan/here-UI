@@ -102,9 +102,9 @@ export class NoteCanvasComponent implements OnInit {
     this.canvas = document.getElementById('can') as HTMLCanvasElement;
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
-    this.ctx.canvas.width = window.innerWidth * 0.4;
+    this.ctx.canvas.width = window.innerWidth * 0.33;
     this.ctx.canvas.height = window.innerHeight * 0.6;
-    this.canvasWidth = window.innerWidth * 0.4;
+    this.canvasWidth = window.innerWidth * 0.33;
     this.canvasHeight = window.innerHeight * 0.6;
     this.flag = false;
     this.dot_flag = false;
@@ -158,6 +158,7 @@ export class NoteCanvasComponent implements OnInit {
 
   color(obj) {
     var selected = document.getElementById(this.brushColor);
+    console.log(selected)
     selected.style.setProperty('border', '0');
     switch (obj.srcElement.id) {
       case 'green':
@@ -186,9 +187,7 @@ export class NoteCanvasComponent implements OnInit {
     else this.brushWidth = 2;
 
     selected = document.getElementById(this.brushColor);
-    if (this.brushColor === 'black')
-      selected.style.setProperty('border', 'solid 3px aquamarine');
-    else selected.style.setProperty('border', 'solid 3px black');
+    selected.style.setProperty('border', 'solid 3px aquamarine');
   }
 
   draw() {

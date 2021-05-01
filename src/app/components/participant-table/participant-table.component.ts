@@ -14,34 +14,8 @@ export class ParticipantTableComponent implements OnInit {
   constructor(private analyticsService: AnalyticsService) {}
 
   ngOnInit(): void {
-    /*
     this.analyticsService.getParticipantList().subscribe((res) => {
       this.dataSource = res;
     });
-    this.analyticsService.fetchParticipants();
-  }*/
-    this.dataSource = [ {
-      name: "Busra Buyukgebiz",
-      participation: 'normal'
-      },
-      {
-        name: "Yuce Hasan Kilic",
-        participation: 'active'
-      } ,
-      {
-        name: "Ozan Aydin",
-        participation: 'inactive'
-      },
-      {
-        name: "Mert Aslan",
-        participation: 'active'
-      },
-      {
-        name: "Burak Okumus",
-        participation: 'normal'
-      } 
-    ];
-    this.dataLength = 2;
   }
-
 }

@@ -26,12 +26,13 @@ interface Course{
     id: number
 }
 
-export interface ParticipantsResponse {
+export interface AnalyticsResponse {
   participants: 
     {
       name: string,
       hand_raise_count: number;
-    }[]
+    }[],
+  timestamps: number[]
 }
 
 export interface ParticipantsDetails {

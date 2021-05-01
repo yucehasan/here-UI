@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -31,7 +32,7 @@ const labelStyle =
 TODOS
 - PDFTron experiences network failure on some clients (console log says CORS policy (again?!) )
 */
-export class ConferenceComponent implements OnInit {
+export class ConferenceComponent implements OnInit, OnDestroy{
   @ViewChild('taTrigger') taTrigger: MatMenuTrigger;
   @ViewChild('noteTrigger') noteTrigger: MatMenuTrigger;
   @ViewChild(SlideComponent) slideComponent: SlideComponent;
@@ -64,6 +65,8 @@ export class ConferenceComponent implements OnInit {
   chat;
   chatDialogRef: MatDialogRef<ChatComponent>;
   unreadCount: number;
+
+  dialogRef: MatDialogRef<NoteCanvasComponent>;
 
   type: 'instructor' | 'student';
   currSlideInstr: number;
@@ -122,11 +125,23 @@ export class ConferenceComponent implements OnInit {
     })
   }
 
+  ngOnDestroy(): void {
+    this.dialogRef.close();
+    this.chatDialogRef.close();
+  }
+
   leaveSession(): void {
     if (this.userType == 'instructor'){
-      this.router.navigate(['analytics'])
+      this.router.navigate(['analytics']);
     }
     else{
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + this.token
+      )
+
+      const formData = new FormData();
+      this.httpClient.post<any>(environment.BACKEND_IP + "/session/end", formData, {headers: headers}).subscribe((res) => {});
       this.router.navigate(['main']);
     }
   }
@@ -172,14 +187,14 @@ export class ConferenceComponent implements OnInit {
         getShareScreen: this.getScreenShareSnip,
         sessionID: this.roomID
       };
-      let dialogRef = this.dialog.open(NoteCanvasComponent, {
+      this.dialogRef = this.dialog.open(NoteCanvasComponent, {
         data: filterData,
         hasBackdrop: false,
         panelClass: 'filter-popup',
       });
 
       this.noteOn = true;
-      dialogRef.afterClosed().subscribe(() => {
+      this.dialogRef.afterClosed().subscribe(() => {
         this.noteOn = false;
         document.getElementById('editIcon').style.color = 'gray';
       });

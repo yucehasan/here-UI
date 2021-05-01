@@ -1,8 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ParticipantsDetails, ParticipantsResponse } from '../interface';
+import { AnalyticsResponse, ParticipantsDetails } from '../interface';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,22 +12,39 @@ import { ParticipantsDetails, ParticipantsResponse } from '../interface';
 export class AnalyticsService {
   participantList: ParticipantsDetails[];
   subParticipantList: Subject<ParticipantsDetails[]>;
+  subTimeline: Subject<number[]>;
+  sessionID: number;
+  token: string;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private activatedRoute: ActivatedRoute, private authService: AuthService) {
     this.participantList = [];
+    this.activatedRoute.params.subscribe((params: Params) => this.sessionID = params['sessionID']);
+    this.token = '';
    }
 
-  fetchParticipants(): ParticipantsDetails[] {
-    this.httpClient.get<any>(environment.BACKEND_IP + "/session").subscribe((res) => {
-      this.updateParticipants(res);
+  fetchData(): void {
+    this.httpClient.get<any>(environment.BACKEND_IP + "/session/analytics/"+ this.sessionID).subscribe((res) => {
+      this.updateData(res);
     });
-    return this.participantList;
+
+    this.authService.getToken().subscribe((token) => {
+      this.token = token;
+    });
+
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      'Bearer ' + this.token
+    );
+    
+    const formData = new FormData();
+    this.httpClient.post<any>(environment.BACKEND_IP + "/session/end", formData, { headers: headers }).subscribe((res) => {});
   }
 
-  updateParticipants(response: ParticipantsResponse): void {
-    var fetchedData = response.participants;
+  updateData(response: AnalyticsResponse): void {
+    var fetchedParticipants = response.participants;
+    var fetchedTimeline = response.timestamps;
     var part = ""
-    fetchedData.forEach((participant) => {
+    fetchedParticipants.forEach((participant) => {
       if(participant.hand_raise_count >= 2){
         part = "active";
       } 
@@ -38,9 +57,14 @@ export class AnalyticsService {
       this.participantList.push({name: participant.name, participation: part});
     });
     this.subParticipantList.next(this.participantList);
+    this.subTimeline.next(fetchedTimeline);
   }
 
   getParticipantList(): Observable<ParticipantsDetails[]> {
     return this.subParticipantList.asObservable();
+  }
+
+  getTimeline(): Observable<number[]> {
+    return this.subTimeline.asObservable();
   }
 }
