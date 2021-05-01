@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { NotesService } from 'src/app/services/notes.service';
 import { AuthService } from '../../services/auth.service';
 
 const TRY = {
@@ -42,16 +43,20 @@ export class MainComponent implements OnInit {
   classesWithNotes;
   userType: string;
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router, private authService: AuthService, private notesService: NotesService) {
     this.username = '';
     this.token = '';
   }
 
   ngOnInit(): void {
-    this.classesWithNotes = this.formatResponse(TRY)
     this.authService.getToken().subscribe((token) => {
       this.token = token;
     });
+    this.notesService.getNotes().subscribe( (notes) => {
+      this.classesWithNotes = this.formatResponse(notes)
+    })
+    
+    this.notesService.fetchNotes(this.token);
 
     this.authService.getUsername().subscribe((username) => {
       this.username = username;
