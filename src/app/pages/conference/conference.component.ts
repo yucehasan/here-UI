@@ -513,12 +513,14 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     Start of WebRTC functions
   */
 
-  startMic() {
+  toggleMic() {
     if(this.micOn){
+      this.localStream.getAudioTracks()[0].enabled = false;
       this.micOn = false;
       document.getElementById('micIcon').setAttribute('class', 'fas fa-microphone-slash');
     }
     else {
+      this.localStream.getAudioTracks()[0].enabled = true;
       this.micOn = true;
       document.getElementById('micIcon').setAttribute('class', 'fas fa-microphone');
     }
@@ -688,6 +690,8 @@ export class ConferenceComponent implements OnInit, OnDestroy{
 
   getUserMediaSuccess(stream) {
     this.videoOn = true;
+    this.micOn = true;
+    document.getElementById('micIcon').setAttribute('class', 'fas fa-microphone');
     this.localStream = stream;
     this.localVideo.srcObject = stream;
     Object.keys( this.connections).forEach( (connectionID) => {
