@@ -1,7 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { ErrorComponent } from '../components/error/error.component';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -11,7 +13,7 @@ export class SessionService {
   token;
 
   constructor(private http: HttpClient, private authService: AuthService,
-    private router: Router) {
+    private router: Router, private dialogController: MatDialog) {
   }
 
   openSession(courseID: string, token: string) {
@@ -43,11 +45,12 @@ export class SessionService {
     );
     this.http.post(environment.BACKEND_IP + '/session/join', formData, {headers: header}).subscribe(
       (res) => {
-        console.log(res);
         this.router.navigate(['conference', res["session_id"]])
       },
       (err) => {
-        console.error("Error is -->", err);
+        this.dialogController.open(ErrorComponent, {
+          data: err.error.error
+        })
       }
     );
   }

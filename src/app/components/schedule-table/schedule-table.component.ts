@@ -45,12 +45,11 @@ export class ScheduleTableComponent implements OnInit {
     this.courseService.fetchCourses(this.token);
   }
 
-  onClick(event: MouseEvent): void{
-    var target: HTMLButtonElement = event.target as HTMLButtonElement
+  onClick(courseID): void{
     if(this.userType == "student")
-      this.sessionService.joinSession(target.id, this.token);
+      this.sessionService.joinSession(courseID, this.token);
     else if(this.userType == "instructor")
-      this.sessionService.openSession(target.id, this.token);
+      this.sessionService.openSession(courseID, this.token);
     else
       console.error("Invalid user type");
   }
