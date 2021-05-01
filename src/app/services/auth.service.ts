@@ -27,26 +27,22 @@ export class AuthService {
     this.tokenSub.next(newToken);
     this.token = newToken;
     localStorage.setItem("token", newToken);
-    console.log("AUTH SERVICE: Token is updated. New Token: \n" + newToken.substr(0, 5) + "...");
   }
 
   updateRefreshToken(newRefreshToken: string): void {
     this.refreshTokenSub.next(newRefreshToken);
     this.refreshToken = newRefreshToken;
     localStorage.setItem("refresh_token", newRefreshToken);
-    console.log("AUTH SERVICE: Refresh token is updated. New Token: \n" + newRefreshToken.substr(0, 5) + "...");
   }
 
   updateUsername(newUsername: string): void {
     this.usernameSub.next(newUsername);
     localStorage.setItem("username", newUsername);
-    console.log("AUTH SERVICE: Username is updated. New Username: \n" + newUsername);
   }
 
   updateUserType(newUserType: string): void {
     this.userTypeSub.next(newUserType);
     localStorage.setItem("userType", newUserType);
-    console.log("AUTH SERVICE: User type is updated. New User type: \n" + newUserType);
   }
 
   refreshAccessToken(): Promise<string> {
@@ -56,10 +52,8 @@ export class AuthService {
         'Authorization',
         'Bearer ' + localStorage.getItem('refresh_token')
         );
-        console.log(localStorage.getItem('refresh_token'))
         this.httpClient.post<any>(environment.BACKEND_IP + "/token/refresh", {}, {headers: headers})
         .subscribe((res) => {
-          console.log("AUTH SERVICE: response for token refresh: " + res);
           this.updateToken(res.access_token);
           resolve(this.token);
         },

@@ -36,8 +36,7 @@ export class HttpService {
           }).catch( (err) => {
             console.log(err);
           })
-        },
-        () => {console.log("Completed")}
+        }
       )
     })
 
@@ -63,8 +62,7 @@ export class HttpService {
           }).catch( (err) => {
             console.log(err);
           })
-        },
-        () => {console.log("Completed")}
+        }
       )
     })
 
