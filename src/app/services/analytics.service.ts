@@ -23,7 +23,7 @@ export class AnalyticsService {
    }
 
   fetchData(): void {
-    this.httpClient.get<any>(environment.BACKEND_IP + "/session/analytics/"+ this.sessionID).subscribe((res) => {
+    this.httpClient.get<any>(environment.BACKEND_IP + "/session/statistics/"+ this.sessionID + "?timestamp=" + Date.now().toString()).subscribe((res) => {
       this.updateData(res);
     });
 
