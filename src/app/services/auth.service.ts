@@ -49,18 +49,26 @@ export class AuthService {
     console.log("AUTH SERVICE: User type is updated. New User type: \n" + newUserType);
   }
 
-  refreshAccessToken(): void {
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      'Bearer ' + this.refreshToken
-    );
+  refreshAccessToken(): Promise<string> {
+    return new Promise( (resolve, reject) => {
 
-    this.httpClient.post<any>(environment.BACKEND_IP + "/token/refresh", {headers: headers})
-    .subscribe((res) => {
-      console.log("AUTH SERVICE: response for token refresh: " + res);
-      this.updateToken(res.access_token);
-    })
-
+      const headers = new HttpHeaders().set(
+        'Authorization',
+        'Bearer ' + localStorage.getItem('refresh_token')
+        );
+        console.log(localStorage.getItem('refresh_token'))
+        this.httpClient.post<any>(environment.BACKEND_IP + "/token/refresh", {}, {headers: headers})
+        .subscribe((res) => {
+          console.log("AUTH SERVICE: response for token refresh: " + res);
+          this.updateToken(res.access_token);
+          resolve(this.token);
+        },
+        (err) => {
+          console.log(err);
+          reject("Sıkıntı oldu");
+        })
+      }
+    )
   }
 
   getToken(): Observable<string> {
