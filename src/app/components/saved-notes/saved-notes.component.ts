@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { NotesService } from 'src/app/services/notes.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -12,23 +13,20 @@ export class SavedNotesComponent implements OnInit {
   @Input('title') classTitle: string;
   @Input('notes') notes: [];
 
-  constructor(private authService: AuthService, private http: HttpClient) {}
+  constructor(private authService: AuthService, private http: HttpClient, private notesService: NotesService) {}
+  token;
+  ngOnInit(): void {
+    this.authService.getToken().subscribe( (token) => {
+      this.token = token
+    })
+  }
 
-  ngOnInit(): void {}
+  fetchAnote(note_id) {
+    this.notesService.fetchANote(note_id, this.token);
+  }
 
-  preview(event: MouseEvent) {
-    var unified = (event.target as HTMLButtonElement).id.split('-');
-    var id = unified[0];
-    var course_id = unified[1];
-    this.http.get(environment.BACKEND_IP + '/notes', {
-      params: {
-        id: id,
-      },
-    }).subscribe(
-      (res) => {console.log("response of preview", res)},
-      (err) => {console.log("error of preview", err)},
-      ()    => {console.log("preview completed")}
-    );
+  preview(note_id) {
+    this.fetchAnote(note_id);
   }
 
   download(event: MouseEvent) {}

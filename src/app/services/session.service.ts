@@ -27,7 +27,7 @@ export class SessionService {
     this.http.post(environment.BACKEND_IP + '/session', formData, {headers: header}).subscribe(
       (res) => {
         console.log(res);
-        this.router.navigate(['conference', res["session_id"]])
+        this.router.navigate(['conference', res["id"], courseID])
       },
       (err) => {
         console.error("Error is -->", err);
@@ -36,7 +36,7 @@ export class SessionService {
   }
 
   joinSession(courseID: string, token): void {
-    console.log("trying to open course", courseID)
+    console.log("trying to join course", courseID)
     var formData = new FormData();
     formData.append('course_id', courseID);
     var header = new HttpHeaders().set(      
@@ -45,13 +45,16 @@ export class SessionService {
     );
     this.http.post(environment.BACKEND_IP + '/session/join', formData, {headers: header}).subscribe(
       (res) => {
-        this.router.navigate(['conference', res["session_id"]])
+        console.log(res);
+        this.router.navigate(['conference', res["session_id"], courseID])
       },
       (err) => {
         this.dialogController.open(ErrorComponent, {
           data: err.error.error
         })
-      }
+        console.log(err);
+      },
+      () => {console.log("completed")}
     );
   }
 
