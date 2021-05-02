@@ -19,6 +19,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ChatComponent } from 'src/app/components/chat/chat.component';
 import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services/file.service';
+import { NotificationsService, NotificationType } from 'angular2-notifications';
 
 const labelStyle =
   'position: absolute; bottom: 5px; width: calc(100% - 20px); \
@@ -91,7 +92,8 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     private authService: AuthService,
     private router: Router,
     private httpService: HttpService,
-    private fileService: FileService
+    private fileService: FileService,
+    private notifier: NotificationsService
   ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
@@ -485,7 +487,9 @@ export class ConferenceComponent implements OnInit, OnDestroy{
               if(res["distraction_type"]){
                 if( res["feedback_message"] != ""){
                   //display feedback to student
-                  this.openTA(res["feedback_message"]);
+                  //this.openTA(res["feedback_message"]);
+                  var a: NotificationType = 'warn' as NotificationType
+                  this.notifier.create("Hey there!", res["feedback_message"], a)
                 }
               }
               else if(res["hand_raised"]){
@@ -495,7 +499,9 @@ export class ConferenceComponent implements OnInit, OnDestroy{
                 }
                 if(res["feedback_message"] != ""){
                   //show feedback to student
-                  this.openTA(res["feedback_message"])
+                  //this.openTA(res["feedback_message"])
+                  var a: NotificationType = 'success' as NotificationType
+                  this.notifier.create("Great Job!", res["feedback_message"], a)
                 }
               }
               return false;
@@ -588,7 +594,9 @@ export class ConferenceComponent implements OnInit, OnDestroy{
 
     if(this.userType === "instructor"){
       this.socket.on('raise-hand', (data) => {
-        this.openTA(data.username + ' raised hand');
+        //this.openTA(data.username + ' raised hand');
+        var a: NotificationType = 'info' as NotificationType
+        this.notifier.create("Students waiting:", data.username + ' raised hand')
       });
     }
 
