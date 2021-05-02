@@ -66,10 +66,6 @@ export class DashboardComponent implements OnInit {
         base64File = event.target.result;
         // Send base64file to backend
 
-        this.dialogController.open(ErrorComponent, {
-          data: "File successfully uploaded."
-        });
-
         this.fileService.uploadSlide( courseID.toString(), base64File)
       };
 

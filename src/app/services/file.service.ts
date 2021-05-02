@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 import { HttpService } from 'src/app/services/http.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ErrorComponent } from '../components/error/error.component';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,7 @@ export class FileService {
   token;
 
   constructor(
+    private dialogController: MatDialog,
     private authService: AuthService,
     private httpService: HttpService) {
     this.authService.getToken().subscribe( (token) => {
@@ -48,9 +51,15 @@ export class FileService {
     this.httpService.post(environment.BACKEND_IP + '/file', formData, headers).subscribe(
       (res) => {
         console.log(res);
+        this.dialogController.open(ErrorComponent, {
+          data: "File successfully uploaded"
+        })
       },
       (err) => {
         console.error("Error is -->", err);
+        this.dialogController.open(ErrorComponent, {
+          data: "An error occurred. Please try again"
+        })
       },
       () => {
         console.log("Completed")
