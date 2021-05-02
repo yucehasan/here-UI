@@ -48,12 +48,6 @@
     <mat-card-content id="buttons" class="dialog-btn-wrapper" align="center">
       <span class="fill-remaining-space"></span>
       <div id="toolsSection" >
-        <button mat-raised-button (click)="openTA('Text will appear here')">
-          TRY
-        </button>
-        <button (click)="captureVideo()" mat-raised-button color="primary">
-          Capture snaphot
-        </button>
         <div #chatIcon class="dialog-btn-wrapper">
           <button matBadgeColor="warn" [matBadge]="unreadCount" [matBadgeHidden]="unreadCount == 0" mat-fab (click)="openChat($event)">
             <i id="chatIcon" class="fas fa-comments"></i>
