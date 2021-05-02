@@ -28,7 +28,7 @@ export class SessionService {
     );
     this.httpService.post(environment.BACKEND_IP + '/session', formData, headers).subscribe(
       (res) => {
-        if(res.error.error || !res["id"]){
+        if(res.error || !res["id"]){
           this.dialogController.open(ErrorComponent, {
             data: res.error.error
           });
@@ -62,7 +62,7 @@ export class SessionService {
     );
     this.httpService.post(environment.BACKEND_IP + '/session/join', formData, headers).subscribe(
       (res) => {
-        if(res.error.error || !res["session_id"]){
+        if(res.error || !res["session_id"]){
           this.dialogController.open(ErrorComponent, {
             data: res.error.error
           });
