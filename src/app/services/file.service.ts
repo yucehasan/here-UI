@@ -22,20 +22,24 @@ export class FileService {
     }
 
   getSlide(courseID: string): Promise<string> {
+    // return new Promise<string>( (resolve, reject) => {
+    //   var headers = new HttpHeaders();
+    //   headers.set(
+    //     'Authorization',
+    //     'Bearer ' + this.token
+    //   );
+    //   this.httpService.get(environment.BACKEND_IP + '/file?course_id=' + courseID, headers).subscribe(
+    //     (res) => {
+    //       resolve(res["file"])
+    //     },
+    //     (err) => {
+    //       reject(err);
+    //     }
+    //   );
+    // })
+
     return new Promise<string>( (resolve, reject) => {
-      var headers = new HttpHeaders();
-      headers.set(
-        'Authorization',
-        'Bearer ' + this.token
-      );
-      this.httpService.get(environment.BACKEND_IP + '/file?course_id=' + courseID, headers).subscribe(
-        (res) => {
-          resolve(res["file"])
-        },
-        (err) => {
-          reject(err);
-        }
-      );
+      resolve(environment.pdf);
     })
 
   }
