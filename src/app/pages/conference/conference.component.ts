@@ -18,6 +18,7 @@ import { ActivatedRoute, Router, Params } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ChatComponent } from 'src/app/components/chat/chat.component';
 import { HttpService } from 'src/app/services/http.service';
+import { FileService } from 'src/app/services/file.service';
 
 const labelStyle =
   'position: absolute; bottom: 5px; width: calc(100% - 20px); \
@@ -54,6 +55,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
   token: string;
 
   interval: NodeJS.Timeout;
+  slideb64: string;
 
   localVideo: HTMLVideoElement;
   share: HTMLVideoElement;
@@ -89,13 +91,15 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     private activatedRoute: ActivatedRoute,
     private authService: AuthService,
     private router: Router,
-    private httpService: HttpService
+    private httpService: HttpService,
+    private fileService: FileService
   ) {}
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
   @ViewChild('chatIcon') chatIcon: ElementRef;
 
   ngOnInit(): void {
+    this.slideb64 = this.fileService.getSlide();
     this.micOn = true;
     this.shareOn = false;
     this.taOn = false;

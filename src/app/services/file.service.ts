@@ -19,23 +19,24 @@ export class FileService {
     }
 
   getSlide(): string {
-    var headers = new HttpHeaders();
-    headers.set(
-      'Authorization',
-      'Bearer ' + this.token
-    );
-    this.httpService.get(environment.BACKEND_IP + '/slide', headers).subscribe(
-      (res) => {
-        console.log(res);
-      },
-      (err) => {
-        console.error("Error is -->", err);
-      },
-      () => {
-        console.log("Completed")
-      }
-    );
-    return "";
+    // var headers = new HttpHeaders();
+    // headers.set(
+    //   'Authorization',
+    //   'Bearer ' + this.token
+    // );
+    // this.httpService.get(environment.BACKEND_IP + '/slide', headers).subscribe(
+    //   (res) => {
+    //     console.log(res);
+    //   },
+    //   (err) => {
+    //     console.error("Error is -->", err);
+    //   },
+    //   () => {
+    //     console.log("Completed")
+    //   }
+    // );
+    // return "";
+    return environment.pdf;
   }
 
   uploadSlide(courseID: string, b64: string): void {

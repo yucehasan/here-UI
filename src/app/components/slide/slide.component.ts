@@ -21,6 +21,7 @@ import { environment } from 'src/environments/environment';
 })
 export class SlideComponent implements OnInit, AfterViewInit {
   @ViewChild('viewer') viewer: ElementRef;
+  @Input('slideb64') slideb64: string;
   @Input() next: EventEmitter<void>;
   @Input() prev: EventEmitter<void>;
   @Output() onChange = new EventEmitter<number>();
@@ -28,9 +29,8 @@ export class SlideComponent implements OnInit, AfterViewInit {
   nextButton: HTMLButtonElement;
   prevButton: HTMLButtonElement;
   currentSlide: number;
-  slideB64: string;
 
-  constructor(private fileService: FileService){}
+  constructor(){}
 
   base64ToBlob(base64) {
     const binaryString = window.atob(base64);
@@ -43,7 +43,6 @@ export class SlideComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    //this.slideB64 = this.fileService.getSlide();
     this.wvDocumentLoadedHandler = this.wvDocumentLoadedHandler.bind(this);
   }
 
@@ -54,7 +53,7 @@ export class SlideComponent implements OnInit, AfterViewInit {
       },
       this.viewer.nativeElement
     ).then((instance) => {
-      instance.loadDocument(this.base64ToBlob(environment.pdf), {
+      instance.loadDocument(this.base64ToBlob(this.slideb64), {
         filename: 'mypdf.pdf',
       });
 
