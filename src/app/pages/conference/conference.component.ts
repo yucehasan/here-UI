@@ -55,7 +55,6 @@ export class ConferenceComponent implements OnInit, OnDestroy{
   token: string;
 
   interval: NodeJS.Timeout;
-  slideb64: string;
 
   localVideo: HTMLVideoElement;
   share: HTMLVideoElement;
@@ -103,7 +102,6 @@ export class ConferenceComponent implements OnInit, OnDestroy{
       this.roomID = params['sessionID']
       this.courseID = params['courseID']
     });
-    this.slideb64 = this.fileService.getSlide(this.courseID.toString());
     this.micOn = true;
     this.shareOn = false;
     this.taOn = false;
