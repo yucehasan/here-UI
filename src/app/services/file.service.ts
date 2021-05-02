@@ -22,26 +22,21 @@ export class FileService {
     }
 
   getSlide(courseID: string): Promise<string> {
-    // return new Promise<string>( (resolve, reject) => {
-    //   var headers = new HttpHeaders();
-    //   headers.set(
-    //     'Authorization',
-    //     'Bearer ' + this.token
-    //   );
-    //   this.httpService.get(environment.BACKEND_IP + '/file?course_id=' + courseID, headers).subscribe(
-    //     (res) => {
-    //       resolve(res["file"])
-    //     },
-    //     (err) => {
-    //       reject(err);
-    //     }
-    //   );
-    // })
-
     return new Promise<string>( (resolve, reject) => {
-      resolve(environment.pdf);
-    })
-
+      var headers = new HttpHeaders();
+      headers.set(
+        'Authorization',
+        'Bearer ' + this.token
+      );
+      this.httpService.get(environment.BACKEND_IP + '/file?course_id=' + courseID, headers).subscribe(
+        (res) => {
+          resolve(res["output"])
+        },
+        (err) => {
+          reject(err);
+        }
+      );
+    });
   }
 
   uploadSlide(courseID: string, b64: string): void {
