@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { HttpService } from 'src/app/services/http.service';
 import { ErrorComponent } from '../error/error.component';
 import { FileService } from 'src/app/services/file.service';
+import { CourseService } from 'src/app/services/course.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,6 +26,7 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private httpService: HttpService,
     private fileService: FileService,
+    private courseService: CourseService,
     private dialogController: MatDialog
   ) {
     this.token = '';
@@ -36,20 +38,11 @@ export class DashboardComponent implements OnInit {
       this.token = token;
     });
 
-    const headers = new HttpHeaders().set(
-      'Authorization',
-      'Bearer ' + this.token
-    );
-
-    this.httpService.get(environment.BACKEND_IP + '/course', headers).subscribe(
-      (res) => {
-        console.log(res);
-        this.courses = res.courses;
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    this.courseService.getCourses().subscribe((courses) => {
+      this.courses = courses;
+    });
+    
+    this.courseService.fetchCourses(this.token);
   }
 
   addCourse(): void {
