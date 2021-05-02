@@ -38,7 +38,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { ErrorComponent } from './components/error/error.component';
 import { NotePreviewComponent } from './components/note-preview/note-preview.component';
 import { ReportsComponent } from './components/reports/reports.component';
-
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { transports: ['websocket'], upgrade: false } };
 @NgModule({
@@ -83,7 +83,11 @@ const config: SocketIoConfig = { url: environment.RTC_ENDPOINT, options: { trans
     HttpClientModule,
     FlexLayoutModule,
     DirectivesModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    SimpleNotificationsModule.forRoot({
+      maxStack: 5,
+      timeOut: 5000
+    })
   ],
   providers: [
   ],
