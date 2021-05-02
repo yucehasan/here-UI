@@ -24,18 +24,21 @@ export class HttpService {
           observer.next(res);
         },
         (err) => {
-          this.authService.refreshAccessToken().then((token) => {
-            const headers = new HttpHeaders().set(
-              'Authorization',
-              'Bearer ' + this.token
-            );
-            this.httpClient.get<any>(url, {headers: headers})
-            .subscribe( (res) => {
-              observer.next(res);
+          if(err.status === 401){
+            this.authService.refreshAccessToken().then((token) => {
+              const headers = new HttpHeaders().set(
+                'Authorization',
+                'Bearer ' + this.token
+              );
+              this.httpClient.get<any>(url, {headers: headers})
+              .subscribe( (res) => {
+                observer.next(res);
+              })
+            }).catch( (err) => {
+              console.log(err);
             })
-          }).catch( (err) => {
-            console.log(err);
-          })
+
+          }
         }
       )
     })
