@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { throwMatDialogContentAlreadyAttachedError, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { environment } from 'src/environments/environment';
 import { HttpService } from 'src/app/services/http.service';
@@ -23,7 +23,6 @@ export class EditProfileComponent implements OnInit {
     private router: Router,
     public dialogRef: MatDialogRef<EditProfileComponent>,
     private formBuilder: FormBuilder,
-    private httpClient: HttpClient,
     private httpService: HttpService,
     private authService: AuthService,
     private fb: FormBuilder) {
@@ -55,7 +54,7 @@ export class EditProfileComponent implements OnInit {
       formData.append("old_password", this.oldPassword);
       formData.append("new_password", this.newPassword);
   
-      this.httpClient.post<any>(environment.BACKEND_IP + "/editProfile", formData, { headers: headers }).subscribe(
+      this.httpService.post(environment.BACKEND_IP + "/editProfile", formData, headers ).subscribe(
         (res) => {
           console.log(res)
           this.authService.updateUsername(res["username"]);

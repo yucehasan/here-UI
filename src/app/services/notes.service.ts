@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class NotesService {
   notes;
   noteSub = new Subject<any>();
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) {
+  constructor(private httpClient: HttpClient, private authService: AuthService, private httpService: HttpService) {
     this.notes = []
   }
 
@@ -25,7 +26,7 @@ export class NotesService {
       'Authorization',
       'Bearer ' + token
     );
-    this.httpClient.get<any>(environment.BACKEND_IP + "/note", {headers: header}).subscribe((res) => {
+    this.httpService.get( environment.BACKEND_IP + "/note", header ).subscribe((res) => {
       console.log(res)
       this.notes = res;
       this.noteSub.next(res);

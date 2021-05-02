@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
@@ -19,7 +19,7 @@ export class AnalyticsService {
   token: string;
 
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) {
+  constructor(private authService: AuthService, private httpService: HttpService) {
     this.participantList = [];
     this.token = '';
    }
@@ -27,7 +27,7 @@ export class AnalyticsService {
   fetchData(sessionID): void {
     console.log("startimestamp" + localStorage.getItem("startTimestamp"));
     
-    this.httpClient.get<any>(environment.BACKEND_IP + "/session/statistics/"+ sessionID + "?start_timestamp=" + localStorage.getItem("startTimestamp") + "&end_timestamp=" + Date.now().toString()).subscribe((res) => {
+    this.httpService.get(environment.BACKEND_IP + "/session/statistics/"+ sessionID + "?start_timestamp=" + localStorage.getItem("startTimestamp") + "&end_timestamp=" + Date.now().toString()).subscribe((res) => {
       this.updateData(res);
       console.log(res);
     });
@@ -42,7 +42,7 @@ export class AnalyticsService {
     );
     
     const formData = new FormData();
-    this.httpClient.post<any>(environment.BACKEND_IP + "/session/leave", formData, { headers: headers }).subscribe((res) => {console.log(res);});
+    this.httpService.post(environment.BACKEND_IP + "/session/leave", formData, headers ).subscribe((res) => {console.log(res);});
   }
 
   updateData(response: AnalyticsResponse): void {
