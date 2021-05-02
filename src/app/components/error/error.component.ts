@@ -16,4 +16,8 @@ export class ErrorComponent implements OnInit {
     this.errorMsg = this.data
   }
 
+  close(): void {
+    this.dialogRef.close();
+  }
+
 }

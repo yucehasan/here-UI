@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { CourseService } from 'src/app/services/course.service';
 import {HttpService} from '../../services/http.service';
 import {environment} from '../../../environments/environment';
+import { ErrorComponent } from '../error/error.component';
 
 // TODO: Add text input for course code and course name, merge them together and send to the backend as a single string
 @Component({
@@ -43,7 +44,8 @@ export class AddCourseDialogComponent implements OnInit {
     private courseService: CourseService,
     public dialogRef: MatDialogRef<AddCourseDialogComponent>,
     private authService: AuthService,
-    private httpService: HttpService
+    private httpService: HttpService,
+    private dialogController: MatDialog
   ) {
     this.checkboxes = new Array(5)
       .fill(false)
@@ -103,11 +105,17 @@ export class AddCourseDialogComponent implements OnInit {
       subscribe(
         (res) => {
           console.log(res);
-          alert("The course is added");
+          this.dialogController.open(ErrorComponent,{
+              data: "The course is added"
+          });
+          this.courseService.fetchCourses(this.token);
           this.dialogRef.close();
         },
         (err) => {
           console.log(err);
+          this.dialogController.open(ErrorComponent,{
+            data: "An error occurred."
+        });
         }
       )
     }

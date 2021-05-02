@@ -23,6 +23,7 @@
         </button>
       </div>
       <app-slide
+        [slideb64]="slideb64"
         [ngStyle]="{ height: '-webkit-fill-available' }"
         (onChange)="onSlideChange($event)"
       ></app-slide>
@@ -69,7 +70,7 @@
         <button mat-fab (click)="leaveSession()">
           <i class="fas fa-phone-slash" style="color: red"></i>
         </button>
-        <button mat-fab (click)="startMic()">
+        <button mat-fab (click)="toggleMic()">
           <i id="micIcon" class="fas fa-microphone-slash"></i>
         </button>
         <button mat-fab (click)="startShare()">

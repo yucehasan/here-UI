@@ -81,10 +81,13 @@ const EMPTYDATA: WeeklySchedule = {
 export class CourseService {
   schedule: WeeklySchedule;
   scheduleSub = new Subject<WeeklySchedule>();
+  courses: any;
+  coursesSub = new Subject<any>();
 
   constructor(private authService: AuthService, 
     private httpService: HttpService) {
     this.schedule = EMPTYDATA;
+    this.courses = []
   }
 
   getEmptySchedule(): WeeklySchedule {
@@ -99,7 +102,9 @@ export class CourseService {
     console.log(headers);
     this.httpService.get(environment.BACKEND_IP + "/course", headers).subscribe((res) => {
       console.log(res)
+      this.coursesSub.next( res.courses);
       this.updateSchedule(res);
+
     },
       (err) => {
         console.log("Got an error")
@@ -161,5 +166,9 @@ export class CourseService {
 
   getschedule(): Observable<WeeklySchedule> {
     return this.scheduleSub.asObservable();
+  }
+
+  getCourses(): Observable<any> {
+    return this.coursesSub.asObservable();
   }
 }
