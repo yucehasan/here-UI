@@ -493,7 +493,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
               else if(res["hand_raised"]){
                 if(res["hand_raised"]){
                   // send notification to instructore
-                  this.openTA("You raised hand");
+                  this.socket.emit("raise-hand", {username: this.username})
                 }
                 if(res["feedback_message"] != ""){
                   //show feedback to student
@@ -590,7 +590,6 @@ export class ConferenceComponent implements OnInit, OnDestroy{
 
     if(this.userType === "instructor"){
       this.socket.on('raise-hand', (data) => {
-        console.log(data.username, 'raised hand');
         this.openTA(data.username + ' raised hand');
       });
     }
