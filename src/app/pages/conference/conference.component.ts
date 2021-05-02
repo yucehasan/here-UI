@@ -92,7 +92,9 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     private router: Router,
     private httpService: HttpService,
     private fileService: FileService
-  ) {}
+  ) {
+    
+  }
   @ViewChild('noteIcon') noteIcon: ElementRef;
   @ViewChild('taIcon') TAIcon: ElementRef;
   @ViewChild('chatIcon') chatIcon: ElementRef;
