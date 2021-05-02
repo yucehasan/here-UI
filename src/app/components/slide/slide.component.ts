@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import WebViewer, { Actions, WebViewerInstance } from '@pdftron/webviewer';
 import { Action } from 'rxjs/internal/scheduler/Action';
+import { CourseService } from 'src/app/services/course.service';
 import { FileService } from 'src/app/services/file.service';
 import { environment } from 'src/environments/environment';
 
@@ -21,7 +22,7 @@ import { environment } from 'src/environments/environment';
 })
 export class SlideComponent implements OnInit, AfterViewInit {
   @ViewChild('viewer') viewer: ElementRef;
-  @Input('slideb64') slideb64: string;
+  @Input('course_id') courseID: string;
   @Input() next: EventEmitter<void>;
   @Input() prev: EventEmitter<void>;
   @Output() onChange = new EventEmitter<number>();
@@ -30,7 +31,7 @@ export class SlideComponent implements OnInit, AfterViewInit {
   prevButton: HTMLButtonElement;
   currentSlide: number;
 
-  constructor(){}
+  constructor(private fileService: FileService){}
 
   base64ToBlob(base64) {
     const binaryString = window.atob(base64);
@@ -53,9 +54,14 @@ export class SlideComponent implements OnInit, AfterViewInit {
       },
       this.viewer.nativeElement
     ).then((instance) => {
-      instance.loadDocument(this.base64ToBlob(this.slideb64), {
-        filename: 'mypdf.pdf',
-      });
+      this.fileService.getSlide(this.courseID).then( (data) => {
+        instance.loadDocument(this.base64ToBlob(data), {
+          filename: 'mypdf.pdf',
+        });
+      }).catch( (err) => {
+        console.log(err);
+      })
+
 
       this.wvInstance = instance;
       this.currentSlide = instance.docViewer.getCurrentPage();

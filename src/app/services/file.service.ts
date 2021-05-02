@@ -18,25 +18,23 @@ export class FileService {
     })
     }
 
-  getSlide(): string {
-    // var headers = new HttpHeaders();
-    // headers.set(
-    //   'Authorization',
-    //   'Bearer ' + this.token
-    // );
-    // this.httpService.get(environment.BACKEND_IP + '/slide', headers).subscribe(
-    //   (res) => {
-    //     console.log(res);
-    //   },
-    //   (err) => {
-    //     console.error("Error is -->", err);
-    //   },
-    //   () => {
-    //     console.log("Completed")
-    //   }
-    // );
-    // return "";
-    return environment.pdf;
+  getSlide(courseID: string): Promise<string> {
+    return new Promise<string>( (resolve, reject) => {
+      var headers = new HttpHeaders();
+      headers.set(
+        'Authorization',
+        'Bearer ' + this.token
+      );
+      this.httpService.get(environment.BACKEND_IP + '/file?course_id=' + courseID, headers).subscribe(
+        (res) => {
+          resolve(res["file"])
+        },
+        (err) => {
+          reject(err);
+        }
+      );
+    })
+
   }
 
   uploadSlide(courseID: string, b64: string): void {
@@ -47,8 +45,7 @@ export class FileService {
     var formData = new FormData();
     formData.append('course_id', courseID);
     formData.append('file', b64);
-    var formData = new FormData();
-    this.httpService.post(environment.BACKEND_IP + '/slide', formData, headers).subscribe(
+    this.httpService.post(environment.BACKEND_IP + '/file', formData, headers).subscribe(
       (res) => {
         console.log(res);
       },

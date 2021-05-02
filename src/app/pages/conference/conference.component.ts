@@ -99,7 +99,11 @@ export class ConferenceComponent implements OnInit, OnDestroy{
   @ViewChild('chatIcon') chatIcon: ElementRef;
 
   ngOnInit(): void {
-    this.slideb64 = this.fileService.getSlide();
+    this.activatedRoute.params.subscribe((params: Params) => {
+      this.roomID = params['sessionID']
+      this.courseID = params['courseID']
+    });
+    this.slideb64 = this.fileService.getSlide(this.courseID.toString());
     this.micOn = true;
     this.shareOn = false;
     this.taOn = false;
@@ -111,10 +115,6 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     this.chat = [];
     this.unreadCount = 0;
     this.expectScreen = false;
-    this.activatedRoute.params.subscribe((params: Params) => {
-      this.roomID = params['sessionID']
-      this.courseID = params['courseID']
-    });
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
     });
