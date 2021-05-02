@@ -58,7 +58,10 @@ export class HttpService {
             this.httpClient.post<any>(url, body, {headers: headers})
             .subscribe( (res) => {
               observer.next(res);
-            })
+              },
+              (err) => {
+                observer.next(err);
+              })
           }).catch( (err) => {
             console.log(err);
           })

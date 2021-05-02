@@ -28,13 +28,23 @@ export class SessionService {
     );
     this.httpService.post(environment.BACKEND_IP + '/session', formData, headers).subscribe(
       (res) => {
-        console.log(res);
-        this.startTimestamp = Date.now().toString();
-        localStorage.setItem("startTimestamp", this.startTimestamp);
-        this.router.navigate(['conference', res["id"], courseID]);
+        if(res.error.error || !res["id"]){
+          this.dialogController.open(ErrorComponent, {
+            data: res.error.error
+          });
+        }
+        else{
+          this.startTimestamp = Date.now().toString();
+          localStorage.setItem("startTimestamp", this.startTimestamp);
+          this.router.navigate(['conference', res["id"], courseID]);
+        }
       },
       (err) => {
         console.error("Error is -->", err);
+        this.dialogController.open(ErrorComponent, {
+          data: err.error.error
+        })
+        console.log(err);
       }
     );
   }
@@ -52,16 +62,15 @@ export class SessionService {
     );
     this.httpService.post(environment.BACKEND_IP + '/session/join', formData, headers).subscribe(
       (res) => {
-        console.log(res);
-        this.router.navigate(['conference', res["session_id"], courseID])
-      },
-      (err) => {
-        this.dialogController.open(ErrorComponent, {
-          data: err.error.error
-        })
-        console.log(err);
-      },
-      () => {console.log("completed")}
+        if(res.error.error || !res["session_id"]){
+          this.dialogController.open(ErrorComponent, {
+            data: res.error.error
+          });
+        }
+        else{
+          this.router.navigate(['conference', res["session_id"], courseID])
+        }
+      }
     );
   }
 
