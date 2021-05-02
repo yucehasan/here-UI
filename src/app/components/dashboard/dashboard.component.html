@@ -18,7 +18,7 @@
                                 <span class="mat-button-wrapper">
                                     <mat-icon role="img" class="upload-icon mat-icon" aria-hidden="true" data-mat-icon-type="font">picture_as_pdf</mat-icon>
                                 </span>
-                                <input id="pdf-input" type="file" class="input-file" accept="application/pdf" (change)="uploadFile($event)" style="display: none;">
+                                <input id="pdf-input" type="file" class="input-file" accept="application/pdf" (change)="uploadFile(course.id)" style="display: none;">
                             </label>
                         </div>
                     </mat-list-item>

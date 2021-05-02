@@ -8,6 +8,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { HttpService } from 'src/app/services/http.service';
 import { ErrorComponent } from '../error/error.component';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,6 +24,7 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private httpService: HttpService,
+    private fileService: FileService,
     private dialogController: MatDialog
   ) {
     this.token = '';
@@ -60,7 +62,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  uploadFile(event): void {
+  uploadFile(courseID): void {
     var files = (document.getElementById('pdf-input') as HTMLInputElement)
       .files;
     if (files.length > 0) {
@@ -75,27 +77,7 @@ export class DashboardComponent implements OnInit {
           data: "File successfully uploaded."
         });
 
-      //   const headers = new HttpHeaders().set(
-      //     'Authorization',
-      //     'Bearer ' + this.token
-      //   );
-
-      //   var formData = new FormData();
-      //   formData.append('pdf', base64File);
-
-      //   this.httpService
-      //     .post(environment.BACKEND_IP + '/course', formData, headers)
-      //     .subscribe(
-      //       (res) => {
-      //         console.log(res);
-      //         this.dialogController.open(ErrorComponent, {
-      //           data: "File successfully uploaded."
-      //         });
-      //       },
-      //       (err) => {
-      //         console.log(err);
-      //       }
-      //     );
+        this.fileService.uploadSlide( courseID.toString(), base64File)
       };
 
       // Convert data to base64
