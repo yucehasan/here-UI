@@ -3,6 +3,7 @@ import jspdf from 'jspdf';
 import html2canvas from 'html2canvas'; 
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AnalyticsService } from 'src/app/services/analytics.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-analytics',
@@ -11,14 +12,27 @@ import { AnalyticsService } from 'src/app/services/analytics.service';
 })
 export class AnalyticsComponent implements OnInit {
   sessionID: string;
+  token: string;
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private analyticsService: AnalyticsService) {
+  constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute, private analyticsService: AnalyticsService) {
     this.activatedRoute.params.subscribe((params: Params) => this.sessionID = params['sessionID']);
     this.analyticsService.fetchData(this.sessionID);
    }
 
   ngOnInit(): void {
+    this.authService.getToken().subscribe((token) => {
+      this.token = token;
+    });
+    if (this.token === '') {
+      alert('You are not logged in');
+      this.router.navigate(['/']);
+    }
     
+    this.authService.getUserType().subscribe(type => {
+      if (type == 'student'){
+        this.router.navigate(['main']);
+      }
+    });
   }
 
   captureScreen()  

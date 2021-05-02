@@ -52,6 +52,11 @@ export class MainComponent implements OnInit {
     this.authService.getToken().subscribe((token) => {
       this.token = token;
     });
+    if (this.token === '') {
+      alert('You are not logged in');
+      this.router.navigate(['/']);
+    }
+    
     this.notesService.getNotes().subscribe( (notes) => {
       this.classesWithNotes = this.formatResponse(notes)
     })
@@ -61,10 +66,7 @@ export class MainComponent implements OnInit {
     this.authService.getUsername().subscribe((username) => {
       this.username = username;
     });
-    if (this.token === '') {
-      alert('You are not logged in');
-      this.router.navigate(['/']);
-    }
+    
     this.authService.getUserType().subscribe((type) => {
       this.userType = type;
     });
