@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-landing',
@@ -6,10 +8,26 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./landing.component.sass']
 })
 export class LandingComponent implements OnInit {
+  token: string;
+  loggedIn: boolean;
 
-  constructor() { }
+  constructor(private authService: AuthService,
+    private router: Router) { }
 
   ngOnInit(): void {
+    this.authService.getToken().subscribe(token => {
+      this.token = token;
+      if (this.token === ""){
+        this.loggedIn = false;
+      }
+      else{
+        this.loggedIn = true;
+      }
+    })
+
+    if(this.loggedIn) {
+      this.router.navigate(['main']);
+    }
   }
 
 }

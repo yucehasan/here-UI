@@ -124,6 +124,10 @@ export class ConferenceComponent implements OnInit, OnDestroy{
     this.authService.getToken().subscribe( (token) => {
       this.token = token;
     })
+    if (this.token === '') {
+      alert('You are not logged in');
+      this.router.navigate(['/']);
+    }
     this.socket.on("connect", () => {
       this.socketId = this.socket.ioSocket.id;
       this.setListeners();
