@@ -166,6 +166,7 @@ export class ConferenceComponent implements OnInit, OnDestroy{
       this.httpService.post(environment.BACKEND_IP + "/session/leave", formData, headers).subscribe((res) => {});
       this.router.navigate(['main']);
     }
+    this.socket.disconnect();
   }
 
   openTA(message: string): void {
