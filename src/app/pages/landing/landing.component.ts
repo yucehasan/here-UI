@@ -15,9 +15,10 @@ export class LandingComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
+    this.loggedIn = false;
     this.authService.getToken().subscribe(token => {
       this.token = token;
-      if (this.token === ""){
+      if (this.token === "" || this.token == null){
         this.loggedIn = false;
       }
       else{

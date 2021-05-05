@@ -42,12 +42,13 @@ export class ToolbarComponent implements OnDestroy, OnInit {
     this.username = "";
     this.token = "";
     this.userType = "";
+    this.loggedIn = false;
   }
 
   ngOnInit(): void {
     this.authService.getToken().subscribe(token => {
       this.token = token;
-      if (this.token === "") {
+      if (this.token === "" || this.token == null) {
         this.loggedIn = false;
       }
       else{
