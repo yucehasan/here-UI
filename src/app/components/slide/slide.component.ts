@@ -7,9 +7,12 @@ import {
   Output,
   EventEmitter,
   Input,
+  OnInit,
 } from '@angular/core';
 import WebViewer, { Actions, WebViewerInstance } from '@pdftron/webviewer';
 import { Action } from 'rxjs/internal/scheduler/Action';
+import { CourseService } from 'src/app/services/course.service';
+import { FileService } from 'src/app/services/file.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -17,8 +20,9 @@ import { environment } from 'src/environments/environment';
   templateUrl: './slide.component.html',
   styleUrls: ['./slide.component.sass'],
 })
-export class SlideComponent implements AfterViewInit {
+export class SlideComponent implements OnInit, AfterViewInit {
   @ViewChild('viewer') viewer: ElementRef;
+  @Input('course_id') courseID: string;
   @Input() next: EventEmitter<void>;
   @Input() prev: EventEmitter<void>;
   @Output() onChange = new EventEmitter<number>();
@@ -27,6 +31,7 @@ export class SlideComponent implements AfterViewInit {
   prevButton: HTMLButtonElement;
   currentSlide: number;
 
+  constructor(private fileService: FileService){}
 
   base64ToBlob(base64) {
     const binaryString = window.atob(base64);
@@ -35,21 +40,28 @@ export class SlideComponent implements AfterViewInit {
     for (let i = 0; i < len; ++i) {
       bytes[i] = binaryString.charCodeAt(i);
     }
-
     return new Blob([bytes], { type: 'application/pdf' });
+  }
+
+  ngOnInit() {
+    this.wvDocumentLoadedHandler = this.wvDocumentLoadedHandler.bind(this);
   }
 
   ngAfterViewInit(): void {
     WebViewer(
       {
         path: '../../../assets/lib',
-        initialDoc: 'https://dergipark.org.tr/tr/download/article-file/636381',
       },
       this.viewer.nativeElement
     ).then((instance) => {
-      // instance.loadDocument(this.base64ToBlob(environment.pdf), {
-      //   filename: 'mypdf.pdf',
-      // });
+      this.fileService.getSlide(this.courseID).then( (data) => {
+        instance.loadDocument(this.base64ToBlob(data), {
+          filename: 'mypdf.pdf',
+        });
+      }).catch( (err) => {
+        console.log(err);
+      })
+
 
       this.wvInstance = instance;
       this.currentSlide = instance.docViewer.getCurrentPage();
@@ -85,10 +97,6 @@ export class SlideComponent implements AfterViewInit {
       this.prevButton = element[0] as HTMLButtonElement;
       this.nextButton = element[1] as HTMLButtonElement;
     });
-  }
-
-  ngOnInit() {
-    this.wvDocumentLoadedHandler = this.wvDocumentLoadedHandler.bind(this);
   }
 
   changeSlide(number) {

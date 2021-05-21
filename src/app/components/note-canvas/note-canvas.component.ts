@@ -1,5 +1,18 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { FileService } from 'src/app/services/file.service';
+import { CanvasTextInputComponent } from '../canvas-text-input/canvas-text-input.component';
+import { ErrorComponent } from '../error/error.component';
 
 @Component({
   selector: 'app-note-canvas',
@@ -7,11 +20,14 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./note-canvas.component.sass'],
 })
 export class NoteCanvasComponent implements OnInit {
+  @ViewChild('textIcon') textIcon: ElementRef;
+
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   canvasWidth: number;
   canvasHeight: number;
   flag: boolean;
+  textInput: string;
 
   prevX: number;
   currX: number;
@@ -34,7 +50,9 @@ export class NoteCanvasComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<NoteCanvasComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialog: MatDialog,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -47,23 +65,47 @@ export class NoteCanvasComponent implements OnInit {
     this.filterData = this.data;
     const leftMosPos = Number(this.filterData.right);
     this.dialogRef.updatePosition({
-      top: `${this.filterData.top}px`,
+      bottom: `${this.filterData.top}px`,
       left: `${leftMosPos}px`,
     });
   }
 
-  snip() {
-    var video = this.data.getSnip();
-    this.canvas
-      .getContext('2d')
-      .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+  screenSnip(){    
+    var video = this.data.getShareScreen() as HTMLVideoElement;
+    if(video){
+      var ratioConstant = Math.min( this.canvasWidth / video.videoWidth, this.canvasHeight / video.videoHeight);
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.canvas
+        .getContext('2d')
+        .drawImage(video, 0, 0, video.videoWidth * ratioConstant, video.videoHeight * ratioConstant);
+    }
+    else{
+      alert("Screen share is not on.")
+    }
+  }
+
+  slideSnip() {
+    var sourceCanvas = this.data.getSlide() as HTMLCanvasElement;
+    if(sourceCanvas){
+      var ratioConstant = Math.min( this.canvasWidth / sourceCanvas.width, this.canvasHeight / sourceCanvas.height);
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.canvas
+        .getContext('2d')
+        .drawImage(sourceCanvas, 0, 0, sourceCanvas.width * ratioConstant, sourceCanvas.height * ratioConstant);
+    }
+    else{
+      alert("Slide share is not on.")
+    }
   }
 
   initCanvas(): void {
     this.canvas = document.getElementById('can') as HTMLCanvasElement;
     this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-    this.canvasWidth = this.canvas.width;
-    this.canvasHeight = this.canvas.height;
+
+    this.ctx.canvas.width = window.innerWidth * 0.33;
+    this.ctx.canvas.height = window.innerHeight * 0.6;
+    this.canvasWidth = window.innerWidth * 0.33;
+    this.canvasHeight = window.innerHeight * 0.6;
     this.flag = false;
     this.dot_flag = false;
     this.prevX = 0;
@@ -71,6 +113,9 @@ export class NoteCanvasComponent implements OnInit {
     this.prevY = 0;
     this.currY = 0;
     (this.brushColor = 'black'), (this.brushWidth = 2);
+    document
+      .getElementById(this.brushColor)
+      .style.setProperty('border', 'solid 3px aquamarine');
     this.active = false;
     this.xOffset = 0;
     this.yOffset = 0;
@@ -112,7 +157,9 @@ export class NoteCanvasComponent implements OnInit {
   }
 
   color(obj) {
-    console.log(obj);
+    var selected = document.getElementById(this.brushColor);
+    console.log(selected)
+    selected.style.setProperty('border', '0');
     switch (obj.srcElement.id) {
       case 'green':
         this.brushColor = 'green';
@@ -138,6 +185,9 @@ export class NoteCanvasComponent implements OnInit {
     }
     if (this.brushColor == 'white') this.brushWidth = 14;
     else this.brushWidth = 2;
+
+    selected = document.getElementById(this.brushColor);
+    selected.style.setProperty('border', 'solid 3px aquamarine');
   }
 
   draw() {
@@ -154,31 +204,45 @@ export class NoteCanvasComponent implements OnInit {
     var m = confirm('Want to clear');
     if (m) {
       this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-      document.getElementById('canvasimg').style.display = 'none';
     }
   }
 
   save() {
-    var canvasimg = document.getElementById('canvasimg') as HTMLImageElement;
-    canvasimg.style.border = '2px solid';
-    canvasimg.src = this.canvas.toDataURL();
-    canvasimg.style.display = 'inline';
+    this.fileService.uploadNote(this.data.courseID, this.canvas.toDataURL())
+    this.dialog.open(ErrorComponent, {
+      data: "Note saved"
+    });
   }
 
   addtext() {
-    this.canvas.addEventListener(
-      'click',
-      (e) => {
-        this.text(e);
-      },
-      { once: true }
-    );
+    const filterData = {
+      bottom: this.textIcon.nativeElement.getBoundingClientRect().top,
+      left: this.textIcon.nativeElement.getBoundingClientRect().left,
+    };
+    console.log(this.textIcon.nativeElement.getBoundingClientRect());
+    let dialogRef = this.dialog.open(CanvasTextInputComponent, {
+      data: filterData,
+      hasBackdrop: false,
+      panelClass: 'filter-popup',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.textInput = result;
+      this.canvas.addEventListener(
+        'click',
+        (e) => {
+          this.text(e);
+        },
+        { once: true }
+      );
+    });
   }
 
   text(e) {
     this.ctx = this.canvas.getContext('2d');
+    this.ctx.font = "20px Georgia";
     this.ctx.fillText(
-      'hello',
+      this.textInput,
       e.clientX - this.canvas.offsetLeft,
       e.clientY - this.canvas.offsetTop
     );

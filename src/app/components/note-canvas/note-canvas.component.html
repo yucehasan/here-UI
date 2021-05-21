@@ -1,25 +1,38 @@
+<link href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" rel="stylesheet">
+
 <div mat-dialog-content>
 <div class="note-wrapper">
-    <canvas id="can" width="400" height="400" style="border:2px solid;"></canvas>
-    <div >
-        <h3>Choose Color</h3>
-        <div style="width:10px;height:10px;background:green;" id="green" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:blue;" id="blue" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:red;" id="red" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:yellow;" id="yellow" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:orange;" id="orange" (click)="color($event)"></div>
-        <div style="width:10px;height:10px;background:black;" id="black" (click)="color($event)"></div>
+    <canvas class="main-canvas" id="can" style="border:2px solid;"></canvas>
+</div>
+</div>
+<div mat-dialog-actions class="action-btns">
+    
+    <button mat-raised-button value="save" id="btn" (click)="save()" ><i style="color:blue" class="material-icons">save</i></button>
+    <button mat-raised-button [matMenuTriggerFor]="menu"><i class="material-icons">color_lens</i></button>
+    <button mat-raised-button  id="erase" (click)="color($event)"><i class="fas fa-eraser"></i></button> <!-- eraser -->
+    <button mat-raised-button value="clear" id="clr" (click)="erase()" ><i class="far fa-trash-alt"></i></button>
+    <div #textIcon class="dialog-btn-wrapper">
+        <button mat-raised-button value="addtext" id="txt" (click)="addtext()" > 
+            <i class="material-icons">text_fields</i>
+        </button>
     </div>
-    <div >Eraser</div>
-    <div style="width:15px;height:15px;background:white;border:2px solid;" id="white" (click)="color($event)"></div>
-    <img id="canvasimg" style="display:none;">
-    <input type="button" value="save" id="btn" size="30" (click)="save()" >
-    <input type="button" value="clear" id="clr" size="23" (click)="erase()" >
-    <input type="button" value="addtext" id="txt" size="23" (click)="addtext()" >
-    <input type="button" value="draw" id="drw" size="23" (click)="draw2()" >
-    <input type="button" value="Snip" id="drw" size="23" (click)="snip()" >
+    <button mat-raised-button value="slide" id="drw" (click)="slideSnip()" ><i class="material-icons">crop_free</i>Slide</button>
+    <button mat-raised-button value="screen" id="drw" (click)="screenSnip()" ><i class="material-icons">crop_free</i>Screen</button>
+    <button mat-raised-button style="background:black; display: none;" id="black" (click)="color($event)"></button>
+    <button mat-raised-button color="warn" (click)="close()"><i class="material-icons">close</i></button>
 </div>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="close()">Close</button>
-</div>
+
+<mat-menu #menu="matMenu">
+    <div fxLayout="row" >
+        <button mat-raised-button class="color-btn" style="background:red;" id="red" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:yellow;" id="yellow" (click)="color($event)"></button>
+    </div>
+    <div fxLayout="row" >
+        <button mat-raised-button class="color-btn" style="background:green;" id="green" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:blue;" id="blue" (click)="color($event)"></button>
+    </div>
+    <div fxLayout="row" >
+        <button mat-raised-button class="color-btn" style="background:orange;" id="orange" (click)="color($event)"></button>
+        <button mat-raised-button class="color-btn" style="background:black;" id="black" (click)="color($event)"></button>
+    </div>
+</mat-menu>

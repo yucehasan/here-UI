@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { ErrorComponent } from '../error/error.component';
 
 @Component({
   selector: 'app-register',
@@ -13,10 +17,12 @@ export class RegisterComponent implements OnInit {
   email: string;
   type: string;
   registerForm: FormGroup;
-  SERVER_URL = "https://hereapp-live.herokuapp.com/registration";
 
   constructor(
     private httpClient: HttpClient,
+    private dialogRef: MatDialogRef<RegisterComponent>,
+    private dialogController: MatDialog,
+    private router: Router,
     private fb: FormBuilder) {
       this.registerForm = fb.group({
         email: ['', [Validators.required]],
@@ -27,6 +33,7 @@ export class RegisterComponent implements OnInit {
     }
 
   ngOnInit(): void {}
+
   register(): void {
     console.log("Register called with username: " + this.username + " password: " + this.password + "type: " + this.type + " email: " + this.email);
     const formData = new FormData();
@@ -35,8 +42,14 @@ export class RegisterComponent implements OnInit {
     formData.append("type", this.type);
     formData.append("email", this.email);
     
-    this.httpClient.post<any>(this.SERVER_URL, formData).subscribe(
-      (res) => console.log(res),
+    this.httpClient.post<any>(environment.BACKEND_IP + '/registration', formData).subscribe(
+      (res) => {
+        console.log(res);
+        this.dialogController.open(ErrorComponent, {
+          data: "Successfully registered"
+        })
+        this.dialogRef.close(); 
+      },
       (err) => console.log(err)
     );
     

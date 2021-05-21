@@ -1,22 +1,22 @@
-<mat-card> </mat-card>
-
 <mat-grid-list cols="8" [gutterSize]="'20px'" rowHeight="80vh">
-  <mat-grid-tile colspan="6" rowspan="1">
-    <mat-grid-tile-header> Weekly Schedule </mat-grid-tile-header>
-    <app-schedule-table></app-schedule-table>
+  <mat-grid-tile class="mat-elevation-z6" colspan="6" rowspan="1">
+    <mat-grid-tile-header> My Weekly Schedule </mat-grid-tile-header>
+    <div class="schedule">
+      <app-schedule-table ></app-schedule-table>
+    </div>
   </mat-grid-tile>
 
-  <mat-grid-tile colspan="2" rowspan="1">
-    <mat-grid-tile-header> Upcoming Classes </mat-grid-tile-header>
-      <mat-list>
-        <div *ngFor="let c of upcomingClasses" class="upcoming-classes">
-          <mat-list-item>
-            <button mat-raised-button class="upcoming-btn">
-              {{ c.code }} {{ c.name }}
-            </button>
-          </mat-list-item>
-          <mat-divider></mat-divider>
-        </div>
-      </mat-list>
+  <mat-grid-tile *ngIf='userType === "student"' class="mat-elevation-z4" colspan="2" rowspan="1">
+    <mat-grid-tile-header id="notes"> <mat-icon style="color:white;" aria-hidden="false">sticky_note_2</mat-icon> My Notes</mat-grid-tile-header>
+    <div class="saved-notes">
+      <app-saved-notes *ngFor="let class of classesWithNotes" [title]="class.title" [notes]="class.notes"></app-saved-notes>
+    </div>
+  </mat-grid-tile>
+
+  <mat-grid-tile id="leftPart" *ngIf='this.userType === "instructor"' class="mat-elevation-z4" colspan="2" rowspan="1">
+    <mat-grid-tile-header id="dashboard"> <mat-icon style="color:white; margin-right: 5px;" aria-hidden="false">dashboard</mat-icon> Instructor Dashboard</mat-grid-tile-header>
+    <div class="dashboard">
+      <app-dashboard id="app-dashboard"></app-dashboard>
+    </div>
   </mat-grid-tile>
 </mat-grid-list>

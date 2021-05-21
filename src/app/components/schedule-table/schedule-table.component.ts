@@ -1,8 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 import { ScheduleResponse, WeeklySchedule } from '../../interface';
 import { CourseService } from '../../services/course.service';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-schedule-table',
@@ -19,49 +22,35 @@ export class ScheduleTableComponent implements OnInit {
     'Friday',
   ];
   dataSource;
-  response: ScheduleResponse = {
-    courses: [
-      {
-        id: 26,
-        name: 'selam',
-        slots: 'Monday-8.30,Monday-9.30,Friday-10.30,Friday-11.30',
-      },
-    ],
-  };
-  constructor(private courseService: CourseService, private httpClient: HttpClient) {}
+  token;
+  userType;
+  constructor(
+    private courseService: CourseService,
+    private authService: AuthService,
+    private router: Router,
+    private sessionService: SessionService
+  ) {}
 
   ngOnInit(): void {
-    this.httpClient.get<any>(environment.SCHEDULE_ENDPOINT).subscribe(
-      (res) => {
-        if (res['access_token'] !== undefined) {
-          console.log('');
-        }
-        else {
-          console.log(res);
-          console.log("Failed");
-        }
-      }
-    );
-    this.dataSource = this.courseService.getEmptySchedule();
+    this.dataSource = this.courseService.getEmptySchedule().schedule;
+    this.authService.getToken().subscribe( (token) => {
+      this.token = token;
+    });
+    this.authService.getUserType().subscribe( (userType) => {
+      this.userType = userType;
+    });
     this.courseService.getschedule().subscribe((schedule) => {
-      console.log("yeni geldi", schedule)
       this.dataSource = schedule.schedule;
     });
-    this.courseService.updateSchedule(this.response);
+    this.courseService.fetchCourses(this.token);
   }
 
-  fetchCourses(): void {
-
+  onClick(courseID): void{
+    if(this.userType == "student")
+      this.sessionService.joinSession(courseID, this.token);
+    else if(this.userType == "instructor")
+      this.sessionService.openSession(courseID, this.token);
+    else
+      console.error("Invalid user type");
   }
-
 }
-
-const response = {
-  courses: [
-    {
-      id: 26,
-      name: 'selam',
-      slots: 'Monday-8.30,Monday-9.30,Friday-10.30,Friday-11.30',
-    },
-  ],
-};

@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { CourseService } from 'src/app/services/course.service';
+import {HttpService} from '../../services/http.service';
+import {environment} from '../../../environments/environment';
+import { ErrorComponent } from '../error/error.component';
 
 // TODO: Add text input for course code and course name, merge them together and send to the backend as a single string
 @Component({
@@ -13,18 +17,35 @@ export class AddCourseDialogComponent implements OnInit {
   username: string;
   token: string;
   userType: string;
-  dataSource = DATA_SOURCE;
-  days = DAYS;
-  hours = HOURS;
+  displayedColumns: string[] = [
+    'hour',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ];
+  hours: String[] = [
+    '8.30',
+    '9.30',
+    '10.30',
+    '11.30',
+    '13.30',
+    '14.30',
+    '15.30',
+    '16.30',
+  ];
+  dataSource;
   courseName: string = '';
   checkboxes: boolean[][];
-  SERVER_URL = 'https://hereapp-live.herokuapp.com/course';
   // /course/id: parameter: student email
 
   constructor(
+    private courseService: CourseService,
     public dialogRef: MatDialogRef<AddCourseDialogComponent>,
-    private httpClient: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private httpService: HttpService,
+    private dialogController: MatDialog
   ) {
     this.checkboxes = new Array(5)
       .fill(false)
@@ -35,6 +56,7 @@ export class AddCourseDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.dataSource = this.courseService.getEmptySchedule().schedule;
     this.authService.getToken().subscribe((token) => {
       this.token = token;
     });
@@ -63,7 +85,8 @@ export class AddCourseDialogComponent implements OnInit {
         }
       }
     }
-    if (count > 6) alert('Too many hours');
+    if(this.courseName.trim().length === 0) alert('Enter course name');
+    else if (count > 6) alert('Too many hours');
     else if (count == 0) alert('You have to pick hours');
     else {
       const formData = new FormData();
@@ -77,11 +100,24 @@ export class AddCourseDialogComponent implements OnInit {
 
       console.log('Form data Course name: ' + formData.get('course_name'));
       console.log('Form data Slots: ' + formData.get('slots'));
-      this.httpClient
-        .post<any>(this.SERVER_URL, formData, { headers: headers })
-        .subscribe((res) => {
+      
+      this.httpService.post(environment.BACKEND_IP + "/course", formData, headers).
+      subscribe(
+        (res) => {
           console.log(res);
+          this.dialogController.open(ErrorComponent,{
+              data: "The course is added"
+          });
+          this.courseService.fetchCourses(this.token);
+          this.dialogRef.close();
+        },
+        (err) => {
+          console.log(err);
+          this.dialogController.open(ErrorComponent,{
+            data: "An error occurred."
         });
+        }
+      )
     }
   }
 
@@ -91,18 +127,14 @@ export class AddCourseDialogComponent implements OnInit {
   }
 
   onCheckChange(event) {
-    // console.log(event.checked);
-    // console.log(event.source.id);
-    var hour = event.source.id.split('-')[0];
+    
+    var hour = this.hours[event.source.id.split('-')[0] as number];
     var day = event.source.id.split('-')[1];
-    var hourIndex = HOURS.indexOf(hour);
+    var hourIndex = event.source.id.split('-')[0];
     var dayIndex = DAYS.indexOf(day);
-    // console.log("Hour: " + hour);
-    // console.log("Day: " + day);
-    // console.log("Checked: " + event.checked);
-    // console.log("Day Index:" + dayIndex);
-    // console.log("Hour Index:" + hourIndex);
+    
     this.checkboxes[dayIndex][hourIndex] = event.checked;
+    console.log(this.checkboxes);
   }
 }
 
